@@ -1,0 +1,973 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reading Rocket</title>
+<meta name="theme-color" content="#6C4BF4">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Reading Rocket">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFF6E8; --card:#FFFFFF; --ink:#2B2340; --muted:#7A7091; --line:#F0E6D6;
+  --purple:#6C4BF4; --purple-d:#4F31D2; --orange:#FF7A1A; --orange-d:#E0600A;
+  --yellow:#FFC93C; --green:#22C55E; --green-d:#15A349; --pink:#FF5C8A; --teal:#12B5A6;
+  --safe-b:env(safe-area-inset-bottom,0px); --safe-t:env(safe-area-inset-top,0px);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink)}
+body{font-family:'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;font-weight:700;
+  -webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;
+  padding-bottom:calc(96px + var(--safe-b));overscroll-behavior-y:none}
+input,textarea{-webkit-user-select:text;user-select:text}
+h1,h2,h3,.fun,button{font-family:'Fredoka','Nunito',system-ui,sans-serif}
+h1,h2,h3{margin:0;font-weight:600;letter-spacing:.2px}
+.wrap{max-width:560px;margin:0 auto;padding:0 16px}
+
+/* ---------- header ---------- */
+header{background:linear-gradient(135deg,#6C4BF4 0%,#8B5CF6 60%,#A855F7 100%);color:#fff;
+  padding:calc(14px + var(--safe-t)) 0 22px;border-radius:0 0 28px 28px;position:relative;overflow:hidden}
+header::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.55;
+  background-image:radial-gradient(2px 2px at 12% 30%,#fff 50%,transparent 51%),radial-gradient(2px 2px at 30% 70%,#fff 50%,transparent 51%),
+  radial-gradient(3px 3px at 52% 22%,#fff 50%,transparent 51%),radial-gradient(2px 2px at 70% 60%,#fff 50%,transparent 51%),
+  radial-gradient(2px 2px at 88% 28%,#fff 50%,transparent 51%),radial-gradient(3px 3px at 80% 85%,#fff 50%,transparent 51%)}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;position:relative}
+.hi{font-family:'Fredoka';font-size:26px;font-weight:600;line-height:1.1}
+.hi small{display:block;font-family:'Nunito';font-size:14px;font-weight:700;opacity:.85;margin-top:2px}
+.chips{display:flex;gap:8px;align-items:center}
+.chip{background:rgba(255,255,255,.2);border-radius:999px;padding:7px 12px;font-family:'Fredoka';font-size:18px;font-weight:600;white-space:nowrap}
+.gear{background:rgba(255,255,255,.2);border:0;color:#fff;border-radius:999px;width:38px;height:38px;font-size:18px;cursor:pointer}
+
+/* ---------- buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;cursor:pointer;
+  font-size:21px;font-weight:600;color:#fff;background:var(--purple);border-radius:18px;padding:15px 22px;
+  box-shadow:0 5px 0 var(--purple-d);transition:transform .06s,box-shadow .06s;min-height:58px}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--purple-d)}
+.btn.green{background:var(--green);box-shadow:0 5px 0 var(--green-d)} .btn.green:active{box-shadow:0 1px 0 var(--green-d)}
+.btn.orange{background:var(--orange);box-shadow:0 5px 0 var(--orange-d)} .btn.orange:active{box-shadow:0 1px 0 var(--orange-d)}
+.btn.white{background:#fff;color:var(--ink);box-shadow:0 5px 0 #E3D8C6} .btn.white:active{box-shadow:0 1px 0 #E3D8C6}
+.btn.small{font-size:17px;min-height:46px;padding:10px 16px;border-radius:14px}
+.btn.block{display:flex;width:100%}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.link{background:none;border:0;color:var(--muted);font-family:'Nunito';font-weight:800;font-size:15px;padding:10px;cursor:pointer;text-decoration:underline}
+
+/* ---------- cards ---------- */
+.card{background:var(--card);border-radius:24px;padding:18px;box-shadow:0 2px 0 var(--line),0 8px 24px rgba(60,40,120,.06)}
+.mission{display:flex;gap:16px;align-items:center;margin-top:-14px;position:relative}
+.ringbox{position:relative;flex:none}
+.ringbox .mid{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.mission h3{font-size:20px} .mission p{margin:4px 0 12px;color:var(--muted);font-size:15px}
+.reward{margin-top:14px;display:flex;align-items:center;gap:12px}
+.bar{height:14px;border-radius:999px;background:#EFE7FF;overflow:hidden;flex:1}
+.bar>i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--yellow),var(--orange))}
+
+.sectionhead{display:flex;align-items:center;justify-content:space-between;margin:26px 0 12px}
+.sectionhead h2{font-size:24px}
+.filters{display:flex;gap:8px;margin-bottom:14px}
+.fchip{border:0;background:#fff;color:var(--muted);font-size:16px;font-weight:600;border-radius:999px;padding:9px 16px;cursor:pointer;box-shadow:0 2px 0 var(--line)}
+.fchip.on{background:var(--ink);color:#fff;box-shadow:none}
+
+/* ---------- covers & shelf ---------- */
+.cover{position:relative;aspect-ratio:2/3;border-radius:12px;overflow:hidden;background:hsl(var(--h,260) 70% 58%);
+  box-shadow:inset -6px 0 0 rgba(0,0,0,.12),0 6px 14px rgba(40,20,90,.18)}
+.cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1}
+.cover .gen{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:10px;text-align:center;
+  color:#fff;font-family:'Fredoka';font-weight:600;font-size:16px;line-height:1.15;word-break:break-word}
+.shelf{display:grid;grid-template-columns:repeat(3,1fr);gap:18px 14px}
+@media (min-width:480px){.shelf{grid-template-columns:repeat(4,1fr)}}
+.tile{background:none;border:0;padding:0;text-align:left;cursor:pointer;color:inherit;font:inherit}
+.tile:active .cover{transform:scale(.96)}
+.tile .cover{transition:transform .08s}
+.tile .t{font-family:'Fredoka';font-weight:600;font-size:14px;margin-top:8px;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tile .pbar{height:7px;border-radius:9px;background:#EDE5F7;margin-top:6px;overflow:hidden}
+.tile .pbar i{display:block;height:100%;background:var(--teal);border-radius:9px}
+.tile .pp{font-size:12px;color:var(--muted);margin-top:3px}
+.ribbon{position:absolute;z-index:2;top:8px;right:-30px;transform:rotate(35deg);background:var(--yellow);color:var(--ink);
+  font-family:'Fredoka';font-size:11px;font-weight:700;padding:3px 34px;box-shadow:0 2px 4px rgba(0,0,0,.2)}
+.empty{text-align:center;padding:30px 10px}
+.empty .big{font-size:64px}
+.empty p{color:var(--muted);font-size:17px}
+.fab{position:fixed;right:max(16px,calc(50% - 264px));bottom:calc(92px + var(--safe-b));z-index:20;border-radius:999px;padding:14px 22px}
+
+/* ---------- book page ---------- */
+.backbtn{background:none;border:0;font-family:'Fredoka';font-size:18px;font-weight:600;color:var(--purple);padding:16px 0 8px;cursor:pointer}
+.bookhero{display:flex;gap:18px;align-items:flex-end}
+.bookhero .cover{width:132px;flex:none}
+.bookhero h1{font-size:26px;line-height:1.15}
+.bookhero .by{color:var(--muted);margin-top:4px}
+.track{position:relative;height:56px;margin:18px 4px 6px}
+.track .line{position:absolute;left:24px;right:24px;top:27px;border-top:4px dashed #D9CCF5}
+.track .done{position:absolute;left:24px;top:25px;height:8px;border-radius:9px;background:linear-gradient(90deg,var(--yellow),var(--orange))}
+.track .e{position:absolute;top:8px;font-size:34px;line-height:1}
+.track .rocket{position:absolute;top:6px;font-size:34px;transform:translateX(-50%) rotate(45deg);transition:left .6s}
+.bigpage{font-family:'Fredoka';font-size:30px;font-weight:600;text-align:center}
+.bigpage span{color:var(--purple)}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.fact{background:#F7F2FF;border-radius:16px;padding:12px}
+.fact b{display:block;font-family:'Fredoka';font-size:20px;font-weight:600}
+.fact small{color:var(--muted)}
+.note{background:#FFF4D6;border-radius:16px;padding:12px 14px;margin-top:10px;font-size:16px}
+.stack{display:grid;gap:14px;margin-top:18px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* ---------- timer ---------- */
+.picker{display:flex;gap:12px;overflow-x:auto;padding:6px 2px 12px;scroll-snap-type:x mandatory}
+.picker .tile{width:86px;flex:none;scroll-snap-align:start;opacity:.55}
+.picker .tile.sel{opacity:1}
+.picker .tile.sel .cover{outline:4px solid var(--orange);outline-offset:3px}
+.timerbox{display:flex;justify-content:center;margin:10px 0 6px}
+.clock{font-family:'Fredoka';font-size:58px;font-weight:600;line-height:1;font-variant-numeric:tabular-nums}
+.clocksub{color:var(--muted);font-size:15px;margin-top:6px}
+.encourage{text-align:center;font-family:'Fredoka';font-size:19px;font-weight:600;color:var(--purple);min-height:26px;margin:8px 0 16px}
+.nowreading{display:flex;align-items:center;gap:12px;justify-content:center}
+.nowreading .cover{width:44px}
+.pulse{animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.03)}}
+
+/* ---------- trophies ---------- */
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.stat{background:#fff;border-radius:20px;padding:14px;box-shadow:0 2px 0 var(--line)}
+.stat .e{font-size:26px} .stat b{display:block;font-family:'Fredoka';font-size:28px;font-weight:600;line-height:1.1}
+.stat small{color:var(--muted)}
+.week{display:flex;align-items:flex-end;gap:8px;height:150px;position:relative;padding-top:10px}
+.week .col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.week .b{width:100%;border-radius:10px 10px 4px 4px;background:#C9BCF7;min-height:4px}
+.week .b.met{background:var(--green)}
+.week .d{font-size:13px;color:var(--muted);margin-top:6px}
+.week .d.today{color:var(--ink)}
+.week .m{font-size:12px;color:var(--muted);margin-bottom:3px}
+.goalline{position:absolute;left:0;right:0;border-top:3px dashed var(--orange);opacity:.7}
+.goalline span{position:absolute;right:0;top:-20px;font-size:11px;color:var(--orange)}
+.badges{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.badge{background:#fff;border-radius:20px;padding:14px 8px;text-align:center;box-shadow:0 2px 0 var(--line)}
+.badge .e{font-size:38px;line-height:1.1}
+.badge b{display:block;font-family:'Fredoka';font-weight:600;font-size:14px;margin-top:6px;line-height:1.15}
+.badge small{display:block;color:var(--muted);font-size:11px;margin-top:4px;line-height:1.2}
+.badge.locked .e{filter:grayscale(1);opacity:.35}
+.badge.locked b{color:var(--muted)}
+
+/* ---------- parent ---------- */
+label.l{display:block;font-family:'Fredoka';font-weight:600;font-size:17px;margin:16px 0 6px}
+.in{width:100%;font:inherit;font-size:18px;padding:13px 14px;border-radius:14px;border:3px solid #E9DFF9;background:#fff;color:var(--ink);outline:none}
+.in:focus{border-color:var(--purple)}
+.stepper{display:flex;gap:8px;align-items:center}
+.stepper .in{text-align:center;font-family:'Fredoka';font-size:26px;font-weight:600;padding:8px;min-width:0;flex:1}
+.stepper .sb{flex:none;width:54px;height:54px;border-radius:14px;border:0;background:#EFE7FF;color:var(--purple);font-size:19px;font-weight:600;cursor:pointer}
+.stepper .sb:active{background:#DCCEFF}
+.hint{color:var(--muted);font-size:14px;margin-top:6px}
+.log{list-style:none;margin:0;padding:0}
+.log li{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:2px solid var(--line);font-size:15px}
+.log li span:last-child{color:var(--muted);text-align:right}
+
+/* ---------- nav ---------- */
+nav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:#fff;border-top:2px solid var(--line);
+  padding:8px 8px calc(8px + var(--safe-b));display:flex;justify-content:center}
+nav .in2{display:flex;max-width:560px;width:100%;justify-content:space-around}
+nav button{flex:1;background:none;border:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;
+  font-size:13px;font-weight:600;color:var(--muted);padding:6px 0;border-radius:16px}
+nav button .ic{font-size:26px;line-height:1.1;transition:transform .15s}
+nav button.on{color:var(--purple);background:#F3EEFF}
+nav button.on .ic{transform:scale(1.15)}
+nav .dot{width:8px;height:8px;border-radius:9px;background:var(--orange);display:inline-block;margin-left:4px;vertical-align:middle}
+
+/* ---------- sheet / overlays ---------- */
+.shade{position:fixed;inset:0;z-index:50;background:rgba(30,18,70,.45);display:none;align-items:flex-end;justify-content:center}
+.shade.open{display:flex;animation:fade .15s}
+.sheet{background:var(--bg);width:100%;max-width:560px;max-height:92vh;overflow-y:auto;border-radius:28px 28px 0 0;
+  padding:22px 18px calc(24px + var(--safe-b));animation:up .22s cubic-bezier(.2,.9,.3,1.2)}
+.sheet h2{font-size:24px;margin-bottom:4px}
+.sheet .x{float:right;background:#fff;border:0;border-radius:999px;width:40px;height:40px;font-size:20px;cursor:pointer;color:var(--muted)}
+@keyframes up{from{transform:translateY(40px);opacity:.4}}
+@keyframes fade{from{opacity:0}}
+.results{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px}
+.results .tile .by{font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.searchrow{display:flex;gap:8px;margin-top:12px}
+.searchrow .in{flex:1}
+.loading{text-align:center;padding:30px;font-size:40px}
+.loading div{animation:spin 1.2s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.chosen{display:flex;gap:14px;align-items:center;margin-top:10px}
+.chosen .cover{width:96px;flex:none}
+.party{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;background:rgba(30,18,70,.55);padding:24px}
+.party.open{display:flex;animation:fade .2s}
+.party .box{background:#fff;border-radius:30px;padding:28px 22px;text-align:center;max-width:360px;width:100%;animation:pop .4s cubic-bezier(.2,1.6,.4,1)}
+.party .e{font-size:84px;line-height:1;animation:wobble 1s ease-in-out infinite}
+.party h2{font-size:28px;margin:12px 0 6px}
+.party p{color:var(--muted);font-size:17px;margin:0 0 20px}
+@keyframes pop{from{transform:scale(.5);opacity:0}}
+@keyframes wobble{25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
+.toast{position:fixed;left:50%;bottom:calc(104px + var(--safe-b));transform:translateX(-50%) translateY(20px);opacity:0;z-index:80;
+  background:var(--ink);color:#fff;padding:12px 18px;border-radius:16px;font-size:16px;transition:.25s;pointer-events:none;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:90}
+.big-win{background:#fff;border-radius:20px;padding:16px;text-align:center;margin:12px 0 4px}
+.big-win b{display:block;font-family:'Fredoka';font-size:26px;font-weight:600}
+.big-win span{color:var(--orange);font-family:'Fredoka';font-size:20px;font-weight:600}
+</style>
+</head>
+<body>
+<header><div class="wrap" id="hdr"></div></header>
+<main class="wrap" id="main"></main>
+<nav><div class="in2" id="nav"></div></nav>
+
+<div class="shade" id="shade"><div class="sheet" id="sheet"></div></div>
+<div class="party" id="party"><div class="box" id="partybox"></div></div>
+<div class="toast" id="toast"></div>
+<canvas id="confetti"></canvas>
+<input type="file" id="photoIn" accept="image/*" capture="environment" hidden>
+<input type="file" id="importIn" accept="application/json,.json" hidden>
+
+<script>
+/* =========================================================
+   Reading Rocket — everything is saved on this phone.
+   ========================================================= */
+const KEY = 'readingRocket.v1';
+const DEFAULTS = {
+  name: 'Reader', goal: 20, books: [], sessions: [], goalDays: {}, badges: {},
+  stars: 0, pagesRead: 0, reward: { text: '', cost: 0 }, timer: null, selBook: null, chimed: ''
+};
+let S = load();
+let view = 'shelf', currentBook = null, shelfFilter = 'all', parentOK = false;
+let addFlow = null, progressCtx = null;
+
+function load() {
+  try {
+    const s = JSON.parse(localStorage.getItem(KEY));
+    if (s && Array.isArray(s.books)) return Object.assign(JSON.parse(JSON.stringify(DEFAULTS)), s);
+  } catch (e) {}
+  return JSON.parse(JSON.stringify(DEFAULTS));
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(S)); }
+  catch (e) { toast('Uh oh, the phone is out of room to save!'); }
+}
+
+/* ---------- little helpers ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const pad = n => String(n).padStart(2, '0');
+const dayKey = (d = new Date()) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const keyToDate = k => { const [y, m, d] = k.split('-').map(Number); return new Date(y, m - 1, d); };
+const addDays = (k, n) => { const d = keyToDate(k); d.setDate(d.getDate() + n); return dayKey(d); };
+const book = id => S.books.find(b => b.id === id);
+const hue = t => { let h = 0; for (const c of String(t)) h = (h * 31 + c.charCodeAt(0)) % 360; return h; };
+const sortTitle = (a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: 'base', numeric: true });
+const fmtMin = secs => { const m = Math.round(secs / 60); return m < 60 ? `${m} min` : `${Math.floor(m / 60)} hr ${m % 60} min`; };
+const dayName = k => keyToDate(k).toLocaleDateString(undefined, { weekday: 'short' });
+const niceDate = ms => {
+  if (!ms) return 'Not yet';
+  const k = dayKey(new Date(ms)), t = dayKey();
+  if (k === t) return 'Today';
+  if (k === addDays(t, -1)) return 'Yesterday';
+  return new Date(ms).toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });
+};
+
+function timerMs() { const t = S.timer; return t ? t.accum + (t.startedAt ? Date.now() - t.startedAt : 0) : 0; }
+function secsOn(day) {
+  let s = S.sessions.reduce((a, x) => a + (x.day === day ? x.secs : 0), 0);
+  if (S.timer && S.timer.day === day) s += timerMs() / 1000;
+  return s;
+}
+function streak() {
+  let d = dayKey(), n = 0;
+  if (!S.goalDays[d]) d = addDays(d, -1);
+  while (S.goalDays[d]) { n++; d = addDays(d, -1); }
+  return n;
+}
+function bestStreak() {
+  const days = Object.keys(S.goalDays).sort();
+  let best = 0, run = 0, prev = null;
+  for (const d of days) { run = prev && addDays(prev, 1) === d ? run + 1 : 1; best = Math.max(best, run); prev = d; }
+  return best;
+}
+const totalSecs = () => S.sessions.reduce((a, x) => a + x.secs, 0);
+const finishedCount = () => S.books.filter(b => b.status === 'finished').length;
+
+/* ---------- covers ---------- */
+function coverHTML(b, extra = '') {
+  return `<div class="cover" style="--h:${hue(b.title)}">${b.cover ? `<img src="${esc(b.cover)}" alt="" loading="lazy" onerror="this.remove()">` : ''}<span class="gen">${esc(b.title)}</span>${extra}</div>`;
+}
+function ring(pct, size, stroke, color) {
+  const r = (size - stroke) / 2, c = 2 * Math.PI * r, p = Math.max(0, Math.min(1, pct));
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+    <circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="#EFE7FF" stroke-width="${stroke}"/>
+    <circle class="ringfg" cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="${color}" stroke-width="${stroke}" stroke-linecap="round"
+      stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - p)}" transform="rotate(-90 ${size / 2} ${size / 2})" style="transition:stroke-dashoffset .5s"/></svg>`;
+}
+
+/* ---------- badges ---------- */
+const BADGES = [
+  { id: 'first',  e: '🚀', n: 'Blast Off',        d: 'Use the reading timer once',       t: () => S.sessions.length >= 1 },
+  { id: 'goal1',  e: '🎯', n: 'Mission Complete', d: 'Reach your daily goal',            t: () => Object.keys(S.goalDays).length >= 1 },
+  { id: 's3',     e: '🔥', n: 'On Fire',          d: 'Reach your goal 3 days in a row',  t: () => bestStreak() >= 3 },
+  { id: 's7',     e: '🌟', n: 'Week Warrior',     d: '7 days in a row',                  t: () => bestStreak() >= 7 },
+  { id: 's14',    e: '⚡', n: 'Unstoppable',      d: '14 days in a row',                 t: () => bestStreak() >= 14 },
+  { id: 's30',    e: '👑', n: 'Reading Royalty',  d: '30 days in a row',                 t: () => bestStreak() >= 30 },
+  { id: 'long30', e: '🏃', n: 'Marathon',         d: 'Read 30 minutes in one go',        t: () => S.sessions.some(s => s.secs >= 1800) },
+  { id: 'm60',    e: '⏱️', n: 'Hour Hero',        d: 'Read 60 minutes in all',           t: () => totalSecs() >= 3600 },
+  { id: 'm300',   e: '🛸', n: 'Space Cadet',      d: 'Read 5 hours in all',              t: () => totalSecs() >= 18000 },
+  { id: 'm1000',  e: '🌌', n: 'Galaxy Brain',     d: 'Read 1,000 minutes in all',        t: () => totalSecs() >= 60000 },
+  { id: 'p100',   e: '📄', n: 'Page Turner',      d: 'Read 100 pages',                   t: () => S.pagesRead >= 100 },
+  { id: 'p500',   e: '📚', n: 'Page Blaster',     d: 'Read 500 pages',                   t: () => S.pagesRead >= 500 },
+  { id: 'p2000',  e: '🏔️', n: 'Page Mountain',    d: 'Read 2,000 pages',                 t: () => S.pagesRead >= 2000 },
+  { id: 'b1',     e: '🏁', n: 'Book Finisher',    d: 'Finish a whole book',              t: () => finishedCount() >= 1 },
+  { id: 'b5',     e: '🐛', n: 'Bookworm',         d: 'Finish 5 books',                   t: () => finishedCount() >= 5 },
+  { id: 'b10',    e: '🏆', n: 'Library Legend',   d: 'Finish 10 books',                  t: () => finishedCount() >= 10 },
+  { id: 'shelf5', e: '🗂️', n: 'Collector',        d: 'Have 5 books on your shelf',       t: () => S.books.length >= 5 },
+  { id: 'early',  e: '🌅', n: 'Early Bird',       d: 'Read before 8 in the morning',     t: () => S.sessions.some(s => new Date(s.start).getHours() < 8) },
+  { id: 'bed',    e: '🌙', n: 'Bedtime Reader',   d: 'Read after 7 at night',            t: () => S.sessions.some(s => new Date(s.start).getHours() >= 19) },
+];
+function checkBadges() {
+  for (const b of BADGES) if (!S.badges[b.id] && b.t()) {
+    S.badges[b.id] = Date.now();
+    celebrate({ e: b.e, title: `New badge: ${b.n}!`, text: b.d, confetti: true });
+  }
+  save();
+}
+
+/* =========================================================
+   RENDER
+   ========================================================= */
+function render() { renderHeader(); renderMain(); renderNav(); }
+
+function renderHeader() {
+  const st = streak();
+  const sub = { shelf: 'Ready for a reading adventure?', book: 'Let\'s see how far you got!', read: 'Find a cozy spot 📖',
+    trophies: 'Look at everything you did!', parent: 'Grown-up corner' }[view];
+  $('#hdr').innerHTML = `<div class="top">
+    <div class="hi">Hi, ${esc(S.name)}! <small>${sub}</small></div>
+    <div class="chips"><span class="chip" title="Days in a row">🔥 ${st}</span><span class="chip" title="Stars">⭐ ${S.stars}</span>
+    <button class="gear" data-act="parent" aria-label="Grown-ups">⚙️</button></div></div>`;
+}
+
+function renderNav() {
+  const items = [['shelf', '📚', 'My Books'], ['read', '⏱️', 'Read!'], ['trophies', '🏆', 'Trophies']];
+  const running = S.timer && S.timer.startedAt;
+  $('#nav').innerHTML = items.map(([v, ic, label]) =>
+    `<button data-act="nav" data-v="${v}" class="${view === v || (view === 'book' && v === 'shelf') ? 'on' : ''}"><span class="ic">${ic}</span><span>${label}${v === 'read' && running ? '<i class="dot"></i>' : ''}</span></button>`).join('');
+}
+
+function renderMain() {
+  const m = $('#main');
+  if (view === 'shelf') m.innerHTML = shelfView();
+  else if (view === 'book') m.innerHTML = bookView();
+  else if (view === 'read') m.innerHTML = readView();
+  else if (view === 'trophies') m.innerHTML = trophiesView();
+  else if (view === 'parent') m.innerHTML = parentView();
+}
+
+/* ---------- shelf ---------- */
+function shelfView() {
+  const today = secsOn(dayKey()) / 60, goal = S.goal, met = today >= goal;
+  const pct = today / goal;
+  const left = Math.max(0, Math.ceil(goal - today));
+  let html = `<div class="card mission">
+    <div class="ringbox">${ring(pct, 104, 12, met ? 'var(--green)' : 'var(--orange)')}
+      <div class="mid"><span class="fun" style="font-size:26px;font-weight:600">${Math.floor(today)}</span><small style="color:var(--muted)">of ${goal} min</small></div></div>
+    <div style="flex:1;min-width:0">
+      <h3>${met ? 'Mission complete! 🎉' : 'Today\'s mission'}</h3>
+      <p>${met ? 'You did your reading today. Extra reading = extra stars!' : `Read ${left} more minute${left === 1 ? '' : 's'} today.`}</p>
+      <button class="btn orange small" data-act="nav" data-v="read">🚀 ${S.timer ? 'Back to timer' : 'Start reading'}</button>
+    </div></div>`;
+
+  if (S.reward.text && S.reward.cost > 0) {
+    const rp = Math.min(1, S.stars / S.reward.cost);
+    html += `<div class="card reward"><span style="font-size:30px">🎁</span><div style="flex:1;min-width:0">
+      <div class="fun" style="font-size:17px;font-weight:600">${esc(S.reward.text)}</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:6px"><div class="bar"><i style="width:${rp * 100}%"></i></div>
+      <small style="color:var(--muted);white-space:nowrap">⭐ ${S.stars}/${S.reward.cost}</small></div>
+      ${rp >= 1 ? '<div style="color:var(--green-d);margin-top:6px">You earned it! Show a grown-up! 🙌</div>' : ''}</div></div>`;
+  }
+
+  const counts = { all: S.books.length, reading: S.books.filter(b => b.status !== 'finished').length, finished: finishedCount() };
+  const list = S.books.filter(b => shelfFilter === 'all' || (shelfFilter === 'finished' ? b.status === 'finished' : b.status !== 'finished')).sort(sortTitle);
+  html += `<div class="sectionhead"><h2>My Bookshelf</h2></div>`;
+  if (S.books.length) {
+    html += `<div class="filters">${[['all', 'All'], ['reading', 'Reading'], ['finished', 'Finished']].map(([f, l]) =>
+      `<button class="fchip ${shelfFilter === f ? 'on' : ''}" data-act="filter" data-f="${f}">${l} ${counts[f]}</button>`).join('')}</div>`;
+  }
+  if (!S.books.length) {
+    html += `<div class="card empty"><div class="big">📚</div><h2>Your shelf is empty!</h2><p>Add the books you're reading and watch your shelf fill up.</p>
+      <button class="btn orange" data-act="addBook">＋ Add my first book</button></div>`;
+  } else if (!list.length) {
+    html += `<div class="empty"><p>${shelfFilter === 'finished' ? 'No finished books yet. You can do it! 💪' : 'Every book is finished! Time to add a new one.'}</p></div>`;
+  } else {
+    html += `<div class="shelf">${list.map(tileHTML).join('')}</div>`;
+  }
+  if (S.books.length) html += `<button class="btn orange fab" data-act="addBook">＋ Add a book</button>`;
+  return html;
+}
+function tileHTML(b) {
+  const fin = b.status === 'finished';
+  const p = b.totalPages ? Math.min(1, b.page / b.totalPages) : 0;
+  return `<button class="tile" data-act="openBook" data-id="${b.id}">${coverHTML(b, fin ? '<span class="ribbon">DONE!</span>' : '')}
+    <div class="t">${esc(b.title)}</div>
+    ${fin ? '<div class="pp">⭐ Finished</div>' : `<div class="pbar"><i style="width:${p * 100}%"></i></div><div class="pp">${b.totalPages ? `Page ${b.page} of ${b.totalPages}` : `Page ${b.page}`}</div>`}</button>`;
+}
+
+/* ---------- one book ---------- */
+function bookView() {
+  const b = book(currentBook);
+  if (!b) { view = 'shelf'; return shelfView(); }
+  const fin = b.status === 'finished';
+  const p = b.totalPages ? Math.min(1, b.page / b.totalPages) : 0;
+  const leftPct = `calc(24px + (100% - 48px) * ${p})`;
+  return `<button class="backbtn" data-act="nav" data-v="shelf">← My Bookshelf</button>
+  <div class="bookhero">${coverHTML(b)}
+    <div><h1>${esc(b.title)}</h1>${b.author ? `<div class="by">by ${esc(b.author)}</div>` : ''}
+    ${fin ? '<div class="fun" style="margin-top:10px;color:var(--green-d);font-size:19px">🏁 You finished it!</div>' : ''}</div></div>
+
+  <div class="card" style="margin-top:20px">
+    <div class="track"><div class="line"></div><div class="done" style="width:calc((100% - 48px) * ${p})"></div>
+      <span class="e" style="left:0">🌍</span><span class="e" style="right:0">${fin ? '🏆' : '🪐'}</span>
+      <span class="rocket" style="left:${leftPct}">🚀</span></div>
+    <div class="bigpage">${fin ? 'All done!' : `Page <span>${b.page}</span>${b.totalPages ? ` of ${b.totalPages}` : ''}`}</div>
+    ${b.totalPages && !fin ? `<div style="text-align:center;color:var(--muted);margin-top:4px">${Math.round(p * 100)}% of the way · ${Math.max(0, b.totalPages - b.page)} pages to go</div>` : ''}
+    <div class="facts">
+      <div class="fact"><small>Chapter</small><b>${b.chapter ? esc(b.chapter) : '—'}</b></div>
+      <div class="fact"><small>Last read</small><b>${niceDate(b.lastRead)}</b></div>
+      <div class="fact"><small>Time in this book</small><b>${fmtMin(b.secs || 0)}</b></div>
+      <div class="fact"><small>Reading times</small><b>${S.sessions.filter(s => s.bookId === b.id).length}</b></div>
+    </div>
+    ${b.note ? `<div class="note">📍 <b>Where I stopped:</b> ${esc(b.note)}</div>` : ''}
+  </div>
+
+  <div class="stack">
+    ${fin ? `<button class="btn" data-act="reread" data-id="${b.id}">🔁 Read it again</button>` : `
+    <button class="btn green block" data-act="readBook" data-id="${b.id}">▶ Read this book</button>
+    <div class="row2"><button class="btn white small" data-act="updatePage" data-id="${b.id}">📖 Update my page</button>
+    <button class="btn white small" data-act="finishAsk" data-id="${b.id}">🏁 I finished it!</button></div>`}
+    <div style="text-align:center"><button class="link" data-act="editBook" data-id="${b.id}">Change name or picture</button>
+    <button class="link" data-act="delBook" data-id="${b.id}">Take off my shelf</button></div>
+  </div>`;
+}
+
+/* ---------- timer ---------- */
+function readView() {
+  const reading = S.books.filter(b => b.status !== 'finished').sort(sortTitle);
+  if (!reading.length) {
+    return `<div class="card empty" style="margin-top:20px"><div class="big">📖</div><h2>Add a book first!</h2>
+      <p>Put the book you're reading on your shelf, then come back to start the timer.</p>
+      <button class="btn orange" data-act="addBook">＋ Add a book</button></div>`;
+  }
+  if (!S.selBook || !book(S.selBook) || book(S.selBook).status === 'finished') {
+    const recent = [...reading].sort((a, b) => (b.lastRead || 0) - (a.lastRead || 0))[0];
+    S.selBook = recent.id;
+  }
+  const t = S.timer, sel = book(t ? t.bookId : S.selBook) || reading[0];
+  let top;
+  if (t) {
+    top = `<div class="nowreading" style="margin-top:18px">${coverHTML(sel)}<div><small style="color:var(--muted)">Reading</small>
+      <div class="fun" style="font-size:19px;font-weight:600">${esc(sel.title)}</div></div></div>`;
+  } else {
+    top = `<h2 style="margin:18px 0 6px;font-size:21px">Which book are you reading?</h2>
+      <div class="picker">${reading.map(b => `<button class="tile ${b.id === sel.id ? 'sel' : ''}" data-act="selBook" data-id="${b.id}">${coverHTML(b)}<div class="t">${esc(b.title)}</div></button>`).join('')}</div>`;
+  }
+  const buttons = !t
+    ? `<button class="btn green block pulse" data-act="start" style="font-size:26px;min-height:70px">▶ Start reading</button>`
+    : t.startedAt
+      ? `<div class="row2"><button class="btn white" data-act="pause">⏸ Pause</button><button class="btn orange" data-act="done">✅ I'm done</button></div>`
+      : `<div class="row2"><button class="btn green" data-act="resume">▶ Keep going</button><button class="btn orange" data-act="done">✅ I'm done</button></div>`;
+  return `${top}
+    <div class="timerbox"><div class="ringbox" id="tRing">${ring(0, 270, 22, 'var(--orange)')}
+      <div class="mid"><div class="clock" id="tClock">0:00</div><div class="clocksub" id="tSub"></div></div></div></div>
+    <div class="encourage" id="tMsg"></div>
+    ${buttons}
+    ${t ? `<div style="text-align:center;margin-top:6px"><button class="link" data-act="cancelTimer">Oops, I didn't mean to start</button></div>` : ''}
+    <p class="hint" style="text-align:center;margin-top:14px">Put the phone down and read! The timer keeps counting${t && t.startedAt ? '' : ' after you press start'}.</p>`;
+}
+function updateTimerUI() {
+  if (view !== 'read' || !$('#tClock')) return;
+  const ms = timerMs(), s = Math.floor(ms / 1000);
+  const h = Math.floor(s / 3600), mm = Math.floor(s / 60) % 60, ss = s % 60;
+  $('#tClock').textContent = h ? `${h}:${pad(mm)}:${pad(ss)}` : `${mm}:${pad(ss)}`;
+  const today = secsOn(dayKey()) / 60, goal = S.goal, met = today >= goal;
+  $('#tSub').textContent = `${Math.floor(today)} of ${goal} min today`;
+  const fg = $('#tRing .ringfg'), r = (270 - 22) / 2, c = 2 * Math.PI * r;
+  fg.setAttribute('stroke-dashoffset', c * (1 - Math.min(1, today / goal)));
+  fg.setAttribute('stroke', met ? 'var(--green)' : 'var(--orange)');
+  const left = Math.ceil(goal - today);
+  let msg;
+  if (!S.timer) msg = met ? 'Goal done today! Extra reading = extra stars ⭐' : `${left} minute${left === 1 ? '' : 's'} to reach your goal!`;
+  else if (!S.timer.startedAt) msg = 'Paused. Ready when you are!';
+  else if (met) msg = 'Goal smashed! Keep going for bonus stars! 🌟';
+  else if (today / goal >= .75) msg = `Almost there! Just ${left} more minute${left === 1 ? '' : 's'}! 🔥`;
+  else if (today / goal >= .5) msg = 'Halfway there! Awesome! 🚀';
+  else if (s < 60) msg = 'Blast off! Happy reading! 📖';
+  else msg = 'You\'re doing great! Keep reading! 💪';
+  $('#tMsg').textContent = msg;
+}
+
+/* ---------- trophies ---------- */
+function trophiesView() {
+  const today = dayKey(), days = [...Array(7)].map((_, i) => addDays(today, i - 6));
+  const mins = days.map(d => secsOn(d) / 60);
+  const top = Math.max(S.goal * 1.25, ...mins, 1);
+  const earned = BADGES.filter(b => S.badges[b.id]).length;
+  return `<div class="stats" style="margin-top:-12px;position:relative">
+    <div class="stat"><span class="e">🔥</span><b>${streak()}</b><small>days in a row</small></div>
+    <div class="stat"><span class="e">⏱️</span><b>${Math.round(totalSecs() / 60)}</b><small>minutes read</small></div>
+    <div class="stat"><span class="e">🏁</span><b>${finishedCount()}</b><small>books finished</small></div>
+    <div class="stat"><span class="e">📄</span><b>${S.pagesRead}</b><small>pages read</small></div></div>
+
+  <div class="sectionhead"><h2>This week</h2></div>
+  <div class="card"><div class="week">
+    <div class="goalline" style="bottom:${(S.goal / top) * 120 + 22}px"><span>goal ${S.goal} min</span></div>
+    ${days.map((d, i) => `<div class="col"><span class="m">${mins[i] >= 1 ? Math.round(mins[i]) : ''}</span>
+      <div class="b ${S.goalDays[d] || mins[i] >= S.goal ? 'met' : ''}" style="height:${(mins[i] / top) * 120}px"></div>
+      <span class="d ${d === today ? 'today' : ''}">${d === today ? 'Today' : dayName(d)}</span></div>`).join('')}
+  </div></div>
+
+  <div class="sectionhead"><h2>Badges</h2><span style="color:var(--muted)">${earned} of ${BADGES.length}</span></div>
+  <div class="badges">${BADGES.map(b => `<div class="badge ${S.badges[b.id] ? '' : 'locked'}"><div class="e">${b.e}</div><b>${b.n}</b><small>${S.badges[b.id] ? '✓ Earned!' : b.d}</small></div>`).join('')}</div>`;
+}
+
+/* ---------- grown-ups ---------- */
+function parentView() {
+  if (!parentOK) { view = 'shelf'; return shelfView(); }
+  const byDay = {};
+  for (const s of S.sessions) (byDay[s.day] ||= []).push(s);
+  const days = Object.keys(byDay).sort().reverse().slice(0, 30);
+  return `<button class="backbtn" data-act="nav" data-v="shelf">← Back to the app</button>
+  <div class="card">
+    <h2>Settings</h2>
+    <label class="l">Reader's name</label><input class="in" id="pName" value="${esc(S.name)}" maxlength="20">
+    <label class="l">Daily reading goal</label>
+    <div class="stepper"><button class="sb" data-act="goalStep" data-n="-5">−5</button>
+      <input class="in" id="pGoal" type="number" inputmode="numeric" value="${S.goal}"><button class="sb" data-act="goalStep" data-n="5">+5</button></div>
+    <div class="hint">Minutes per day. Reaching it builds the 🔥 streak and earns 10 bonus stars.</div>
+    <label class="l">Reward to work toward (optional)</label>
+    <input class="in" id="pReward" value="${esc(S.reward.text)}" placeholder="e.g. Pick the movie for movie night" maxlength="60">
+    <div class="stepper" style="margin-top:8px"><span style="flex:none;color:var(--muted)">Stars needed</span>
+      <input class="in" id="pCost" type="number" inputmode="numeric" value="${S.reward.cost || ''}" placeholder="200"></div>
+    <div class="hint">Stars: 1 per minute read, +10 for reaching the daily goal, +50 for finishing a book.</div>
+    <button class="btn block" style="margin-top:16px" data-act="saveParent">Save settings</button>
+    ${S.reward.text && S.reward.cost ? `<button class="btn white block small" style="margin-top:12px" data-act="rewardGiven" ${S.stars >= S.reward.cost ? '' : 'disabled'}>🎁 Reward given (takes away ${S.reward.cost} ⭐)</button>` : ''}
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <h2>Reading log</h2>
+    <div class="hint" style="margin-bottom:6px">Handy for school reading logs. Last 30 days with reading.</div>
+    ${days.length ? `<ul class="log">${days.map(d => {
+      const tot = byDay[d].reduce((a, s) => a + s.secs, 0);
+      const titles = [...new Set(byDay[d].map(s => (book(s.bookId) || { title: '(removed book)' }).title))].join(', ');
+      return `<li><span>${keyToDate(d).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}<br><small style="color:var(--muted)">${esc(titles)}</small></span>
+        <span>${fmtMin(tot)}${S.goalDays[d] ? ' ✅' : ''}</span></li>`;
+    }).join('')}</ul>` : '<p class="hint">No reading recorded yet.</p>'}
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <h2>Backup</h2>
+    <div class="hint">Everything is saved on this phone only. Download a backup now and then, so a lost or reset phone doesn't lose his shelf.</div>
+    <div class="row2" style="margin-top:12px"><button class="btn white small" data-act="exportData">⬇ Download</button>
+    <button class="btn white small" data-act="importData">⬆ Restore</button></div>
+    <div style="text-align:center;margin-top:10px"><button class="link" data-act="eraseAll" style="color:#D33">Erase everything</button></div>
+  </div>`;
+}
+
+/* =========================================================
+   SHEETS & CELEBRATIONS
+   ========================================================= */
+function openSheet(html) { $('#sheet').innerHTML = html; $('#shade').classList.add('open'); $('#sheet').scrollTop = 0; }
+function closeSheet() { $('#shade').classList.remove('open'); addFlow = null; progressCtx = null; }
+$('#shade').addEventListener('click', e => { if (e.target.id === 'shade' && !progressCtx?.secs) closeSheet(); });
+
+const partyQueue = [];
+function celebrate(p) { partyQueue.push(p); if (!$('#party').classList.contains('open')) nextParty(); }
+function nextParty() {
+  const p = partyQueue.shift();
+  if (!p) { $('#party').classList.remove('open'); return; }
+  $('#partybox').innerHTML = `<div class="e">${p.e}</div><h2>${esc(p.title)}</h2><p>${esc(p.text)}</p><button class="btn orange block" data-act="partyNext">Yay!</button>`;
+  $('#party').classList.add('open');
+  if (p.confetti) confetti();
+  chime();
+}
+let toastT;
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2600); }
+
+/* ---------- add / edit a book ---------- */
+function openAdd(editId) {
+  const b = editId && book(editId);
+  addFlow = { step: b ? 'details' : 'search', q: '', results: [], loading: false, error: '', editId: b ? b.id : null,
+    chosen: b ? { title: b.title, author: b.author, cover: b.cover, pages: b.totalPages } : { title: '', author: '', cover: '', pages: 0 } };
+  renderAdd();
+}
+function renderAdd() {
+  const f = addFlow;
+  if (f.step === 'search') {
+    let body = '';
+    if (f.loading) body = `<div class="loading"><div>🔭</div><p class="hint">Looking for your book…</p></div>`;
+    else if (f.error) body = `<p class="hint" style="margin-top:16px">${esc(f.error)}</p>`;
+    else if (f.results.length) body = `<p class="hint" style="margin-top:14px">Tap the one that looks like YOUR book:</p>
+      <div class="results">${f.results.map((r, i) => `<button class="tile" data-act="pick" data-i="${i}">${coverHTML(r)}<div class="t">${esc(r.title)}</div><div class="by">${esc(r.author)}</div></button>`).join('')}</div>`;
+    else if (f.q) body = `<p class="hint" style="margin-top:16px">Hmm, I couldn't find a picture for "${esc(f.q)}". Try fewer words, type the number under the barcode, or take a photo of your book!</p>`;
+    openSheet(`<button class="x" data-act="closeSheet">✕</button><h2>${f.editId ? 'Find a new picture' : 'Add a book'}</h2>
+      <p class="hint" style="margin:0">Type the name of the book. Adding the author helps!<br>Can't find it? Type the number under the barcode on the back.</p>
+      <div class="searchrow"><input class="in" id="q" value="${esc(f.q || f.chosen.title)}" placeholder="e.g. Dog Man" enterkeyhint="search" autocomplete="off">
+      <button class="btn small" data-act="search">🔍</button></div>
+      ${body}
+      <div class="row2" style="margin-top:18px"><button class="btn white small" data-act="photo">📷 Take a photo</button>
+      <button class="btn white small" data-act="noPic">No picture</button></div>`);
+    const q = $('#q');
+    q.addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
+    if (!f.results.length && !f.loading) setTimeout(() => q.focus(), 250);
+  } else {
+    const c = f.chosen;
+    openSheet(`<button class="x" data-act="closeSheet">✕</button><h2>${f.editId ? 'Change book' : 'Is this right?'}</h2>
+      <div class="chosen">${coverHTML({ title: c.title || '?', cover: c.cover })}
+        <div style="display:grid;gap:8px;flex:1"><button class="btn white small" data-act="changePic">🔍 Find a picture</button>
+        <button class="btn white small" data-act="photo">📷 Take a photo</button></div></div>
+      <label class="l">Book name</label><input class="in" id="bTitle" value="${esc(c.title)}" maxlength="120">
+      <label class="l">Author</label><input class="in" id="bAuthor" value="${esc(c.author)}" placeholder="Who wrote it?" maxlength="80">
+      <label class="l">How many pages?</label><input class="in" id="bPages" type="number" inputmode="numeric" value="${c.pages || ''}" placeholder="Look at the last page number">
+      <div class="hint">${c.pages && !f.editId ? 'This is a guess from the internet. Check the last page of your book!' : 'Flip to the very last page and look at the number.'}</div>
+      ${f.editId ? '' : `<label class="l">What page are you on now?</label><input class="in" id="bStart" type="number" inputmode="numeric" value="0">`}
+      <button class="btn orange block" style="margin-top:20px" data-act="saveBook">${f.editId ? 'Save' : '📚 Put it on my shelf!'}</button>`);
+  }
+}
+function grabDetails() {
+  if (!$('#bTitle')) return;
+  Object.assign(addFlow.chosen, { title: $('#bTitle').value.trim(), author: $('#bAuthor').value.trim(), pages: parseInt($('#bPages').value) || 0 });
+}
+async function doSearch() {
+  const q = $('#q').value.trim();
+  if (!q) return toast('Type the name of your book first!');
+  Object.assign(addFlow, { q, loading: true, results: [], error: '' });
+  renderAdd();
+  try { addFlow.results = await findBooks(q); }
+  catch (e) { addFlow.error = 'I can\'t reach the internet right now. Try again in a bit, or take a photo of your book!'; }
+  if (!addFlow) return;
+  addFlow.loading = false;
+  renderAdd();
+}
+// "Dog Man: A Sprinkle in Time: A Graphic Novel (Dog Man #15): From the Creator of ..." -> "Dog Man: A Sprinkle in Time"
+function tidyTitle(t) {
+  return String(t).replace(/\s*\([^)]*\)/g, '').split(':').map(s => s.trim())
+    .filter((s, i) => i === 0 || !/graphic novel|from the (creator|author)|a novel|book \d|series/i.test(s))
+    .join(': ').trim();
+}
+async function findBooks(q) {
+  const out = [], seen = new Set();
+  let reached = false;
+  const isbn = q.replace(/[\s-]/g, '');
+  const byBarcode = /^(97[89])?\d{9}[\dXx]$/.test(isbn);
+
+  // 1. Apple Books: has most newer kids' books and big clear covers.
+  try {
+    const url = byBarcode
+      ? `https://itunes.apple.com/lookup?isbn=${isbn}&country=us`
+      : `https://itunes.apple.com/search?term=${encodeURIComponent(q)}&media=ebook&entity=ebook&limit=15&country=us`;
+    const j = await (await fetch(url)).json(); reached = true;
+    for (const r of j.results || []) {
+      if (!r.artworkUrl100 || !r.trackName) continue;
+      const title = tidyTitle(r.trackName);
+      if (seen.has(title.toLowerCase())) continue;
+      seen.add(title.toLowerCase());
+      out.push({ title, author: (r.artistName || '').split(/\s*&\s*/)[0], cover: r.artworkUrl100.replace(/\/\d+x\d+bb\.(jpg|png)$/, '/400x600bb.$1'), pages: 0 });
+    }
+  } catch (e) {}
+
+  // 2. Open Library: free library catalogue, knows page counts.
+  try {
+    const url = byBarcode
+      ? `https://openlibrary.org/search.json?isbn=${isbn}&fields=title,author_name,cover_i,number_of_pages_median`
+      : `https://openlibrary.org/search.json?q=${encodeURIComponent(q)}&limit=30&fields=title,author_name,cover_i,number_of_pages_median`;
+    const j = await (await fetch(url)).json(); reached = true;
+    for (const d of j.docs || []) {
+      const cover = d.cover_i ? `https://covers.openlibrary.org/b/id/${d.cover_i}-M.jpg?default=false`
+        : byBarcode ? `https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg?default=false` : '';
+      if (!cover || seen.has(cover)) continue;
+      seen.add(cover);
+      out.push({ title: d.title, author: (d.author_name || [])[0] || '', cover, pages: d.number_of_pages_median || 0 });
+      if (out.length >= 24) break;
+    }
+  } catch (e) {}
+
+  // 3. Google Books, only if the others came up short (its free daily limit often runs out).
+  if (out.length < 3) {
+    try {
+      const r = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=12&printType=books`);
+      const j = await r.json(); reached = true;
+      for (const it of j.items || []) {
+        const v = it.volumeInfo || {}, img = v.imageLinks && (v.imageLinks.thumbnail || v.imageLinks.smallThumbnail);
+        if (!img) continue;
+        out.push({ title: v.title, author: (v.authors || [])[0] || '', cover: img.replace(/^http:/, 'https:'), pages: v.pageCount || 0 });
+      }
+    } catch (e) {}
+  }
+  if (!reached) throw new Error('offline');
+  return out;
+}
+// Apple doesn't say how many pages a book has, so ask Open Library for that one number.
+async function guessPages(r) {
+  try {
+    const j = await (await fetch(`https://openlibrary.org/search.json?title=${encodeURIComponent(r.title)}&author=${encodeURIComponent(r.author)}&limit=3&fields=number_of_pages_median`)).json();
+    const pages = (j.docs || []).map(d => d.number_of_pages_median).find(Boolean);
+    const box = $('#bPages');
+    if (!pages || !addFlow || addFlow.chosen.cover !== r.cover || !box || box.value) return;
+    box.value = pages; addFlow.chosen.pages = pages;
+    box.nextElementSibling.textContent = 'This is a guess from the internet. Check the last page of your book!';
+  } catch (e) {}
+}
+$('#photoIn').addEventListener('change', e => {
+  const file = e.target.files[0]; e.target.value = '';
+  if (!file || !addFlow) return;
+  const img = new Image(), url = URL.createObjectURL(file);
+  img.onload = () => {
+    const h = 420, w = Math.round(img.width * (h / img.height));
+    const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+    cv.getContext('2d').drawImage(img, 0, 0, w, h);
+    URL.revokeObjectURL(url);
+    grabDetails();
+    addFlow.chosen.cover = cv.toDataURL('image/jpeg', .8);
+    if (addFlow.step === 'search') addFlow.chosen.title = addFlow.chosen.title || ($('#q') ? $('#q').value.trim() : '');
+    addFlow.step = 'details';
+    renderAdd();
+  };
+  img.src = url;
+});
+
+/* ---------- page / progress sheet ---------- */
+function openProgress(bookId, session) {
+  const b = book(bookId);
+  progressCtx = { bookId, ...(session || {}) };
+  const m = session ? Math.floor(session.secs / 60) : 0;
+  openSheet(`${session ? '' : '<button class="x" data-act="closeSheet">✕</button>'}
+    <h2>${session ? 'Awesome reading!' : 'Update my page'}</h2><div class="hint" style="margin:0">${esc(b.title)}</div>
+    ${session ? `<div class="big-win"><b>You read ${m < 1 ? 'less than a minute' : `${m} minute${m === 1 ? '' : 's'}`}!</b>${m ? `<span>+${m} ⭐</span>` : ''}</div>` : ''}
+    <label class="l">What page are you on now?</label>
+    <div class="stepper"><button class="sb" data-act="pgStep" data-n="-5">−5</button><button class="sb" data-act="pgStep" data-n="-1">−1</button>
+      <input class="in" id="pg" type="number" inputmode="numeric" value="${b.page}"><button class="sb" data-act="pgStep" data-n="1">+1</button><button class="sb" data-act="pgStep" data-n="5">+5</button></div>
+    ${b.totalPages ? `<div class="hint" style="text-align:center">out of ${b.totalPages} pages · you started at page ${b.page}</div>` : ''}
+    <label class="l">What chapter?</label><input class="in" id="ch" value="${esc(b.chapter)}" placeholder="e.g. 5 or The Big Storm" maxlength="40">
+    <label class="l">Where did you stop? <small style="color:var(--muted);font-family:Nunito">(if you want)</small></label>
+    <input class="in" id="note" value="${esc(b.note)}" placeholder="e.g. Right after the dragon showed up" maxlength="100">
+    <button class="btn green block" style="margin-top:20px" data-act="saveProgress">💾 Save</button>`);
+}
+function saveProgress() {
+  const ctx = progressCtx, b = book(ctx.bookId);
+  let pg = Math.max(0, parseInt($('#pg').value) || 0);
+  if (b.totalPages) pg = Math.min(pg, b.totalPages);
+  const prev = b.page;
+  if (pg > prev) S.pagesRead += pg - prev;
+  b.page = pg; b.chapter = $('#ch').value.trim(); b.note = $('#note').value.trim(); b.lastRead = Date.now();
+
+  if (ctx.secs != null) {
+    const secs = Math.round(ctx.secs);
+    S.sessions.push({ id: uid(), bookId: b.id, day: ctx.day, start: ctx.start, secs, from: prev, to: pg });
+    b.secs = (b.secs || 0) + secs;
+    S.stars += Math.floor(secs / 60);
+    S.timer = null; releaseWake();
+    if (secsOn(ctx.day) / 60 >= S.goal && !S.goalDays[ctx.day]) {
+      S.goalDays[ctx.day] = 1; S.stars += 10;
+      celebrate({ e: '🎯', title: 'Mission complete!', text: `You read ${S.goal} minutes today. +10 bonus stars! Your streak is ${streak()} day${streak() === 1 ? '' : 's'}! 🔥`, confetti: true });
+    }
+  }
+  if (b.totalPages && pg >= b.totalPages && b.status !== 'finished') finishBook(b);
+  save(); closeSheet(); checkBadges(); render(); updateTimerUI();
+  if (!partyQueue.length && !$('#party').classList.contains('open')) toast('Saved! 👍');
+}
+function finishBook(b) {
+  b.status = 'finished'; b.finishedAt = Date.now();
+  if (b.totalPages) { if (b.page < b.totalPages) S.pagesRead += b.totalPages - b.page; b.page = b.totalPages; }
+  S.stars += 50;
+  celebrate({ e: '🏆', title: 'You finished a book!', text: `"${b.title}" is DONE! That's ${finishedCount()} book${finishedCount() === 1 ? '' : 's'} finished. +50 stars!`, confetti: true });
+}
+
+/* =========================================================
+   TIMER, SOUND, SCREEN
+   ========================================================= */
+let audio, wakeLock;
+function unlockAudio() { try { audio ||= new (window.AudioContext || window.webkitAudioContext)(); audio.resume(); } catch (e) {} }
+function chime() {
+  if (!audio) return;
+  try {
+    const t0 = audio.currentTime;
+    [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => {
+      const o = audio.createOscillator(), g = audio.createGain();
+      o.type = 'triangle'; o.frequency.value = f;
+      g.gain.setValueAtTime(0, t0 + i * .12); g.gain.linearRampToValueAtTime(.25, t0 + i * .12 + .02); g.gain.exponentialRampToValueAtTime(.001, t0 + i * .12 + .5);
+      o.connect(g).connect(audio.destination); o.start(t0 + i * .12); o.stop(t0 + i * .12 + .55);
+    });
+  } catch (e) {}
+}
+async function wake() { try { wakeLock = await navigator.wakeLock?.request('screen'); } catch (e) {} }
+function releaseWake() { try { wakeLock?.release(); } catch (e) {} wakeLock = null; }
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') { if (S.timer?.startedAt) wake(); renderHeader(); renderNav(); updateTimerUI(); }
+});
+
+setInterval(() => {
+  if (!S.timer || !S.timer.startedAt) return;
+  updateTimerUI();
+  const d = dayKey();
+  if (S.chimed !== d && secsOn(d) / 60 >= S.goal) {
+    S.chimed = d; save();
+    chime(); navigator.vibrate?.([200, 100, 200, 100, 400]);
+    confetti();
+    toast(`🎯 You reached ${S.goal} minutes! Keep going or tap "I'm done".`);
+  }
+}, 1000);
+
+/* ---------- confetti ---------- */
+function confetti() {
+  const cv = $('#confetti'), ctx = cv.getContext('2d');
+  cv.width = innerWidth * devicePixelRatio; cv.height = innerHeight * devicePixelRatio; ctx.scale(devicePixelRatio, devicePixelRatio);
+  const cols = ['#FF7A1A', '#FFC93C', '#22C55E', '#6C4BF4', '#FF5C8A', '#12B5A6'];
+  const ps = [...Array(160)].map(() => ({ x: innerWidth / 2 + (Math.random() - .5) * 80, y: innerHeight * .35, vx: (Math.random() - .5) * 14,
+    vy: -Math.random() * 14 - 4, r: Math.random() * 6 + 4, c: cols[Math.floor(Math.random() * cols.length)], a: Math.random() * 6, va: (Math.random() - .5) * .4 }));
+  const t0 = performance.now();
+  (function frame(t) {
+    ctx.clearRect(0, 0, innerWidth, innerHeight);
+    for (const p of ps) {
+      p.vy += .35; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.a += p.va;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a); ctx.fillStyle = p.c; ctx.fillRect(-p.r / 2, -p.r / 4, p.r, p.r / 2); ctx.restore();
+    }
+    if (t - t0 < 3200) requestAnimationFrame(frame); else ctx.clearRect(0, 0, innerWidth, innerHeight);
+  })(t0);
+}
+
+/* =========================================================
+   TAPS
+   ========================================================= */
+const ACT = {
+  nav(el) { view = el.dataset.v; if (view !== 'parent') parentOK = false; render(); updateTimerUI(); scrollTo(0, 0); },
+  filter(el) { shelfFilter = el.dataset.f; renderMain(); },
+  openBook(el) { currentBook = el.dataset.id; view = 'book'; render(); scrollTo(0, 0); },
+  addBook() { openAdd(); },
+  closeSheet,
+  search: doSearch,
+  pick(el) {
+    const r = addFlow.results[+el.dataset.i];
+    Object.assign(addFlow.chosen, { title: r.title, author: r.author, cover: r.cover, pages: r.pages || addFlow.chosen.pages });
+    addFlow.step = 'details'; renderAdd();
+    if (!addFlow.chosen.pages) guessPages(r);
+  },
+  noPic() { addFlow.chosen.cover = ''; addFlow.chosen.title ||= $('#q').value.trim(); addFlow.step = 'details'; renderAdd(); },
+  photo() { $('#photoIn').click(); },
+  changePic() { grabDetails(); addFlow.step = 'search'; addFlow.q = ''; addFlow.results = []; renderAdd(); },
+  saveBook() {
+    grabDetails();
+    const c = addFlow.chosen;
+    if (!c.title) return toast('Your book needs a name!');
+    if (addFlow.editId) {
+      const b = book(addFlow.editId);
+      Object.assign(b, { title: c.title, author: c.author, cover: c.cover, totalPages: c.pages });
+      if (b.totalPages && b.page > b.totalPages) b.page = b.totalPages;
+      toast('Changed! ✏️');
+    } else {
+      let start = Math.max(0, parseInt($('#bStart').value) || 0);
+      if (c.pages) start = Math.min(start, c.pages);
+      const b = { id: uid(), title: c.title, author: c.author, cover: c.cover, totalPages: c.pages, page: start, chapter: '', note: '',
+        status: 'reading', added: Date.now(), lastRead: null, secs: 0 };
+      S.books.push(b); S.selBook = b.id;
+      toast('On your shelf! 📚');
+    }
+    save(); closeSheet(); checkBadges(); render();
+  },
+  readBook(el) { if (!S.timer) S.selBook = el.dataset.id; view = 'read'; render(); updateTimerUI(); scrollTo(0, 0); },
+  selBook(el) { S.selBook = el.dataset.id; save(); renderMain(); updateTimerUI(); },
+  start() {
+    unlockAudio();
+    const now = Date.now();
+    S.timer = { bookId: S.selBook, startedAt: now, accum: 0, day: dayKey(), start: now };
+    save(); wake(); render(); updateTimerUI();
+  },
+  pause() { S.timer.accum += Date.now() - S.timer.startedAt; S.timer.startedAt = null; save(); releaseWake(); render(); updateTimerUI(); },
+  resume() { unlockAudio(); S.timer.startedAt = Date.now(); save(); wake(); render(); updateTimerUI(); },
+  done() {
+    if (S.timer.startedAt) { S.timer.accum += Date.now() - S.timer.startedAt; S.timer.startedAt = null; }
+    save(); releaseWake(); render(); updateTimerUI();
+    openProgress(S.timer.bookId, { secs: S.timer.accum / 1000, day: S.timer.day, start: S.timer.start });
+  },
+  cancelTimer() { if (confirm('Stop the timer without saving this time?')) { S.timer = null; save(); releaseWake(); render(); updateTimerUI(); } },
+  updatePage(el) { openProgress(el.dataset.id); },
+  pgStep(el) { const i = $('#pg'); i.value = Math.max(0, (parseInt(i.value) || 0) + +el.dataset.n); },
+  saveProgress,
+  finishAsk(el) {
+    openSheet(`<button class="x" data-act="closeSheet">✕</button><h2>Did you read the whole book? 🤔</h2>
+      <p class="hint">All the way to the very last page?</p>
+      <div class="row2" style="margin-top:18px"><button class="btn white" data-act="closeSheet">Not yet</button>
+      <button class="btn green" data-act="finishYes" data-id="${el.dataset.id}">Yes! 🎉</button></div>`);
+  },
+  finishYes(el) { const b = book(el.dataset.id); b.lastRead = Date.now(); finishBook(b); save(); closeSheet(); checkBadges(); render(); },
+  reread(el) { const b = book(el.dataset.id); b.status = 'reading'; b.page = 0; b.chapter = ''; b.note = ''; save(); render(); toast('Here we go again! 🔁'); },
+  editBook(el) { openAdd(el.dataset.id); },
+  delBook(el) {
+    const b = book(el.dataset.id);
+    if (!confirm(`Take "${b.title}" off your shelf?`)) return;
+    S.books = S.books.filter(x => x.id !== b.id);
+    save(); view = 'shelf'; render();
+  },
+  partyNext() { nextParty(); },
+
+  parent() {
+    if (view === 'parent') return;
+    const a = 6 + Math.floor(Math.random() * 7), b = 6 + Math.floor(Math.random() * 7);
+    openSheet(`<button class="x" data-act="closeSheet">✕</button><h2>Grown-ups only 🔒</h2>
+      <label class="l">What is ${a} × ${b}?</label><input class="in" id="pin" type="number" inputmode="numeric" data-ans="${a * b}">
+      <button class="btn block" style="margin-top:16px" data-act="unlock">Open</button>`);
+    const i = $('#pin'); setTimeout(() => i.focus(), 250);
+    i.addEventListener('keydown', e => { if (e.key === 'Enter') ACT.unlock(); });
+  },
+  unlock() {
+    const i = $('#pin');
+    if (+i.value === +i.dataset.ans) { parentOK = true; closeSheet(); view = 'parent'; render(); scrollTo(0, 0); }
+    else { i.value = ''; toast('Not quite!'); }
+  },
+  goalStep(el) { const i = $('#pGoal'); i.value = Math.min(180, Math.max(5, (parseInt(i.value) || 20) + +el.dataset.n)); },
+  saveParent() {
+    S.name = $('#pName').value.trim() || 'Reader';
+    S.goal = Math.min(180, Math.max(1, parseInt($('#pGoal').value) || 20));
+    S.reward = { text: $('#pReward').value.trim(), cost: Math.max(0, parseInt($('#pCost').value) || 0) };
+    save(); render(); toast('Settings saved');
+  },
+  rewardGiven() {
+    if (!confirm(`Give the reward and take away ${S.reward.cost} stars?`)) return;
+    S.stars -= S.reward.cost; save(); render();
+    celebrate({ e: '🎁', title: 'Reward unlocked!', text: `Enjoy: ${S.reward.text}`, confetti: true });
+  },
+  exportData() {
+    const blob = new Blob([JSON.stringify(S, null, 1)], { type: 'application/json' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = `reading-rocket-backup-${dayKey()}.json`; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  },
+  importData() { $('#importIn').click(); },
+  eraseAll() {
+    if (!confirm('Erase ALL books, reading times, stars and badges on this phone?')) return;
+    if (!confirm('Really? This cannot be undone. (Download a backup first if you are not sure.)')) return;
+    S = JSON.parse(JSON.stringify(DEFAULTS)); save(); parentOK = false; view = 'shelf'; render();
+  },
+};
+$('#importIn').addEventListener('change', async e => {
+  const f = e.target.files[0]; e.target.value = '';
+  if (!f) return;
+  try {
+    const data = JSON.parse(await f.text());
+    if (!Array.isArray(data.books)) throw 0;
+    if (!confirm(`Restore this backup (${data.books.length} books)? It replaces what is on this phone now.`)) return;
+    S = Object.assign(JSON.parse(JSON.stringify(DEFAULTS)), data); save(); render(); toast('Backup restored!');
+  } catch (err) { toast('That file is not a Reading Rocket backup.'); }
+});
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-act]');
+  if (el && ACT[el.dataset.act]) ACT[el.dataset.act](el, e);
+});
+
+/* ---------- go! ---------- */
+render(); updateTimerUI();
+if (S.timer) { view = 'read'; render(); updateTimerUI(); }
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
+</script>
+</body>
+</html>
