@@ -190,6 +190,8 @@ nav .dot{width:8px;height:8px;border-radius:9px;background:var(--orange);display
 .results{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px}
 .results .tile .by{font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .searchrow{display:flex;gap:8px;margin-top:12px}
+.manual{background:#F3EEFF;border-radius:18px;padding:12px;margin-top:14px}
+.manual>span{display:block;font-family:'Fredoka';font-weight:600;font-size:15px;color:var(--purple-d);margin:0 0 10px 2px}
 .searchrow .in{flex:1}
 .loading{text-align:center;padding:30px;font-size:40px}
 .loading div{animation:spin 1.2s linear infinite;display:inline-block}
@@ -432,20 +434,22 @@ function bookView() {
       <span class="rocket" style="left:${leftPct}">🚀</span></div>
     <div class="bigpage">${fin ? 'All done!' : `Page <span>${b.page}</span>${b.totalPages ? ` of ${b.totalPages}` : ''}`}</div>
     ${b.totalPages && !fin ? `<div style="text-align:center;color:var(--muted);margin-top:4px">${Math.round(p * 100)}% of the way · ${Math.max(0, b.totalPages - b.page)} pages to go</div>` : ''}
+    ${!b.totalPages && !fin ? `<div style="text-align:center;color:var(--muted);margin-top:4px">How many pages is it? Tap <b>Update my page</b> to add it.</div>` : ''}
     <div class="facts">
       <div class="fact"><small>Chapter</small><b>${b.chapter ? esc(b.chapter) : '—'}</b></div>
       <div class="fact"><small>Last read</small><b>${niceDate(b.lastRead)}</b></div>
       <div class="fact"><small>Time in this book</small><b>${fmtMin(b.secs || 0)}</b></div>
-      <div class="fact"><small>Reading times</small><b>${S.sessions.filter(s => s.bookId === b.id).length}</b></div>
+      <div class="fact"><small>Reading times</small><b>${S.sessions.filter(s => s.bookId === b.id && s.start >= (b.resetAt || 0)).length}</b></div>
     </div>
     ${b.note ? `<div class="note">📍 <b>Where I stopped:</b> ${esc(b.note)}</div>` : ''}
   </div>
 
   <div class="stack">
-    ${fin ? `<button class="btn" data-act="reread" data-id="${b.id}">🔁 Read it again</button>` : `
+    ${fin ? `<button class="btn" data-act="startOverAsk" data-id="${b.id}">🔁 Read it again</button>` : `
     <button class="btn green block" data-act="readBook" data-id="${b.id}">▶ Read this book</button>
     <div class="row2"><button class="btn white small" data-act="updatePage" data-id="${b.id}">📖 Update my page</button>
     <button class="btn white small" data-act="finishAsk" data-id="${b.id}">🏁 I finished it!</button></div>`}
+    ${fin ? '' : `<button class="btn white small" data-act="startOverAsk" data-id="${b.id}">🔄 Start this book over</button>`}
     <div style="text-align:center"><button class="link" data-act="editBook" data-id="${b.id}">Change name or picture</button>
     <button class="link" data-act="delBook" data-id="${b.id}">Take off my shelf</button></div>
   </div>`;
@@ -609,14 +613,15 @@ function renderAdd() {
     else if (f.error) body = `<p class="hint" style="margin-top:16px">${esc(f.error)}</p>`;
     else if (f.results.length) body = `<p class="hint" style="margin-top:14px">Tap the one that looks like YOUR book:</p>
       <div class="results">${f.results.map((r, i) => `<button class="tile" data-act="pick" data-i="${i}">${coverHTML(r)}<div class="t">${esc(r.title)}</div><div class="by">${esc(r.author)}</div></button>`).join('')}</div>`;
-    else if (f.q) body = `<p class="hint" style="margin-top:16px">Hmm, I couldn't find a picture for "${esc(f.q)}". Try fewer words, type the number under the barcode, or take a photo of your book!</p>`;
+    else if (f.q) body = `<p class="hint" style="margin-top:16px">Hmm, I couldn't find a picture for "${esc(f.q)}". Try fewer words, type the number under the barcode, or add it yourself with the buttons above!</p>`;
     openSheet(`<button class="x" data-act="closeSheet">✕</button><h2>${f.editId ? 'Find a new picture' : 'Add a book'}</h2>
       <p class="hint" style="margin:0">Type the name of the book. Adding the author helps!<br>Can't find it? Type the number under the barcode on the back.</p>
       <div class="searchrow"><input class="in" id="q" value="${esc(f.q || f.chosen.title)}" placeholder="e.g. Dog Man" enterkeyhint="search" autocomplete="off">
       <button class="btn small" data-act="search">🔍</button></div>
-      ${body}
-      <div class="row2" style="margin-top:18px"><button class="btn white small" data-act="photo">📷 Take a photo</button>
-      <button class="btn white small" data-act="noPic">No picture</button></div>`);
+      <div class="manual"><span>Can't find your book? Add it yourself:</span>
+      <div class="row2"><button class="btn white small" data-act="photo">📷 Photo of my book</button>
+      <button class="btn white small" data-act="noPic">✏️ Type it in</button></div></div>
+      ${body}`);
     const q = $('#q');
     q.addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
     if (!f.results.length && !f.loading) setTimeout(() => q.focus(), 250);
@@ -655,6 +660,10 @@ function tidyTitle(t) {
     .filter((s, i) => i === 0 || !/graphic novel|from the (creator|author)|a novel|book \d|series/i.test(s))
     .join(': ').trim();
 }
+// Kids-only search: a book must be labelled for kids or young readers, and nothing grown-up.
+const KID = /kids?|children|juvenile|young adult|picture book/i;
+const GROWNUP = /erotic|sex(ual|uality)?|romance|adult fiction|mature/i;
+const kidSafe = labels => labels.some(l => KID.test(l)) && !labels.some(l => GROWNUP.test(l));
 async function findBooks(q) {
   const out = [], seen = new Set();
   let reached = false;
@@ -668,7 +677,7 @@ async function findBooks(q) {
       : `https://itunes.apple.com/search?term=${encodeURIComponent(q)}&media=ebook&entity=ebook&limit=15&country=us`;
     const j = await (await fetch(url)).json(); reached = true;
     for (const r of j.results || []) {
-      if (!r.artworkUrl100 || !r.trackName) continue;
+      if (!r.artworkUrl100 || !r.trackName || !kidSafe(r.genres || [])) continue;
       const title = tidyTitle(r.trackName);
       if (seen.has(title.toLowerCase())) continue;
       seen.add(title.toLowerCase());
@@ -679,10 +688,11 @@ async function findBooks(q) {
   // 2. Open Library: free library catalogue, knows page counts.
   try {
     const url = byBarcode
-      ? `https://openlibrary.org/search.json?isbn=${isbn}&fields=title,author_name,cover_i,number_of_pages_median`
-      : `https://openlibrary.org/search.json?q=${encodeURIComponent(q)}&limit=30&fields=title,author_name,cover_i,number_of_pages_median`;
+      ? `https://openlibrary.org/search.json?isbn=${isbn}&fields=title,author_name,cover_i,number_of_pages_median,subject`
+      : `https://openlibrary.org/search.json?q=${encodeURIComponent(q)}&limit=50&fields=title,author_name,cover_i,number_of_pages_median,subject`;
     const j = await (await fetch(url)).json(); reached = true;
     for (const d of j.docs || []) {
+      if (!kidSafe(d.subject || [])) continue;
       const cover = d.cover_i ? `https://covers.openlibrary.org/b/id/${d.cover_i}-M.jpg?default=false`
         : byBarcode ? `https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg?default=false` : '';
       if (!cover || seen.has(cover)) continue;
@@ -695,11 +705,11 @@ async function findBooks(q) {
   // 3. Google Books, only if the others came up short (its free daily limit often runs out).
   if (out.length < 3) {
     try {
-      const r = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=12&printType=books`);
+      const r = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=20&printType=books&maxAllowedMaturityRating=not-mature`);
       const j = await r.json(); reached = true;
       for (const it of j.items || []) {
         const v = it.volumeInfo || {}, img = v.imageLinks && (v.imageLinks.thumbnail || v.imageLinks.smallThumbnail);
-        if (!img) continue;
+        if (!img || v.maturityRating === 'MATURE' || !kidSafe(v.categories || [])) continue;
         out.push({ title: v.title, author: (v.authors || [])[0] || '', cover: img.replace(/^http:/, 'https:'), pages: v.pageCount || 0 });
       }
     } catch (e) {}
@@ -747,7 +757,9 @@ function openProgress(bookId, session) {
     <label class="l">What page are you on now?</label>
     <div class="stepper"><button class="sb" data-act="pgStep" data-n="-5">−5</button><button class="sb" data-act="pgStep" data-n="-1">−1</button>
       <input class="in" id="pg" type="number" inputmode="numeric" value="${b.page}"><button class="sb" data-act="pgStep" data-n="1">+1</button><button class="sb" data-act="pgStep" data-n="5">+5</button></div>
-    ${b.totalPages ? `<div class="hint" style="text-align:center">out of ${b.totalPages} pages · you started at page ${b.page}</div>` : ''}
+    <div class="hint" style="text-align:center">You started at page ${b.page}</div>
+    <label class="l">How many pages in the whole book?</label>
+    <input class="in" id="tp" type="number" inputmode="numeric" value="${b.totalPages || ''}" placeholder="Look at the last page number">
     <label class="l">What chapter?</label><input class="in" id="ch" value="${esc(b.chapter)}" placeholder="e.g. 5 or The Big Storm" maxlength="40">
     <label class="l">Where did you stop? <small style="color:var(--muted);font-family:Nunito">(if you want)</small></label>
     <input class="in" id="note" value="${esc(b.note)}" placeholder="e.g. Right after the dragon showed up" maxlength="100">
@@ -755,6 +767,7 @@ function openProgress(bookId, session) {
 }
 function saveProgress() {
   const ctx = progressCtx, b = book(ctx.bookId);
+  b.totalPages = Math.max(0, parseInt($('#tp').value) || 0);
   let pg = Math.max(0, parseInt($('#pg').value) || 0);
   if (b.totalPages) pg = Math.min(pg, b.totalPages);
   const prev = b.page;
@@ -900,7 +913,19 @@ const ACT = {
       <button class="btn green" data-act="finishYes" data-id="${el.dataset.id}">Yes! 🎉</button></div>`);
   },
   finishYes(el) { const b = book(el.dataset.id); b.lastRead = Date.now(); finishBook(b); save(); closeSheet(); checkBadges(); render(); },
-  reread(el) { const b = book(el.dataset.id); b.status = 'reading'; b.page = 0; b.chapter = ''; b.note = ''; save(); render(); toast('Here we go again! 🔁'); },
+  startOverAsk(el) {
+    const b = book(el.dataset.id);
+    openSheet(`<button class="x" data-act="closeSheet">✕</button><h2>Start "${esc(b.title)}" over? 🔄</h2>
+      <p class="hint">This book goes back to page 0. Its chapter, note and time in this book are cleared.</p>
+      <p class="hint">Your stars ⭐, streak 🔥 and badges 🏆 stay. You already earned those!</p>
+      <div class="row2" style="margin-top:18px"><button class="btn white" data-act="closeSheet">Keep it</button>
+      <button class="btn orange" data-act="startOver" data-id="${b.id}">Start over</button></div>`);
+  },
+  startOver(el) {
+    const b = book(el.dataset.id);
+    Object.assign(b, { status: 'reading', page: 0, chapter: '', note: '', secs: 0, lastRead: null, finishedAt: null, resetAt: Date.now() });
+    save(); closeSheet(); render(); scrollTo(0, 0); toast('Back to page 0. Here we go! 🚀');
+  },
   editBook(el) { openAdd(el.dataset.id); },
   delBook(el) {
     const b = book(el.dataset.id);
