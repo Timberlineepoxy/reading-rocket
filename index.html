@@ -153,6 +153,9 @@ header::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:
 .badge small{display:block;color:var(--muted);font-size:11px;margin-top:4px;line-height:1.2}
 .badge.locked .e{filter:grayscale(1);opacity:.35}
 .badge.locked b{color:var(--muted)}
+.bgroup{display:flex;align-items:baseline;justify-content:space-between;margin:20px 2px 10px}
+.bgroup h3{font-size:18px}
+.bgroup span{color:var(--muted);font-size:14px}
 
 /* ---------- parent ---------- */
 label.l{display:block;font-family:'Fredoka';font-weight:600;font-size:17px;margin:16px 0 6px}
@@ -234,7 +237,7 @@ nav .dot{width:8px;height:8px;border-radius:9px;background:var(--orange);display
 const KEY = 'readingRocket.v1';
 const DEFAULTS = {
   name: 'Reader', goal: 20, books: [], sessions: [], goalDays: {}, badges: {},
-  stars: 0, pagesRead: 0, reward: { text: '', cost: 0 }, timer: null, selBook: null, chimed: ''
+  stars: 0, pagesRead: 0, rereads: 0, rewardsGiven: 0, reward: { text: '', cost: 0 }, timer: null, selBook: null, chimed: ''
 };
 let S = load();
 let view = 'shelf', currentBook = null, shelfFilter = 'all', parentOK = false;
@@ -307,31 +310,109 @@ function ring(pct, size, stroke, color) {
 }
 
 /* ---------- badges ---------- */
+const DAY = 864e5;
+const weekOf = k => { const d = keyToDate(k); d.setDate(d.getDate() - (d.getDay() + 6) % 7); return dayKey(d); }; // Monday
+const pagesOf = s => Math.max(0, (s.to || 0) - (s.from || 0));
+function tally(keyFn, valFn) { const m = {}; for (const s of S.sessions) { const k = keyFn(s); m[k] = (m[k] || 0) + valFn(s); } return m; }
+const most = o => Math.max(0, ...Object.values(o));
+const minsByDay = () => tally(s => s.day, s => s.secs / 60);
+const finishedBooks = () => S.books.filter(b => b.status === 'finished');
+const readOn = md => S.sessions.some(s => md.includes(s.day.slice(5)));
+const starsEarned = () => S.sessions.reduce((a, s) => a + Math.floor(s.secs / 60), 0) + 10 * Object.keys(S.goalDays).length + 50 * finishedCount();
+function perfectWeek() {
+  return Object.keys(S.goalDays).some(d => weekOf(d) === d && [1, 2, 3, 4, 5, 6].every(i => S.goalDays[addDays(d, i)]));
+}
+function weekend() {
+  const days = new Set(S.sessions.map(s => s.day));
+  return [...days].some(d => keyToDate(d).getDay() === 6 && days.has(addDays(d, 1)));
+}
+function bounceBack() {
+  const days = Object.keys(S.goalDays).sort();
+  return days.some((d, i) => i > 0 && !S.goalDays[addDays(d, -1)]);
+}
+function doubleFinish() {
+  const t = finishedBooks().map(b => b.finishedAt || 0).filter(Boolean).sort((a, b) => a - b);
+  return t.some((x, i) => i > 0 && x - t[i - 1] <= 7 * DAY);
+}
+function superFan() {
+  const n = {};
+  for (const b of finishedBooks()) if (b.author) { const a = b.author.toLowerCase(); n[a] = (n[a] || 0) + 1; }
+  return most(n) >= 3;
+}
+
+const BADGE_GROUPS = [['start', '🚀 Getting started'], ['pages', '📄 Pages'], ['books', '📚 Books'], ['time', '⏱️ Reading time'],
+  ['habit', '🔥 Every day'], ['special', '🎉 Special']];
 const BADGES = [
-  { id: 'first',  e: '🚀', n: 'Blast Off',        d: 'Use the reading timer once',       t: () => S.sessions.length >= 1 },
-  { id: 'goal1',  e: '🎯', n: 'Mission Complete', d: 'Reach your daily goal',            t: () => Object.keys(S.goalDays).length >= 1 },
-  { id: 's3',     e: '🔥', n: 'On Fire',          d: 'Reach your goal 3 days in a row',  t: () => bestStreak() >= 3 },
-  { id: 's7',     e: '🌟', n: 'Week Warrior',     d: '7 days in a row',                  t: () => bestStreak() >= 7 },
-  { id: 's14',    e: '⚡', n: 'Unstoppable',      d: '14 days in a row',                 t: () => bestStreak() >= 14 },
-  { id: 's30',    e: '👑', n: 'Reading Royalty',  d: '30 days in a row',                 t: () => bestStreak() >= 30 },
-  { id: 'long30', e: '🏃', n: 'Marathon',         d: 'Read 30 minutes in one go',        t: () => S.sessions.some(s => s.secs >= 1800) },
-  { id: 'm60',    e: '⏱️', n: 'Hour Hero',        d: 'Read 60 minutes in all',           t: () => totalSecs() >= 3600 },
-  { id: 'm300',   e: '🛸', n: 'Space Cadet',      d: 'Read 5 hours in all',              t: () => totalSecs() >= 18000 },
-  { id: 'm1000',  e: '🌌', n: 'Galaxy Brain',     d: 'Read 1,000 minutes in all',        t: () => totalSecs() >= 60000 },
-  { id: 'p100',   e: '📄', n: 'Page Turner',      d: 'Read 100 pages',                   t: () => S.pagesRead >= 100 },
-  { id: 'p500',   e: '📚', n: 'Page Blaster',     d: 'Read 500 pages',                   t: () => S.pagesRead >= 500 },
-  { id: 'p2000',  e: '🏔️', n: 'Page Mountain',    d: 'Read 2,000 pages',                 t: () => S.pagesRead >= 2000 },
-  { id: 'b1',     e: '🏁', n: 'Book Finisher',    d: 'Finish a whole book',              t: () => finishedCount() >= 1 },
-  { id: 'b5',     e: '🐛', n: 'Bookworm',         d: 'Finish 5 books',                   t: () => finishedCount() >= 5 },
-  { id: 'b10',    e: '🏆', n: 'Library Legend',   d: 'Finish 10 books',                  t: () => finishedCount() >= 10 },
-  { id: 'shelf5', e: '🗂️', n: 'Collector',        d: 'Have 5 books on your shelf',       t: () => S.books.length >= 5 },
-  { id: 'early',  e: '🌅', n: 'Early Bird',       d: 'Read before 8 in the morning',     t: () => S.sessions.some(s => new Date(s.start).getHours() < 8) },
-  { id: 'bed',    e: '🌙', n: 'Bedtime Reader',   d: 'Read after 7 at night',            t: () => S.sessions.some(s => new Date(s.start).getHours() >= 19) },
+  { c: 'start', id: 'first',  e: '🚀', n: 'Blast Off',        d: 'Use the reading timer once',       t: () => S.sessions.length >= 1 },
+  { c: 'start', id: 'goal1',  e: '🎯', n: 'Mission Complete', d: 'Reach your daily goal',            t: () => Object.keys(S.goalDays).length >= 1 },
+  { c: 'start', id: 'shelf5', e: '🗂️', n: 'Collector',        d: 'Have 5 books on your shelf',       t: () => S.books.length >= 5 },
+
+  { c: 'pages', id: 'p100',   e: '📄', n: 'Page Turner',      d: 'Read 100 pages',                   t: () => S.pagesRead >= 100 },
+  { c: 'pages', id: 'p500',   e: '📚', n: 'Page Blaster',     d: 'Read 500 pages',                   t: () => S.pagesRead >= 500 },
+  { c: 'pages', id: 'p1000',  e: '📖', n: 'Thousand Pager',   d: 'Read 1,000 pages',                 t: () => S.pagesRead >= 1000 },
+  { c: 'pages', id: 'p2000',  e: '🏔️', n: 'Page Mountain',    d: 'Read 2,000 pages',                 t: () => S.pagesRead >= 2000 },
+  { c: 'pages', id: 'p5000',  e: '🪐', n: 'Page Planet',      d: 'Read 5,000 pages',                 t: () => S.pagesRead >= 5000 },
+  { c: 'pages', id: 'p10000', e: '🌠', n: 'Page Galaxy',      d: 'Read 10,000 pages',                t: () => S.pagesRead >= 10000 },
+  { c: 'pages', id: 'pday50', e: '🌪️', n: 'Page Storm',       d: 'Read 50 pages in one day',         t: () => most(tally(s => s.day, pagesOf)) >= 50 },
+  { c: 'pages', id: 'pwk150', e: '🏎️', n: 'Page Racer',       d: 'Read 150 pages in one week',       t: () => most(tally(s => weekOf(s.day), pagesOf)) >= 150 },
+
+  { c: 'books', id: 'b1',     e: '🏁', n: 'Book Finisher',    d: 'Finish a whole book',              t: () => finishedCount() >= 1 },
+  { c: 'books', id: 'b3',     e: '🎩', n: 'Hat Trick',        d: 'Finish 3 books',                   t: () => finishedCount() >= 3 },
+  { c: 'books', id: 'b5',     e: '🐛', n: 'Bookworm',         d: 'Finish 5 books',                   t: () => finishedCount() >= 5 },
+  { c: 'books', id: 'b10',    e: '🏆', n: 'Library Legend',   d: 'Finish 10 books',                  t: () => finishedCount() >= 10 },
+  { c: 'books', id: 'b20',    e: '🦉', n: 'Wise Owl',         d: 'Finish 20 books',                  t: () => finishedCount() >= 20 },
+  { c: 'books', id: 'b30',    e: '🦁', n: 'Book Lion',        d: 'Finish 30 books',                  t: () => finishedCount() >= 30 },
+  { c: 'books', id: 'b50',    e: '🐉', n: 'Book Dragon',      d: 'Finish 50 books',                  t: () => finishedCount() >= 50 },
+  { c: 'books', id: 'big200', e: '🐘', n: 'Big Book',         d: 'Finish a book with 200+ pages',    t: () => finishedBooks().some(b => b.totalPages >= 200) },
+  { c: 'books', id: 'big400', e: '🦕', n: 'Giant Book',       d: 'Finish a book with 400+ pages',    t: () => finishedBooks().some(b => b.totalPages >= 400) },
+  { c: 'books', id: 'speedy', e: '🐆', n: 'Speedy Reader',    d: 'Finish a book within 7 days of adding it', t: () => finishedBooks().some(b => b.added && b.finishedAt && b.finishedAt - b.added <= 7 * DAY) },
+  { c: 'books', id: 'two7',   e: '✌️', n: 'Double Finish',    d: 'Finish 2 books in one week',       t: doubleFinish },
+  { c: 'books', id: 'fan',    e: '🎸', n: 'Super Fan',        d: 'Finish 3 books by the same author', t: superFan },
+  { c: 'books', id: 'juggle', e: '🤹', n: 'Book Juggler',     d: 'Be partway through 3 books at once', t: () => S.books.filter(b => b.status !== 'finished' && b.page > 0).length >= 3 },
+  { c: 'books', id: 'again',  e: '🔁', n: 'Read It Again',    d: 'Start a finished book over',       t: () => (S.rereads || 0) >= 1 },
+
+  { c: 'time',  id: 'long30', e: '🏃', n: 'Marathon',         d: 'Read 30 minutes in one go',        t: () => S.sessions.some(s => s.secs >= 1800) },
+  { c: 'time',  id: 'long60', e: '🦸', n: 'Super Marathon',   d: 'Read 60 minutes in one go',        t: () => S.sessions.some(s => s.secs >= 3600) },
+  { c: 'time',  id: 'twice',  e: '👯', n: 'Double Header',    d: 'Read two times in one day',        t: () => most(tally(s => s.day, () => 1)) >= 2 },
+  { c: 'time',  id: 'x2goal', e: '💥', n: 'Double Goal',      d: 'Read twice your goal in one day',  t: () => most(minsByDay()) >= 2 * S.goal },
+  { c: 'time',  id: 'wk150',  e: '📅', n: 'Big Week',         d: 'Read 150 minutes in one week',     t: () => most(tally(s => weekOf(s.day), s => s.secs / 60)) >= 150 },
+  { c: 'time',  id: 'wk300',  e: '🗓️', n: 'Mega Week',        d: 'Read 300 minutes in one week',     t: () => most(tally(s => weekOf(s.day), s => s.secs / 60)) >= 300 },
+  { c: 'time',  id: 'm60',    e: '⏱️', n: 'Hour Hero',        d: 'Read 60 minutes in all',           t: () => totalSecs() >= 3600 },
+  { c: 'time',  id: 'm300',   e: '🛸', n: 'Space Cadet',      d: 'Read 5 hours in all',              t: () => totalSecs() >= 18000 },
+  { c: 'time',  id: 'm1000',  e: '🌌', n: 'Galaxy Brain',     d: 'Read 1,000 minutes in all',        t: () => totalSecs() >= 60000 },
+  { c: 'time',  id: 'm1440',  e: '🕛', n: 'Around the Clock', d: 'Read 24 hours in all',             t: () => totalSecs() >= 86400 },
+  { c: 'time',  id: 'm3000',  e: '⏳', n: 'Fifty Hours',      d: 'Read 50 hours in all',             t: () => totalSecs() >= 180000 },
+  { c: 'time',  id: 'm6000',  e: '🛰️', n: 'Hundred Hours',    d: 'Read 100 hours in all',            t: () => totalSecs() >= 360000 },
+
+  { c: 'habit', id: 's3',     e: '🔥', n: 'On Fire',          d: 'Reach your goal 3 days in a row',  t: () => bestStreak() >= 3 },
+  { c: 'habit', id: 's7',     e: '🌟', n: 'Week Warrior',     d: '7 days in a row',                  t: () => bestStreak() >= 7 },
+  { c: 'habit', id: 's14',    e: '⚡', n: 'Unstoppable',      d: '14 days in a row',                 t: () => bestStreak() >= 14 },
+  { c: 'habit', id: 's30',    e: '👑', n: 'Reading Royalty',  d: '30 days in a row',                 t: () => bestStreak() >= 30 },
+  { c: 'habit', id: 's50',    e: '🛡️', n: 'Unbreakable',      d: '50 days in a row',                 t: () => bestStreak() >= 50 },
+  { c: 'habit', id: 's100',   e: '🏅', n: 'Hundred Day Hero', d: '100 days in a row',                t: () => bestStreak() >= 100 },
+  { c: 'habit', id: 'perfect',e: '💯', n: 'Perfect Week',     d: 'Reach your goal every day, Monday to Sunday', t: perfectWeek },
+  { c: 'habit', id: 'wkend',  e: '🏖️', n: 'Weekend Warrior',  d: 'Read on Saturday AND Sunday',      t: weekend },
+  { c: 'habit', id: 'bounce', e: '🏀', n: 'Bounce Back',      d: 'Reach your goal again after missing a day', t: bounceBack },
+  { c: 'habit', id: 'days50', e: '🌱', n: 'Growing Reader',   d: 'Read on 50 different days',        t: () => new Set(S.sessions.map(s => s.day)).size >= 50 },
+  { c: 'habit', id: 'days100',e: '🌳', n: 'Reading Tree',     d: 'Read on 100 different days',       t: () => new Set(S.sessions.map(s => s.day)).size >= 100 },
+
+  { c: 'special', id: 'early',  e: '🌅', n: 'Early Bird',     d: 'Read before 8 in the morning',     t: () => S.sessions.some(s => new Date(s.start).getHours() < 8) },
+  { c: 'special', id: 'lunch',  e: '🥪', n: 'Lunch Break',    d: 'Read between 11 and 1 o’clock',    t: () => S.sessions.some(s => [11, 12].includes(new Date(s.start).getHours())) },
+  { c: 'special', id: 'bed',    e: '🌙', n: 'Bedtime Reader', d: 'Read after 7 at night',            t: () => S.sessions.some(s => new Date(s.start).getHours() >= 19) },
+  { c: 'special', id: 'spooky', e: '🎃', n: 'Spooky Reader',  d: 'Read on Halloween',                t: () => readOn(['10-31']) },
+  { c: 'special', id: 'xmas',   e: '🎄', n: 'Holiday Reader', d: 'Read on Christmas Eve or Christmas Day', t: () => readOn(['12-24', '12-25']) },
+  { c: 'special', id: 'newyr',  e: '🎆', n: 'New Year Reader',d: 'Read on New Year’s Day',           t: () => readOn(['01-01']) },
+  { c: 'special', id: 'st500',  e: '✨', n: 'Star Collector', d: 'Earn 500 stars',                   t: () => starsEarned() >= 500 },
+  { c: 'special', id: 'st2000', e: '💫', n: 'Superstar',      d: 'Earn 2,000 stars',                 t: () => starsEarned() >= 2000 },
+  { c: 'special', id: 'treat',  e: '🎁', n: 'Treat Time',     d: 'Get your first reward',            t: () => (S.rewardsGiven || 0) >= 1 },
 ];
 function checkBadges() {
-  for (const b of BADGES) if (!S.badges[b.id] && b.t()) {
-    S.badges[b.id] = Date.now();
-    celebrate({ e: b.e, title: `New badge: ${b.n}!`, text: b.d, confetti: true });
+  const fresh = BADGES.filter(b => !S.badges[b.id] && b.t());
+  for (const b of fresh) S.badges[b.id] = Date.now();
+  if (fresh.length > 2) {
+    celebrate({ e: '🏆', title: `${fresh.length} new badges!`, text: fresh.map(b => `${b.e} ${b.n}`).join('   '), confetti: true });
+  } else {
+    for (const b of fresh) celebrate({ e: b.e, title: `New badge: ${b.n}!`, text: b.d, confetti: true });
   }
   save();
 }
@@ -532,7 +613,11 @@ function trophiesView() {
   </div></div>
 
   <div class="sectionhead"><h2>Badges</h2><span style="color:var(--muted)">${earned} of ${BADGES.length}</span></div>
-  <div class="badges">${BADGES.map(b => `<div class="badge ${S.badges[b.id] ? '' : 'locked'}"><div class="e">${b.e}</div><b>${b.n}</b><small>${S.badges[b.id] ? '✓ Earned!' : b.d}</small></div>`).join('')}</div>`;
+  ${BADGE_GROUPS.map(([c, label]) => {
+    const list = BADGES.filter(b => b.c === c);
+    return `<div class="bgroup"><h3>${label}</h3><span>${list.filter(b => S.badges[b.id]).length} / ${list.length}</span></div>
+    <div class="badges">${list.map(b => `<div class="badge ${S.badges[b.id] ? '' : 'locked'}"><div class="e">${b.e}</div><b>${b.n}</b><small>${S.badges[b.id] ? '✓ Earned!' : b.d}</small></div>`).join('')}</div>`;
+  }).join('')}`;
 }
 
 /* ---------- grown-ups ---------- */
@@ -923,6 +1008,7 @@ const ACT = {
   },
   startOver(el) {
     const b = book(el.dataset.id);
+    if (b.status === 'finished') S.rereads = (S.rereads || 0) + 1;
     Object.assign(b, { status: 'reading', page: 0, chapter: '', note: '', secs: 0, lastRead: null, finishedAt: null, resetAt: Date.now() });
     save(); closeSheet(); render(); scrollTo(0, 0); toast('Back to page 0. Here we go! 🚀');
   },
@@ -958,7 +1044,7 @@ const ACT = {
   },
   rewardGiven() {
     if (!confirm(`Give the reward and take away ${S.reward.cost} stars?`)) return;
-    S.stars -= S.reward.cost; save(); render();
+    S.stars -= S.reward.cost; S.rewardsGiven = (S.rewardsGiven || 0) + 1; save(); checkBadges(); render();
     celebrate({ e: '🎁', title: 'Reward unlocked!', text: `Enjoy: ${S.reward.text}`, confetti: true });
   },
   exportData() {
@@ -990,7 +1076,7 @@ document.addEventListener('click', e => {
 });
 
 /* ---------- go! ---------- */
-render(); updateTimerUI();
+render(); updateTimerUI(); checkBadges();
 if (S.timer) { view = 'read'; render(); updateTimerUI(); }
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
 </script>
