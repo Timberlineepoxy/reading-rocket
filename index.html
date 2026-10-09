@@ -148,13 +148,24 @@ button.stat:active{transform:scale(.97)}
 body{background:transparent}
 #bg{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;background:var(--bg)}
 #bg .d{position:absolute;opacity:.5;filter:drop-shadow(0 3px 3px rgba(0,0,0,.08))}
-#bg .fall{position:absolute;top:-50px;opacity:.7;animation:fallv linear infinite}
+#fx{position:fixed;inset:0;z-index:45;pointer-events:none;overflow:hidden}
+#fx .fall{position:absolute;top:-50px;opacity:.7;animation:fallv linear infinite}
 @keyframes fallv{to{transform:translateY(calc(100vh + 100px)) rotate(220deg)}}
-#bg .bubble{position:absolute;bottom:-40px;border-radius:50%;border:2px solid rgba(255,255,255,.9);background:rgba(255,255,255,.35);animation:rise linear infinite}
+#fx .maple{position:absolute;top:-70px;opacity:.95;filter:drop-shadow(0 4px 4px rgba(0,0,0,.18));animation:mapleFall linear infinite}
+@keyframes mapleFall{0%{transform:translate(0,0) rotate(0)}20%{transform:translate(34px,22vh) rotate(55deg)}40%{transform:translate(-18px,44vh) rotate(120deg)}
+  60%{transform:translate(30px,66vh) rotate(190deg)}80%{transform:translate(-12px,88vh) rotate(250deg)}100%{transform:translate(14px,calc(100vh + 110px)) rotate(320deg)}}
+#fx .bubble{position:absolute;bottom:-40px;border-radius:50%;border:2px solid rgba(255,255,255,.9);background:rgba(255,255,255,.35);animation:rise linear infinite}
 @keyframes rise{to{transform:translateY(calc(-100vh - 80px))}}
-#bg .tw{position:absolute;opacity:.6;animation:tw 2.4s ease-in-out infinite}
+#fx .tw{position:absolute;opacity:.6;animation:tw 2.4s ease-in-out infinite}
 @keyframes tw{50%{opacity:.12;transform:scale(.7)}}
 #pets{position:fixed;inset:0;z-index:40;pointer-events:none;overflow:hidden}
+#watchTap{display:none;position:fixed;inset:0;z-index:46;align-items:flex-end;justify-content:center;padding-bottom:calc(28px + var(--safe-b))}
+#watchTap span{background:rgba(43,35,64,.75);color:#fff;font-family:'Fredoka';font-size:16px;padding:10px 18px;border-radius:999px;transition:opacity 1s}
+#watchTap.faded span{opacity:0}
+body.watch #watchTap{display:flex}
+body.watch header,body.watch main,body.watch nav{visibility:hidden}
+body.watch{overflow:hidden}
+.watchbtn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-top:14px}
 .pet{position:absolute;left:0;top:0;will-change:transform}
 .pet .petsvg{display:block;overflow:visible;filter:drop-shadow(0 2px 2px rgba(0,0,0,.18))}
 .pet .shadow{position:absolute;left:18%;right:18%;bottom:-3px;height:7px;border-radius:50%;background:rgba(0,0,0,.2);filter:blur(2px)}
@@ -283,6 +294,8 @@ nav .dot{width:8px;height:8px;border-radius:9px;background:var(--orange);display
 </head>
 <body>
 <div id="bg"></div>
+<div id="fx"></div>
+<div id="watchTap"><span>Tap anywhere to go back</span></div>
 <header><div class="wrap" id="hdr"></div></header>
 <main class="wrap" id="main"></main>
 <nav><div class="in2" id="nav"></div></nav>
@@ -518,7 +531,7 @@ const BACKGROUNDS = [
   { id: 'ocean',   e: '🐠', n: 'Under the Sea', cost: 500, hdr: HDR.teal,    tc: '#0E7490', base: '#E6F8FF', sky: 'linear-gradient(#CFF1FF,#E9FAFF 60%,#FFF3D8)',
     deco: [['fish', 5, 22, 44], ['fish', 80, 45, 40], ['shell', 7, 83, 36], ['palm', 82, 74, 70], ['umbrella', 40, 89, 46]], fx: 'bubbles' },
   { id: 'autumn',  e: '🍁', n: 'Autumn Leaves', cost: 700, hdr: HDR.amber,   tc: '#C2410C', base: '#FFF1DE', sky: 'linear-gradient(#FFF3E2,#FFE4C4)',
-    deco: [['tree', 82, 22, 64], ['maple', 5, 20, 40], ['pumpkin', 80, 64, 52], ['chestnut', 8, 80, 36]], fx: 'leaves' },
+    deco: [['tree', 82, 22, 64], ['pumpkin', 80, 64, 52], ['chestnut', 8, 80, 36]], fx: 'leaves' },
   { id: 'snow',    e: '⛄', n: 'Snow Day',     cost: 900,  hdr: HDR.ice,     tc: '#1E3A8A', base: '#EEF5FF', sky: 'linear-gradient(#DCEAFB,#F6FAFF)',
     deco: [['pine', 3, 26, 46], ['pine', 80, 20, 50], ['snowman', 5, 72, 64], ['xmastree', 82, 70, 70]], fx: 'snow' },
   { id: 'candy',   e: '🍭', n: 'Candy Land',   cost: 1200, hdr: HDR.pink,    tc: '#DB2777', base: '#FFEFF7', sky: 'linear-gradient(#FFDDF0,#FFF4FA)',
@@ -547,6 +560,9 @@ function checkUnlocks() {
       : { e: u.e, title: `New background: ${u.n}!`, text: 'Go to 🐾 Unlocks to use it!', confetti: true });
   }
 }
+// Autumn leaf colours: mostly orange, with red and yellow mixed in. The maple picture is pinkish red (hue 337), so every tint rotates toward orange.
+const LEAF_TINTS = ['hue-rotate(52deg) saturate(1.3)', 'hue-rotate(26deg) saturate(1.15)', 'hue-rotate(72deg) saturate(1.5) brightness(1.2)', 'hue-rotate(44deg) saturate(1.3)',
+  'hue-rotate(60deg) saturate(1.4) brightness(1.1)', 'hue-rotate(34deg) saturate(1.2)', 'hue-rotate(80deg) saturate(1.6) brightness(1.25)'];
 let bgShown = '';
 function applyTheme() {
   const b = BACKGROUNDS.find(x => x.id === S.bg && S.unlocked[x.id]) || BACKGROUNDS[0];
@@ -555,15 +571,17 @@ function applyTheme() {
   document.querySelector('meta[name=theme-color]').setAttribute('content', b.tc);
   if (bgShown === b.id) return;
   bgShown = b.id;
-  let h = b.deco.map(([img, x, y, z]) => `<img class="d" src="decor/${img}.webp" alt="" style="left:${x}%;top:${y}%;height:${z}px">`).join('');
+  const h = b.deco.map(([img, x, y, z]) => `<img class="d" src="decor/${img}.webp" alt="" style="left:${x}%;top:${y}%;height:${z}px">`).join('');
+  let fx = '';
   for (let i = 0; b.fx && i < 14; i++) {
     const left = (i * 37 + 11) % 100, dur = 9 + (i % 5) * 2, delay = -((i * 1.7) % dur);
-    if (b.fx === 'snow') h += `<img class="fall" src="decor/snowflake.webp" alt="" style="left:${left}%;height:${12 + (i % 3) * 6}px;animation-duration:${dur}s;animation-delay:${delay}s">`;
-    if (b.fx === 'leaves') h += `<img class="fall" src="decor/leaf.webp" alt="" style="left:${left}%;height:${16 + (i % 3) * 5}px;animation-duration:${dur}s;animation-delay:${delay}s">`;
-    if (b.fx === 'bubbles') { const z = 8 + (i % 4) * 5; h += `<span class="bubble" style="left:${left}%;width:${z}px;height:${z}px;animation-duration:${dur}s;animation-delay:${delay}s"></span>`; }
-    if (b.fx === 'sparkle') h += `<img class="tw" src="decor/sparkles.webp" alt="" style="left:${left}%;top:${(i * 53 + 7) % 95}%;height:${14 + (i % 3) * 6}px;animation-delay:${(i % 6) * .4}s">`;
+    if (b.fx === 'snow') fx += `<img class="fall" src="decor/snowflake.webp" alt="" style="left:${left}%;height:${12 + (i % 3) * 6}px;animation-duration:${dur}s;animation-delay:${delay}s">`;
+    if (b.fx === 'leaves' && i < 10) fx += `<img class="maple" src="decor/maple.webp" alt="" style="left:${(i * 41 + 5) % 92}%;height:${30 + (i % 4) * 7}px;animation-duration:${dur + 4}s;animation-delay:${delay}s;filter:${LEAF_TINTS[i % LEAF_TINTS.length]} drop-shadow(0 4px 4px rgba(0,0,0,.18))">`;
+    if (b.fx === 'bubbles') { const z = 8 + (i % 4) * 5; fx += `<span class="bubble" style="left:${left}%;width:${z}px;height:${z}px;animation-duration:${dur}s;animation-delay:${delay}s"></span>`; }
+    if (b.fx === 'sparkle') fx += `<img class="tw" src="decor/sparkles.webp" alt="" style="left:${left}%;top:${(i * 53 + 7) % 95}%;height:${14 + (i % 3) * 6}px;animation-delay:${(i % 6) * .4}s">`;
   }
   const el = $('#bg'); el.style.background = b.sky; el.innerHTML = h;
+  $('#fx').innerHTML = fx;
 }
 
 function checkBadges() {
@@ -810,6 +828,7 @@ function unlocksView() {
       ${next ? `<div style="display:flex;align-items:center;gap:8px;margin-top:6px"><div class="bar"><i style="width:${Math.min(100, have / next.cost * 100)}%"></i></div>
         <small style="color:var(--muted);white-space:nowrap">${(next.cost - have).toLocaleString()} more ⭐</small></div>` : ''}
       <small style="color:var(--muted)">⭐ ${have.toLocaleString()} stars earned all-time</small></div></div>
+    <button class="btn green watchbtn" data-act="watch">👀 Watch my animals${out ? ` (${out})` : ''}</button>
     <div class="filters" style="margin-top:18px">${[['animal', '🐾 Animals'], ['bg', '🖼️ Backgrounds']].map(([k, l]) =>
       `<button class="fchip ${unlockTab === k ? 'on' : ''}" data-act="unlockTab" data-k="${k}">${l}</button>`).join('')}</div>
     <p class="hint" style="margin:0 2px 12px">${unlockTab === 'animal'
@@ -824,7 +843,27 @@ const petBox = document.createElement('div');
 petBox.id = 'pets';
 document.body.appendChild(petBox);
 let pets = [], petRAF = 0, petLast = 0;
-function petArea() { const top = 70; return { W: innerWidth, top, bot: Math.max(top + 120, innerHeight - 96) }; }
+function petArea() {
+  const watching = document.body.classList.contains('watch'), top = watching ? 16 : 70;
+  return { W: innerWidth, top, bot: Math.max(top + 120, innerHeight - (watching ? 12 : 96)) };
+}
+let watchT;
+function startWatch() {
+  if (document.body.classList.contains('watch')) return;
+  document.body.classList.add('watch');
+  history.pushState({ watch: 1 }, '');
+  const tap = $('#watchTap'); tap.classList.remove('faded');
+  clearTimeout(watchT); watchT = setTimeout(() => tap.classList.add('faded'), 2500);
+  pets.forEach(o => { if (o.fly) o.base = petSkyY(); else { o.wait = 0; petTarget(o); } });
+  if (!pets.length) toast('No animals are out yet. Tap some in Unlocks first!');
+}
+function endWatch() {
+  if (!document.body.classList.contains('watch')) return;
+  document.body.classList.remove('watch');
+  pets.forEach(o => { if (!o.fly) { const A = petArea(); o.y = Math.min(Math.max(o.y, A.top), A.bot - o.h); petTarget(o); } else o.base = petSkyY(); });
+}
+$('#watchTap').addEventListener('click', () => { if (history.state && history.state.watch) history.back(); else endWatch(); });
+addEventListener('popstate', endWatch);
 function petTarget(o) { const A = petArea(); o.tx = Math.random() * Math.max(10, A.W - o.w); o.ty = A.top + Math.random() * Math.max(10, A.bot - A.top - o.h); }
 function petSkyY() { const A = petArea(); return A.top + Math.random() * Math.max(20, (A.bot - A.top) * .45); }
 function makePet(a) {
@@ -1215,6 +1254,7 @@ const ACT = {
     S.bg = u.id; save(); render(); toast(`${u.n} background is on!`);
   },
   petsAway() { S.pets = []; save(); syncPets(); renderMain(); toast('Everyone went home for a nap 💤'); },
+  watch() { startWatch(); },
   openBook(el) { currentBook = el.dataset.id; view = 'book'; render(); scrollTo(0, 0); },
   addBook() { openAdd(); },
   closeSheet,
