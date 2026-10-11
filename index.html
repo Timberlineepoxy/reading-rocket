@@ -147,17 +147,14 @@ button.stat:active{transform:scale(.97)}
 /* ---------- background layer + walking pets ---------- */
 body{background:transparent}
 #bg{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;background:var(--bg)}
-#bg .d{position:absolute;opacity:.5;filter:drop-shadow(0 3px 3px rgba(0,0,0,.08))}
 #fx{position:fixed;inset:0;z-index:45;pointer-events:none;overflow:hidden}
-#fx .fall{position:absolute;top:-50px;opacity:.7;animation:fallv linear infinite}
-@keyframes fallv{to{transform:translateY(calc(100vh + 100px)) rotate(220deg)}}
-#fx .maple{position:absolute;top:-70px;opacity:.95;filter:drop-shadow(0 4px 4px rgba(0,0,0,.18));animation:mapleFall linear infinite}
-@keyframes mapleFall{0%{transform:translate(0,0) rotate(0)}20%{transform:translate(34px,22vh) rotate(55deg)}40%{transform:translate(-18px,44vh) rotate(120deg)}
-  60%{transform:translate(30px,66vh) rotate(190deg)}80%{transform:translate(-12px,88vh) rotate(250deg)}100%{transform:translate(14px,calc(100vh + 110px)) rotate(320deg)}}
-#fx .bubble{position:absolute;bottom:-40px;border-radius:50%;border:2px solid rgba(255,255,255,.9);background:rgba(255,255,255,.35);animation:rise linear infinite}
-@keyframes rise{to{transform:translateY(calc(-100vh - 80px))}}
-#fx .tw{position:absolute;opacity:.6;animation:tw 2.4s ease-in-out infinite}
-@keyframes tw{50%{opacity:.12;transform:scale(.7)}}
+/* dark backgrounds: words sitting right on the background turn white */
+body.darkbg main .sectionhead h2,body.darkbg main .sectionhead span,body.darkbg .bgroup h3,body.darkbg .bgroup span,
+body.darkbg .shelf .tile .t,body.darkbg .shelf .tile .pp,body.darkbg main>.hint,body.darkbg main>p.hint,body.darkbg main>h2,
+body.darkbg .backbtn,body.darkbg .bookhero h1,body.darkbg .bookhero .by,body.darkbg .bookhero .fun,body.darkbg .stack .link,
+body.darkbg .clock,body.darkbg .clocksub,body.darkbg .encourage,body.darkbg .picker .tile .t,body.darkbg .nowreading,body.darkbg main>div>.link,
+body.darkbg main>.empty:not(.card) p{color:#fff !important;text-shadow:0 1px 3px rgba(0,0,0,.55)}
+body.darkbg main>p.hint b,body.darkbg main>p.hint .link{color:#fff !important}
 #pets{position:fixed;inset:0;z-index:40;pointer-events:none;overflow:hidden}
 #watchTap{display:none;position:fixed;inset:0;z-index:46;align-items:flex-end;justify-content:center;padding-bottom:calc(28px + var(--safe-b))}
 #watchTap span{background:rgba(43,35,64,.75);color:#fff;font-family:'Fredoka';font-size:16px;padding:10px 18px;border-radius:999px;transition:opacity 1s}
@@ -209,7 +206,9 @@ body.watch{overflow:hidden}
 .ucard.on{outline:4px solid var(--orange);outline-offset:-4px}
 .ucard .sw{height:52px;border-radius:12px;margin:0 4px;position:relative;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(0,0,0,.06)}
 .ucard .sw i{position:absolute;left:0;right:0;top:0;height:11px}
-.ucard .sw img{position:absolute;right:6px;bottom:4px;height:30px}
+.ucard .sw .thumb{position:absolute;right:6px;bottom:4px;display:flex;align-items:flex-end}
+.ucard .sw .thumb>*{max-height:30px;max-width:44px;width:auto;height:auto}
+.ucard .sw .thumb img{height:28px}
 .ucard .lock{position:absolute;top:8px;right:10px;font-size:14px}
 .week{display:flex;align-items:flex-end;gap:8px;height:150px;position:relative;padding-top:10px}
 .week .col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
@@ -308,6 +307,7 @@ nav .dot{width:8px;height:8px;border-radius:9px;background:var(--orange);display
 <input type="file" id="importIn" accept="application/json,.json" hidden>
 
 <script src="animals.js"></script>
+<script src="backgrounds.js"></script>
 <script>
 /* =========================================================
    Reading Rocket — everything is saved on this phone.
@@ -511,40 +511,8 @@ const ANIMALS = [  // drawn and animated in animals.js
   { id: 'dragon',    e: '🐉', n: 'Dragon',    cost: 6000, move: 'fly',    speed: 70, size: 64 },
 ].map(a => ({ ...a, kind: 'animal' }));
 const animalImg = (a, h) => petSVG(a.id, h);
-// Whole-app backgrounds. deco: [picture, left %, top %, height px]
-const HDR = {
-  purple: 'linear-gradient(135deg,#6C4BF4,#8B5CF6 60%,#A855F7)', blue: 'linear-gradient(135deg,#0284C7,#0EA5E9 60%,#38BDF8)',
-  green: 'linear-gradient(135deg,#15803D,#16A34A 60%,#22C55E)', orange: 'linear-gradient(135deg,#EA580C,#F97316 55%,#FB7185)',
-  teal: 'linear-gradient(135deg,#0E7490,#0891B2 55%,#22D3EE)', amber: 'linear-gradient(135deg,#9A3412,#C2410C 50%,#D97706)',
-  ice: 'linear-gradient(135deg,#1E3A8A,#2563EB 55%,#60A5FA)', pink: 'linear-gradient(135deg,#DB2777,#EC4899 55%,#F472B6)',
-  jungle: 'linear-gradient(135deg,#14532D,#15803D 55%,#65A30D)', space: 'linear-gradient(135deg,#0F0C3A,#1E1B4B 55%,#4338CA)',
-  rainbow: 'linear-gradient(135deg,#EF4444,#F59E0B 25%,#22C55E 50%,#3B82F6 75%,#A855F7)', gold: 'linear-gradient(135deg,#B45309,#D97706 50%,#F59E0B)',
-};
-const BACKGROUNDS = [
-  { id: 'cream',   e: '📖', n: 'Classic',      cost: 0,    hdr: HDR.purple,  tc: '#6C4BF4', base: '#FFF6E8', sky: '#FFF6E8', deco: [] },
-  { id: 'sky',     e: '☁️', n: 'Blue Sky',     cost: 100,  hdr: HDR.blue,    tc: '#0284C7', base: '#EAF6FF', sky: 'linear-gradient(#CDEBFF,#F3FAFF 70%)',
-    deco: [['sun', 78, 13, 70], ['cloud', 3, 22, 58], ['cloud', 62, 47, 72], ['cloud', 8, 71, 52], ['cloud', 72, 86, 46]] },
-  { id: 'meadow',  e: '🌼', n: 'Flower Field', cost: 200,  hdr: HDR.green,   tc: '#15803D', base: '#F1FBEA', sky: 'linear-gradient(#E3F5FF,#F4FFEE 55%,#DDF3CF)',
-    deco: [['sun', 80, 12, 56], ['blossom', 5, 30, 40], ['tulip', 86, 40, 44], ['sunflower', 3, 60, 52], ['clover', 84, 70, 36], ['blossom', 46, 87, 34], ['tulip', 12, 90, 40]] },
-  { id: 'sunset',  e: '🌅', n: 'Sunset',       cost: 350,  hdr: HDR.orange,  tc: '#EA580C', base: '#FFEFE4', sky: 'linear-gradient(#FFD3BD,#FFE9DA 50%,#FFF6EE)',
-    deco: [['sun', 72, 10, 80], ['cloud', 5, 26, 56], ['cloud', 60, 57, 60], ['rice', 3, 82, 56], ['rice', 86, 86, 50]] },
-  { id: 'ocean',   e: '🐠', n: 'Under the Sea', cost: 500, hdr: HDR.teal,    tc: '#0E7490', base: '#E6F8FF', sky: 'linear-gradient(#CFF1FF,#E9FAFF 60%,#FFF3D8)',
-    deco: [['fish', 5, 22, 44], ['fish', 80, 45, 40], ['shell', 7, 83, 36], ['palm', 82, 74, 70], ['umbrella', 40, 89, 46]], fx: 'bubbles' },
-  { id: 'autumn',  e: '🍁', n: 'Autumn Leaves', cost: 700, hdr: HDR.amber,   tc: '#C2410C', base: '#FFF1DE', sky: 'linear-gradient(#FFF3E2,#FFE4C4)',
-    deco: [['tree', 82, 22, 64], ['pumpkin', 80, 64, 52], ['chestnut', 8, 80, 36]], fx: 'leaves' },
-  { id: 'snow',    e: '⛄', n: 'Snow Day',     cost: 900,  hdr: HDR.ice,     tc: '#1E3A8A', base: '#EEF5FF', sky: 'linear-gradient(#DCEAFB,#F6FAFF)',
-    deco: [['pine', 3, 26, 46], ['pine', 80, 20, 50], ['snowman', 5, 72, 64], ['xmastree', 82, 70, 70]], fx: 'snow' },
-  { id: 'candy',   e: '🍭', n: 'Candy Land',   cost: 1200, hdr: HDR.pink,    tc: '#DB2777', base: '#FFEFF7', sky: 'linear-gradient(#FFDDF0,#FFF4FA)',
-    deco: [['lollipop', 4, 22, 50], ['cupcake', 84, 40, 46], ['candy', 7, 63, 40], ['donut', 82, 82, 48], ['lollipop', 46, 90, 38]] },
-  { id: 'jungle',  e: '🌴', n: 'Jungle',       cost: 1600, hdr: HDR.jungle,  tc: '#14532D', base: '#EDF9EA', sky: 'linear-gradient(#E1F6DE,#F5FFF1)',
-    deco: [['palm', 1, 16, 80], ['hibiscus', 84, 34, 40], ['tree', 80, 70, 70], ['mushroom', 7, 80, 36], ['clover', 50, 90, 30]] },
-  { id: 'space',   e: '🪐', n: 'Outer Space',  cost: 2000, hdr: HDR.space,   tc: '#1E1B4B', base: '#EEEAFF', sky: 'linear-gradient(#DCD5FF,#F4F1FF)',
-    deco: [['planet', 74, 13, 60], ['moon', 5, 30, 44], ['rocket', 83, 57, 52], ['ufo', 3, 74, 50], ['star', 46, 88, 30]], fx: 'sparkle' },
-  { id: 'rainbow', e: '🌈', n: 'Rainbow',      cost: 2500, hdr: HDR.rainbow, tc: '#8B5CF6', base: '#FFF8F0', sky: 'linear-gradient(160deg,#FFE3E3,#FFF2D6 25%,#E6FBE0 50%,#DFF0FF 75%,#EFE4FF)',
-    deco: [['rainbow', 58, 11, 80], ['cloud', 3, 30, 54], ['sparkles', 84, 60, 36], ['cloud', 68, 84, 52], ['sparkles', 7, 86, 32]] },
-  { id: 'gold',    e: '👑', n: 'Royal Gold',   cost: 3500, hdr: HDR.gold,    tc: '#B45309', base: '#FFF8E4', sky: 'linear-gradient(#FFF0C2,#FFFAEB)',
-    deco: [['crown', 76, 13, 50], ['gem', 5, 34, 38], ['trophy', 83, 62, 50], ['glowstar', 7, 80, 40]], fx: 'sparkle' },
-].map(x => ({ ...x, kind: 'bg' }));
+// Whole-app backgrounds: drawn and animated in backgrounds.js
+const BACKGROUNDS = RRBG.list.map(x => ({ ...x, kind: 'bg' }));
 const UNLOCKS = [...ANIMALS, ...BACKGROUNDS];
 function checkUnlocks() {
   S.unlocked ||= {};
@@ -560,28 +528,13 @@ function checkUnlocks() {
       : { e: u.e, title: `New background: ${u.n}!`, text: 'Go to 🐾 Unlocks to use it!', confetti: true });
   }
 }
-// Autumn leaf colours: mostly orange, with red and yellow mixed in. The maple picture is pinkish red (hue 337), so every tint rotates toward orange.
-const LEAF_TINTS = ['hue-rotate(52deg) saturate(1.3)', 'hue-rotate(26deg) saturate(1.15)', 'hue-rotate(72deg) saturate(1.5) brightness(1.2)', 'hue-rotate(44deg) saturate(1.3)',
-  'hue-rotate(60deg) saturate(1.4) brightness(1.1)', 'hue-rotate(34deg) saturate(1.2)', 'hue-rotate(80deg) saturate(1.6) brightness(1.25)'];
-let bgShown = '';
 function applyTheme() {
   const b = BACKGROUNDS.find(x => x.id === S.bg && S.unlocked[x.id]) || BACKGROUNDS[0];
   const r = document.documentElement.style;
   r.setProperty('--hdr', b.hdr); r.setProperty('--bg', b.base);
   document.querySelector('meta[name=theme-color]').setAttribute('content', b.tc);
-  if (bgShown === b.id) return;
-  bgShown = b.id;
-  const h = b.deco.map(([img, x, y, z]) => `<img class="d" src="decor/${img}.webp" alt="" style="left:${x}%;top:${y}%;height:${z}px">`).join('');
-  let fx = '';
-  for (let i = 0; b.fx && i < 14; i++) {
-    const left = (i * 37 + 11) % 100, dur = 9 + (i % 5) * 2, delay = -((i * 1.7) % dur);
-    if (b.fx === 'snow') fx += `<img class="fall" src="decor/snowflake.webp" alt="" style="left:${left}%;height:${12 + (i % 3) * 6}px;animation-duration:${dur}s;animation-delay:${delay}s">`;
-    if (b.fx === 'leaves' && i < 10) fx += `<img class="maple" src="decor/maple.webp" alt="" style="left:${(i * 41 + 5) % 92}%;height:${30 + (i % 4) * 7}px;animation-duration:${dur + 4}s;animation-delay:${delay}s;filter:${LEAF_TINTS[i % LEAF_TINTS.length]} drop-shadow(0 4px 4px rgba(0,0,0,.18))">`;
-    if (b.fx === 'bubbles') { const z = 8 + (i % 4) * 5; fx += `<span class="bubble" style="left:${left}%;width:${z}px;height:${z}px;animation-duration:${dur}s;animation-delay:${delay}s"></span>`; }
-    if (b.fx === 'sparkle') fx += `<img class="tw" src="decor/sparkles.webp" alt="" style="left:${left}%;top:${(i * 53 + 7) % 95}%;height:${14 + (i % 3) * 6}px;animation-delay:${(i % 6) * .4}s">`;
-  }
-  const el = $('#bg'); el.style.background = b.sky; el.innerHTML = h;
-  $('#fx').innerHTML = fx;
+  document.body.classList.toggle('darkbg', !!b.dark);
+  RRBG.apply(b.id);
 }
 
 function checkBadges() {
@@ -819,7 +772,7 @@ function unlocksView() {
     const got = S.unlocked[u.id];
     const on = u.kind === 'animal' ? S.pets.includes(u.id) : bgId === u.id;
     const pic = u.kind === 'animal' ? `<div class="pic">${animalImg(u, 52)}</div>`
-      : `<div class="sw" style="background:${u.sky}"><i style="background:${u.hdr}"></i>${u.deco[0] ? `<img src="decor/${u.deco[0][0]}.webp" alt="">` : ''}</div>`;
+      : `<div class="sw" style="background:${u.sky}"><i style="background:${u.hdr}"></i><span class="thumb">${u.thumb || ''}</span></div>`;
     const status = !got ? `⭐ ${u.cost.toLocaleString()}` : u.kind === 'animal' ? (on ? '✓ Out walking' : 'Tap to bring out') : on ? '✓ Using it' : 'Tap to use';
     return `<button class="ucard ${got ? '' : 'locked'} ${on ? 'on' : ''}" data-act="pickUnlock" data-id="${u.id}">${got ? '' : '<span class="lock">🔒</span>'}${pic}<b>${u.n}</b><small>${status}</small></button>`;
   };
