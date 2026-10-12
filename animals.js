@@ -503,7 +503,75 @@
       ${L(56, 0, c)}${L(106, .5, c)}`;
   }};
 
+  A.frog = { w: 90, h: 60, T: .55, draw() {
+    const c = '#4CAF50', dk = '#2E7D32', bel = '#D4EDB0';
+    return `<g class="hopbody">
+      <g class="kick" style="transform-origin:32px 46px"><path d="M32 42 C18 42 10 52 15 56 L42 56 C42 51 38 46 32 42Z" fill="${dk}"/><path d="M12 56 l-5 1 M16 57 l-3 2.5" stroke="${dk}" stroke-width="2.2" stroke-linecap="round"/></g>
+      <path d="M24 46 C22 32 36 24 52 26 C66 28 72 38 70 48 C66 56 50 58 36 56 C28 55 24 52 24 46Z" fill="${c}"/>
+      <path d="M38 53 C48 56 60 54 66 48" stroke="${bel}" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <circle cx="38" cy="36" r="2.6" fill="${dk}"/><circle cx="46" cy="31" r="2" fill="${dk}"/><circle cx="34" cy="45" r="1.8" fill="${dk}"/>
+      <g class="head" style="transform-origin:62px 34px">
+        <circle cx="58" cy="25" r="7.5" fill="${c}"/><circle cx="69" cy="27" r="6.5" fill="${c}"/>
+        <circle cx="59" cy="24" r="4.4" fill="#fff"/><ellipse cx="60" cy="24" rx="2.4" ry="1.5" fill="#111"/>
+        <circle cx="69.5" cy="26" r="3.8" fill="#fff"/><ellipse cx="70.4" cy="26" rx="2.1" ry="1.3" fill="#111"/>
+        <path d="M58 39 C64 42 71 41 75 36" stroke="${dk}" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      </g>
+      <g class="reach" style="transform-origin:62px 47px"><rect x="60" y="45" width="5" height="11" rx="2.5" fill="${dk}"/><path d="M60 56 l-2 1.5 M65 56 l2 1.5" stroke="${dk}" stroke-width="2" stroke-linecap="round"/></g>
+    </g>`;
+  }};
+
+  A.hamster = { w: 90, h: 60, T: .28, draw(T) {
+    const c = '#E8A75A', lt = '#FFF1DC', dk = '#C98A40', pk = '#F2A9B5';
+    const L = (x, ph, col) => leg({ x, y: 46, up: 4, low: 5, wu: 5, wl: 4.4, col, foot: (fx, fy) => `<ellipse cx="${fx + 1.5}" cy="${fy}" rx="3.2" ry="1.7" fill="${pk}"/>`, phase: ph, a: 26, k: 20, T });
+    return `${L(38, .5, dk)}${L(60, 0, dk)}
+      <g class="torso">
+        <circle cx="19" cy="40" r="3.5" fill="${c}"/>
+        <path d="M18 40 C18 24 34 16 52 18 C68 20 78 30 78 42 C78 52 64 56 48 56 C30 56 18 52 18 40Z" fill="${c}"/>
+        <path d="M32 46 C40 55 62 55 72 44 C66 51 44 53 32 46Z" fill="${lt}"/>
+        <path d="M30 26 C36 22 44 21 50 22" stroke="#F3C38A" stroke-width="3" fill="none" stroke-linecap="round" opacity=".8"/>
+        <g class="head" style="transform-origin:66px 34px">
+          <circle cx="56" cy="19" r="5.5" fill="${c}"/><circle cx="56" cy="19" r="3" fill="${pk}"/>
+          <ellipse cx="67" cy="40" rx="8" ry="6.5" fill="${lt}"/>
+          <circle cx="78.5" cy="36" r="2" fill="${pk}"/>${eye(69, 30, 2)}
+          <path d="M77 38 l8 -1.5 M77 39.5 l8 1.5" stroke="#8a6a4a" stroke-width=".6"/>
+        </g></g>
+      ${L(34, 0, c)}${L(56, .5, c)}`;
+  }};
+
+  A.panda = { w: 160, h: 100, T: .9, draw(T) {
+    const w = '#F7F7F4', bk = '#1E1E22', far = '#2E2E33';
+    const L = (x, ph, col) => leg({ x, y: 60, up: 18, low: 17, wu: 15, wl: 13, col, foot: paw('#111'), phase: ph, a: 16, k: 24, T });
+    return `${L(58, .5, far)}${L(106, 0, far)}
+      <circle cx="38" cy="52" r="5" fill="${bk}"/>
+      <g class="torso">
+        <path d="M38 52 C38 34 62 29 88 31 C108 33 118 37 121 49 C123 61 115 68 102 68 L52 68 C42 68 38 62 38 52Z" fill="${w}"/>
+        <ellipse cx="54" cy="56" rx="15" ry="13" fill="${bk}"/>
+        <path d="M90 32 C100 31 112 34 118 42 C122 50 120 62 112 67 L98 67 C94 58 90 46 90 32Z" fill="${bk}"/>
+        <path d="M60 64 C72 68 86 68 94 64" stroke="#E4E4E0" stroke-width="4" stroke-linecap="round" fill="none"/>
+        <g class="head" style="transform-origin:124px 46px">
+          <circle cx="132" cy="42" r="17" fill="${w}"/>
+          <circle cx="121" cy="28" r="6" fill="${bk}"/><circle cx="141" cy="27" r="6" fill="${bk}"/>
+          <ellipse cx="128" cy="41" rx="5" ry="7" transform="rotate(25 128 41)" fill="${bk}"/><ellipse cx="141" cy="40" rx="4.6" ry="6.6" transform="rotate(-20 141 40)" fill="${bk}"/>
+          <circle cx="129" cy="40" r="1.9" fill="#fff"/><circle cx="141" cy="39" r="1.8" fill="#fff"/>
+          <ellipse cx="136.5" cy="49" rx="3.6" ry="2.6" fill="${bk}"/>
+          <path d="M136.5 51.5 C135 55 131 55 130 53 M136.5 51.5 C138 55 142 55 143 53" stroke="${bk}" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+        </g></g>
+      ${L(54, 0, bk)}${L(102, .5, bk)}`;
+  }};
+
   /* ---------------- fliers ---------------- */
+  A.parrot = { w: 110, h: 64, fly: true, draw() {
+    const r = '#E8302E', b = '#1E5BD6', y = '#FFD23F';
+    return `<g class="wing" style="transform-origin:52px 30px;animation-delay:-.2s;opacity:.85"><path d="M52 30 C44 10 58 0 78 4 C72 16 62 26 56 34Z" fill="#1747A8"/></g>
+      <path d="M32 34 L0 46 L5 38 L0 32 L32 30Z" fill="${r}"/><path d="M4 38 L30 34 M3 43 L28 36" stroke="${b}" stroke-width="2.6"/>
+      <ellipse cx="52" cy="34" rx="22" ry="11" fill="${r}"/><path d="M38 40 C46 45 58 45 66 38" stroke="#C4211F" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M58 42 l-2 6 M64 41 l0 6" stroke="#5a5a5a" stroke-width="2" stroke-linecap="round"/>
+      <g class="wing" style="transform-origin:54px 30px"><path d="M54 30 C44 6 60 -4 84 0 C78 14 66 26 58 35Z" fill="${y}"/>
+        <path d="M58 23 C64 13 72 8 82 5" stroke="${b}" stroke-width="5.5" fill="none" stroke-linecap="round"/><path d="M60 29 C66 22 72 18 78 16" stroke="#3DBE4A" stroke-width="3" fill="none" stroke-linecap="round"/></g>
+      <circle cx="76" cy="26" r="10.5" fill="${r}"/><path d="M71 22 C74 19 79 19 82 21 C80 26 76 28 72 27Z" fill="#fff"/>
+      <circle cx="78" cy="23.5" r="2.1" fill="#111"/><circle cx="78.6" cy="22.9" r=".7" fill="#fff"/>
+      <path d="M84 21 C93 21 97 28 93 35 C91 31 87 30 84 31Z" fill="#E9E1D3"/><path d="M85 30 C88 31 90 33 90 35 C87 35 85 33 84 31Z" fill="#2b2b2b"/>`;
+  }};
   A.eagle = { w: 150, h: 80, fly: true, draw() {
     const b = '#4A2E1C', dk = '#36210F', w = '#FAFAF5', y = '#F2B81B';
     return `<g class="wing" style="transform-origin:66px 36px;animation-delay:-.2s;opacity:.85"><path d="M66 36 C52 10 70 -6 104 0 C120 2 128 8 132 12 C118 12 110 14 104 18 C96 26 82 34 72 42Z" fill="${dk}"/></g>
