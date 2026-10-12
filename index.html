@@ -192,8 +192,16 @@ body.watch{overflow:hidden}
 @keyframes wag{from{transform:rotate(-9deg)}to{transform:rotate(9deg)}}
 @keyframes flap{from{transform:rotate(-38deg)}to{transform:rotate(28deg)}}
 @keyframes bflap{from{transform:scaleX(1)}to{transform:scaleX(.25)}}
-.nextup{display:flex;align-items:center;gap:12px;margin-top:14px}
-.nextup .big{font-size:40px}
+.nextup{margin-top:14px}
+.nextrow{display:flex;align-items:center;gap:12px;padding:6px 0}
+.nextrow+.nextrow{border-top:2px solid var(--line);margin-top:4px;padding-top:10px}
+.nicon{width:58px;flex:none;display:flex;justify-content:center;align-items:center;font-size:34px}
+.nicon svg{max-width:58px;height:auto;max-height:40px}
+.nlabel{font-size:16px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nswatch{position:relative;display:block;width:54px;height:40px;border-radius:10px;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+.nswatch i{position:absolute;left:0;right:0;top:0;height:9px}
+.nswatch span{position:absolute;right:4px;bottom:3px;display:flex}
+.nswatch span>*{max-height:24px;max-width:34px;width:auto;height:auto}
 .ugrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .ucard{background:#fff;border:0;border-radius:20px;padding:12px 8px;text-align:center;box-shadow:0 2px 0 var(--line);font:inherit;color:inherit;cursor:pointer;position:relative}
 .ucard .e{font-size:40px;line-height:1.15;display:block}
@@ -779,7 +787,15 @@ function unlocksView() {
   S.unlocked ||= {}; S.pets ||= [];
   const have = starsEarned();
   const bgId = (BACKGROUNDS.find(x => x.id === S.bg && S.unlocked[x.id]) || BACKGROUNDS[0]).id;
-  const next = UNLOCKS.filter(u => !S.unlocked[u.id]).sort((a, b) => a.cost - b.cost)[0];
+  const nextOf = list => list.filter(u => !S.unlocked[u.id]).sort((a, b) => a.cost - b.cost)[0];
+  const nextRow = (label, u, done) => {
+    if (!u) return `<div class="nextrow"><span class="nicon">🏆</span><div style="flex:1;min-width:0"><div class="fun nlabel">${done}</div></div></div>`;
+    const pic = u.kind === 'animal' ? animalImg(u, 40) : `<span class="nswatch" style="background:${u.sky}"><i style="background:${u.hdr}"></i><span>${u.thumb || u.e}</span></span>`;
+    return `<div class="nextrow"><span class="nicon">${pic}</span><div style="flex:1;min-width:0">
+      <div class="fun nlabel">${label}: ${u.n}</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:5px"><div class="bar"><i style="width:${Math.min(100, have / u.cost * 100)}%"></i></div>
+      <small style="color:var(--muted);white-space:nowrap">${(u.cost - have).toLocaleString()} more ⭐</small></div></div></div>`;
+  };
   const out = S.pets.length;
   const card = u => {
     const got = S.unlocked[u.id];
@@ -789,11 +805,9 @@ function unlocksView() {
     const status = !got ? `⭐ ${u.cost.toLocaleString()}` : u.kind === 'animal' ? (on ? '✓ Out walking' : 'Tap to bring out') : on ? '✓ Using it' : 'Tap to use';
     return `<button class="ucard ${got ? '' : 'locked'} ${on ? 'on' : ''}" data-act="pickUnlock" data-id="${u.id}">${got ? '' : '<span class="lock">🔒</span>'}${pic}<b>${u.n}</b><small>${status}</small></button>`;
   };
-  return `<div class="card nextup" style="margin-top:-12px;position:relative"><span class="big">${!next ? '🏆' : next.kind === 'animal' ? animalImg(next, 48) : next.e}</span><div style="flex:1;min-width:0">
-      <div class="fun" style="font-size:17px;font-weight:600">${next ? `Next unlock: ${next.n}` : 'You unlocked EVERYTHING!'}</div>
-      ${next ? `<div style="display:flex;align-items:center;gap:8px;margin-top:6px"><div class="bar"><i style="width:${Math.min(100, have / next.cost * 100)}%"></i></div>
-        <small style="color:var(--muted);white-space:nowrap">${(next.cost - have).toLocaleString()} more ⭐</small></div>` : ''}
-      <small style="color:var(--muted)">⭐ ${have.toLocaleString()} stars earned all-time</small></div></div>
+  return `<div class="card nextup" style="margin-top:-12px;position:relative">
+      ${unlockTab === 'animal' ? nextRow('Next animal', nextOf(ANIMALS), 'Every animal unlocked!') : nextRow('Next background', nextOf(BACKGROUNDS), 'Every background unlocked!')}
+      <small style="color:var(--muted);display:block;text-align:center;margin-top:8px">⭐ ${have.toLocaleString()} stars earned all-time</small></div>
     <button class="btn green watchbtn" data-act="watch">👀 Watch my animals${out ? ` (${out})` : ''}</button>
     <div class="filters" style="margin-top:18px">${[['animal', '🐾 Animals'], ['bg', '🖼️ Backgrounds']].map(([k, l]) =>
       `<button class="fchip ${unlockTab === k ? 'on' : ''}" data-act="unlockTab" data-k="${k}">${l}</button>`).join('')}</div>
