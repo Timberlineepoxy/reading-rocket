@@ -1376,6 +1376,26 @@ document.addEventListener('click', e => {
 checkUnlocks(); render(); updateTimerUI(); checkBadges(); syncPets();
 if (S.timer) { view = 'read'; render(); updateTimerUI(); }
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
+
+// ---------- staying up to date ----------
+// Phones often resume the app from memory instead of reloading it, so check for a newer
+// version whenever the app opens or comes back on screen, and reload into it.
+const APP_VERSION = 'rr-shell-v18';  // must match SHELL in sw.js
+async function checkForUpdate() {
+  if (!location.protocol.startsWith('http')) return;
+  try {
+    const txt = await (await fetch('sw.js?check=' + Date.now(), { cache: 'no-store' })).text();
+    const live = (txt.match(/SHELL = '([^']+)'/) || [])[1];
+    if (!live || live === APP_VERSION) return;
+    if ($('#shade').classList.contains('open') || $('#party').classList.contains('open')) return;  // never interrupt typing
+    const tried = 'rr-update-' + live;
+    try { if (sessionStorage.getItem(tried)) return; sessionStorage.setItem(tried, '1'); } catch (e) {}
+    try { const reg = await navigator.serviceWorker?.getRegistration(); await reg?.update(); } catch (e) {}
+    location.replace(location.pathname + '?v=' + encodeURIComponent(live));
+  } catch (e) {}
+}
+setTimeout(checkForUpdate, 1500);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') checkForUpdate(); });
 </script>
 </body>
 </html>
