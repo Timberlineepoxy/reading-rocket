@@ -95,6 +95,90 @@
   const LEAF_TINTS = ['hue-rotate(52deg) saturate(1.3)', 'hue-rotate(26deg) saturate(1.15)', 'hue-rotate(72deg) saturate(1.5) brightness(1.2)', 'hue-rotate(44deg) saturate(1.3)',
     'hue-rotate(60deg) saturate(1.4) brightness(1.1)', 'hue-rotate(34deg) saturate(1.2)', 'hue-rotate(80deg) saturate(1.6) brightness(1.25)'];
 
+  /* ---- holiday artwork ---- */
+  const HEART_PATH = 'M16 29 C6 21 1 15 1 9 C1 4 5 1 9 1 C12 1 14.5 3 16 5.5 C17.5 3 20 1 23 1 C27 1 31 4 31 9 C31 15 26 21 16 29Z';
+  const HEARTS = ['#FF1744', '#FF4F8B', '#FF80AB', '#E91E63', '#FFFFFF', '#B388FF', '#FF5252', '#FFC1D9'];
+  const heart = (s, c) => `<svg viewBox="0 0 32 30" width="${s}" height="${s * .94}"><path d="${HEART_PATH}" fill="${c}"/><path d="M7 7 C8 5 10 4.3 12 4.8" stroke="#fff" stroke-width="2.2" opacity=".55" fill="none" stroke-linecap="round"/></svg>`;
+  const convo = s => { const [c, t] = pick([['#FFB3C7', 'LOVE'], ['#C8F7C5', 'HUG ME'], ['#FFF3B0', 'XOXO'], ['#D7C4FF', 'BE MINE'], ['#B8E6FF', 'BFF'], ['#FFD3A8', 'SMILE'], ['#FFB3C7', 'U ROCK']]);
+    return `<svg viewBox="0 0 32 30" width="${s}" height="${s * .94}"><path d="${HEART_PATH}" fill="${c}"/><text x="16" y="15.5" font-size="${t.length > 4 ? 4.4 : 6}" font-weight="900" text-anchor="middle" font-family="Arial,sans-serif" fill="#D81B60">${t}</text></svg>`; };
+  const letter = s => `<svg viewBox="0 0 40 28" width="${s}" height="${s * .7}"><rect x="1" y="1" width="38" height="26" rx="3" fill="#fff" stroke="#F8BBD0" stroke-width="1.5"/><path d="M2 3 L20 16 L38 3" stroke="#F48FB1" stroke-width="1.8" fill="none"/>
+    <path d="M20 22 C16 19 14 17 14 15 C14 13 16 12 17.5 12 C18.6 12 19.4 12.8 20 13.6 C20.6 12.8 21.4 12 22.5 12 C24 12 26 13 26 15 C26 17 24 19 20 22Z" fill="#E91E63"/></svg>`;
+
+  const xmasTree = h => `<svg viewBox="0 0 100 140" width="${h * .71}" height="${h}"><rect x="44" y="118" width="12" height="18" fill="#6B3E1F"/>
+    <path d="M50 14 L82 56 L66 56 L92 92 L72 92 L98 122 L2 122 L28 92 L8 92 L34 56 L18 56Z" fill="#1E7A3C"/>
+    <path d="M30 60 C44 66 58 64 72 56 M22 96 C42 104 62 102 80 92" stroke="#FFD23F" stroke-width="2.4" fill="none"/>
+    ${[[40, 48, '#FF3B3B'], [60, 52, '#3AA0FF'], [32, 74, '#FFD23F'], [52, 78, '#FF3B3B'], [70, 72, '#B05BFF'], [26, 104, '#3AA0FF'], [46, 110, '#FFD23F'], [66, 106, '#FF3B3B'], [84, 112, '#3AA0FF'], [50, 34, '#B05BFF']]
+      .map(([x, y, c], i) => `<circle class="bgx-blink" cx="${x}" cy="${y}" r="3.6" fill="${c}" style="animation-delay:-${i * .27}s"/>`).join('')}
+    <path class="bgx-glowstar" d="M50 2 L53.5 10 L62 10.5 L55.5 16 L57.5 24.5 L50 20 L42.5 24.5 L44.5 16 L38 10.5 L46.5 10Z" fill="#FFD23F"/></svg>`;
+  const present = (w, a, b) => `<svg viewBox="0 0 40 36" width="${w}" height="${w * .9}"><rect x="2" y="12" width="36" height="22" rx="2" fill="${a}"/><rect x="0" y="8" width="40" height="8" rx="2" fill="${a}"/>
+    <rect x="17" y="8" width="6" height="26" fill="${b}"/><path d="M20 8 C14 0 6 2 10 7 C12 9 17 8 20 8 C23 8 28 9 30 7 C34 2 26 0 20 8Z" fill="${b}"/></svg>`;
+  const xmasLights = () => `<svg viewBox="0 0 400 34" style="width:100%;height:auto;display:block"><path d="M0 4 Q25 22 50 4 T100 4 T150 4 T200 4 T250 4 T300 4 T350 4 T400 4" stroke="#24331f" stroke-width="1.6" fill="none"/>
+    ${Array.from({ length: 16 }, (_, i) => { const x = 12.5 + i * 25, y = 13; return `<ellipse class="bgx-blink" cx="${x}" cy="${y + 5}" rx="3.6" ry="5.4" fill="${['#FF3B3B', '#FFD23F', '#3AD06B', '#3AA0FF', '#FF7AE0'][i % 5]}" style="animation-delay:-${(i % 5) * .3}s"/><rect x="${x - 2}" y="${y - 2}" width="4" height="3" fill="#333"/>`; }).join('')}</svg>`;
+  const cane = s => `<svg viewBox="0 0 20 40" width="${s * .5}" height="${s}"><path d="M6 38 V12 C6 4 16 4 16 12" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M6 38 V12 C6 4 16 4 16 12" stroke="#E8304A" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="4 4"/></svg>`;
+  const reindeer = (x, nose) => `<g transform="translate(${x} 0)">
+    <g class="bgx-gallop" style="transform-origin:12px 58px"><path d="M8 58 L2 72 M16 58 L12 72" stroke="#6B3E1F" stroke-width="3" stroke-linecap="round"/></g>
+    <g class="bgx-gallop2" style="transform-origin:34px 58px"><path d="M30 58 L36 72 M38 58 L44 70" stroke="#6B3E1F" stroke-width="3" stroke-linecap="round"/></g>
+    <ellipse cx="24" cy="52" rx="20" ry="9" fill="#8B5A2B"/><path d="M38 48 C42 40 44 34 48 30 L54 34 C50 38 48 44 44 52Z" fill="#8B5A2B"/>
+    <ellipse cx="54" cy="30" rx="8" ry="5.5" fill="#8B5A2B"/><path d="M50 25 L46 14 M48 18 L42 16 M53 25 L55 13 M54 17 L59 13" stroke="#6B3E1F" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="61.5" cy="30" r="${nose ? 3.6 : 2}" fill="${nose ? '#FF2A2A' : '#3b2414'}" ${nose ? 'class="bgx-nose"' : ''}/><circle cx="54" cy="28" r="1.2" fill="#111"/>
+    <path d="M4 50 C2 46 4 44 7 45" stroke="#F4E3C3" stroke-width="3" fill="none" stroke-linecap="round"/></g>`;
+  const sleigh = w => `<svg viewBox="0 0 330 92" width="${w}" height="${w * 92 / 330}">
+    ${[0, 1, 2, 3, 4].map(i => `<path class="bgx-tw" d="M${6 + i * 8} ${40 + (i % 2) * 8} l2 -5 l2 5 l5 2 l-5 2 l-2 5 l-2 -5 l-5 -2Z" fill="#FFE27A" style="animation-delay:-${i * .3}s"/>`).join('')}
+    <path d="M128 50 L330 46" stroke="#5a3a1a" stroke-width="1.6"/>${reindeer(150)}${reindeer(205)}${reindeer(260, true)}
+    <circle cx="60" cy="40" r="17" fill="#8B5A2B"/><path d="M50 30 C56 26 64 26 70 30" stroke="#6b4420" stroke-width="2" fill="none"/>
+    <ellipse cx="90" cy="42" rx="14" ry="16" fill="#D62828"/><rect x="77" y="44" width="26" height="4" fill="#222"/>
+    <circle cx="94" cy="22" r="8.5" fill="#F5C9A8"/><path d="M86 24 C86 36 102 36 103 24 C99 28 90 28 86 24Z" fill="#fff"/><circle cx="97" cy="20" r="1.2" fill="#222"/><circle cx="100.5" cy="23" r="1.8" fill="#F08080"/>
+    <path d="M86 18 C88 8 98 6 104 12 L92 17Z" fill="#D62828"/><path d="M85 18 C90 16 98 15 104 17" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/><circle cx="83" cy="12" r="3.4" fill="#fff"/>
+    <path d="M44 58 C44 44 58 40 76 42 L120 44 C130 44 134 50 132 58 L128 70 C126 76 120 78 112 78 L58 78 C50 78 44 72 44 58Z" fill="#C62828"/>
+    <path d="M48 60 C70 64 104 64 128 58" stroke="#FFD23F" stroke-width="2.4" fill="none"/>
+    <path d="M38 84 C62 89 112 89 136 83 C144 80 146 72 139 70" stroke="#FFD23F" stroke-width="4" fill="none" stroke-linecap="round"/></svg>`;
+
+  const shamrock = s => `<svg viewBox="-16 -16 32 34" width="${s}" height="${s * 1.06}"><g fill="#2EAD4B">${[0, 120, 240].map(a => `<path transform="rotate(${a}) translate(0 -7)" d="M0 5 C-7 0 -8 -6 -4 -8 C-2 -9 -.5 -8 0 -6.5 C.5 -8 2 -9 4 -8 C8 -6 7 0 0 5Z"/>`).join('')}</g>
+    <path d="M0 2 C1 8 3 13 6 17" stroke="#1E7A34" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M-3 -9 C-1 -10 1 -10 2 -9" stroke="#8EE09B" stroke-width="1.4" fill="none"/></svg>`;
+  const lepHat = s => `<svg viewBox="0 0 40 34" width="${s}" height="${s * .85}"><ellipse cx="20" cy="29" rx="19" ry="4.5" fill="#1B7A34"/><path d="M9 29 L11 4 C16 2 24 2 29 4 L31 29Z" fill="#22A045"/>
+    <rect x="10" y="19" width="20" height="5" fill="#222"/><rect x="17" y="18" width="6" height="7" fill="none" stroke="#FFD23F" stroke-width="1.8"/></svg>`;
+  const potOfGold = w => `<svg viewBox="0 0 100 80" width="${w}" height="${w * .8}"><ellipse cx="50" cy="22" rx="40" ry="10" fill="#FFD23F"/>
+    ${[[30, 16], [44, 12], [58, 14], [70, 18], [38, 22], [52, 20], [64, 24]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="7" fill="#F2B705" stroke="#C99400" stroke-width="1.4"/>`).join('')}
+    <path d="M10 26 C8 60 24 78 50 78 C76 78 92 60 90 26 C70 34 30 34 10 26Z" fill="#1d1d1d"/><path d="M8 24 C30 34 70 34 92 24" stroke="#333" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path d="M22 40 C24 52 30 60 38 64" stroke="#444" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`;
+  const snowPile = s => `<span class="bgx-mound" style="width:${s * 1.5}px;height:${s * .8}px"></span>`;
+  const flatCoin = s => `<div style="transform:scaleY(.5)">${coin(s)}</div>`;
+
+  const darkCloud = (w, c = '#566170', sh = '#424C59') => `<svg viewBox="0 0 120 60" width="${w}" height="${w / 2}"><g fill="${c}"><circle cx="30" cy="36" r="18"/><circle cx="56" cy="26" r="24"/><circle cx="84" cy="34" r="19"/><circle cx="102" cy="42" r="12"/><rect x="16" y="36" width="94" height="20" rx="10"/></g>
+    <rect x="20" y="46" width="88" height="10" rx="5" fill="${sh}"/></svg>`;
+  const bolt = h => `<svg viewBox="0 0 40 100" width="${h * .4}" height="${h}"><path d="M24 0 L6 52 L20 52 L10 100 L36 38 L22 38 L32 0Z" fill="#FFF59D" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg>`;
+  const umbrella = w => `<svg viewBox="0 0 60 60" width="${w}" height="${w}"><path d="M2 28 C4 10 18 2 30 2 C42 2 56 10 58 28 C52 24 46 24 40 28 C36 24 24 24 20 28 C14 24 8 24 2 28Z" fill="#FFC107"/>
+    <path d="M20 28 C20 14 26 4 30 2 C34 4 40 14 40 28" stroke="#F57F17" stroke-width="1.5" fill="none"/><path d="M30 28 V52 C30 58 22 58 22 52" stroke="#3b2a1e" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`;
+  const boat = w => `<svg viewBox="0 0 60 40" width="${w}" height="${w * .67}"><path d="M4 24 L56 24 L46 36 L14 36Z" fill="#FAFAFA" stroke="#B0BEC5" stroke-width="1"/>
+    <path d="M30 2 L30 24 L12 24Z" fill="#fff" stroke="#B0BEC5" stroke-width="1"/><path d="M30 6 L44 24 L30 24Z" fill="#ECEFF1" stroke="#B0BEC5" stroke-width="1"/></svg>`;
+
+  const EGG = 'M12 1 C19 1 23 12 23 18 C23 25 18 29 12 29 C6 29 1 25 1 18 C1 12 5 1 12 1Z';
+  const egg = s => { const base = pick(['#FF8FB8', '#8FD3FF', '#B39DFF', '#FFE066', '#8BE38B', '#FFB36B', '#FF6B6B']), acc = pick(['#fff', '#E91E63', '#3F51B5', '#FF9800', '#4CAF50', '#7C3AED']), k = Math.floor(Math.random() * 3);
+    const marks = k === 0 ? `<path d="M0 14 L4 11 L8 14 L12 11 L16 14 L20 11 L24 14 M0 20 L4 17 L8 20 L12 17 L16 20 L20 17 L24 20" stroke="${acc}" stroke-width="2.2" fill="none"/>`
+      : k === 1 ? [[7, 9], [15, 8], [11, 15], [6, 21], [17, 20], [12, 25]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="1.9" fill="${acc}"/>`).join('')
+      : `<rect x="0" y="12" width="24" height="3" fill="${acc}"/><rect x="0" y="19" width="24" height="3" fill="${acc}"/>`;
+    return `<svg viewBox="0 0 24 30" width="${s * .8}" height="${s}"><path d="${EGG}" fill="${base}"/><g clip-path="url(#rr-egg)">${marks}</g><path d="M7 7 C8 5 10 4 11 4" stroke="#fff" stroke-width="1.6" opacity=".6" fill="none" stroke-linecap="round"/></svg>`; };
+  const chick = w => `<svg viewBox="0 0 40 42" width="${w}" height="${w * 1.05}"><g class="bgx-hop"><circle cx="18" cy="24" r="12" fill="#FFE03B"/><circle cx="28" cy="13" r="8" fill="#FFE03B"/>
+    <path d="M35 12 L41 14.5 L35 17Z" fill="#FF9800"/><circle cx="30" cy="11" r="1.4" fill="#111"/><path d="M10 22 C14 18 20 20 20 26" stroke="#F4C400" stroke-width="2.2" fill="none"/></g>
+    <path d="M15 35 L14 40 M21 35 L22 40" stroke="#FF9800" stroke-width="2" stroke-linecap="round"/></svg>`;
+  const basket = w => `<svg viewBox="0 0 100 74" width="${w}" height="${w * .74}"><path d="M18 34 C18 4 82 4 82 34" stroke="#8B5A2B" stroke-width="5" fill="none"/>
+    <path d="M30 30 C30 22 40 22 40 30Z M44 28 C44 18 56 18 56 28Z M60 30 C60 22 70 22 70 30Z" fill="#FF8FB8"/><path d="M44 28 C44 18 56 18 56 28Z" fill="#8FD3FF"/><path d="M60 30 C60 22 70 22 70 30Z" fill="#FFE066"/>
+    <path d="M10 32 L90 32 L80 72 L20 72Z" fill="#C68A4E"/><path d="M14 44 H86 M17 56 H83 M30 32 L34 72 M50 32 V72 M70 32 L66 72" stroke="#9C6A36" stroke-width="2.4"/>
+    <path d="M10 32 L90 32" stroke="#A8743E" stroke-width="5"/></svg>`;
+
+  const bigStar = w => `<svg viewBox="-50 -50 100 100" width="${w}" height="${w}"><path d="M0 -48 L6 -8 L40 -28 L10 -2 L48 0 L10 4 L30 34 L4 10 L0 48 L-4 10 L-30 34 L-10 4 L-48 0 L-10 -2 L-40 -28 L-6 -8Z" fill="#FFF6C8"/><circle r="9" fill="#fff"/></svg>`;
+  const crossesHill = () => `<svg viewBox="0 0 400 170" preserveAspectRatio="xMidYMax slice" style="width:100%;height:230px;display:block">
+    <path d="M0 150 C80 120 140 70 200 66 C260 70 320 120 400 150 L400 170 L0 170Z" fill="#1A1433"/>
+    <g fill="#120D26"><rect x="195" y="0" width="10" height="72"/><rect x="176" y="18" width="48" height="9"/><rect x="133" y="40" width="7" height="50"/><rect x="120" y="52" width="33" height="6"/>
+    <rect x="260" y="40" width="7" height="50"/><rect x="247" y="52" width="33" height="6"/></g></svg>`;
+  const dove = w => `<svg viewBox="0 0 100 56" width="${w}" height="${w * .56}">
+    <g class="bgx-wing" style="transform-origin:46px 30px;animation-delay:-.2s;opacity:.85"><path d="M46 30 C38 10 52 0 72 2 C66 14 58 24 50 34Z" fill="#E1E8F2"/></g>
+    <path d="M24 34 L4 28 L8 36 L4 42 L24 38Z" fill="#F2F5FA"/><ellipse cx="46" cy="36" rx="22" ry="10" fill="#fff"/><circle cx="70" cy="28" r="8" fill="#fff"/>
+    <path d="M77 27 L84 29 L77 31Z" fill="#F4A261"/><circle cx="72" cy="26" r="1.3" fill="#222"/>
+    <path d="M82 30 C88 34 92 36 97 35" stroke="#4CAF50" stroke-width="1.6" fill="none"/><ellipse cx="89" cy="33" rx="3" ry="1.4" fill="#66BB6A" transform="rotate(20 89 33)"/><ellipse cx="95" cy="36.5" rx="3" ry="1.4" fill="#66BB6A" transform="rotate(-10 95 36.5)"/>
+    <g class="bgx-wing" style="transform-origin:48px 30px"><path d="M48 30 C38 6 54 -4 76 0 C70 14 60 24 52 35Z" fill="#fff"/><path d="M54 14 L66 8 M53 20 L64 16" stroke="#DDE3EC" stroke-width="1.5"/></g></svg>`;
+  const crossIcon = '<svg viewBox="0 0 20 30" width="20" height="30"><rect x="8" y="0" width="4" height="30" fill="#FFE7A0"/><rect x="2" y="7" width="16" height="4" fill="#FFE7A0"/></svg>';
+
   /* ======================= engine ======================= */
   let fxEl, bgEl, anims = [], timers = [], current = '';
   function box(html, layer, css = '') {
@@ -105,7 +189,41 @@
     return d;
   }
   function track(a) { anims.push(a); a.addEventListener('finish', () => { const i = anims.indexOf(a); if (i >= 0) anims.splice(i, 1); }); return a; }
+
+  // ---- the pile: falling things land on the floor (top of the bottom bar, or the bottom of the screen
+  // in Watch mode), stack up, and the oldest pieces fade away as the pile grows.
+  const BIN = 8;
+  let heights = [], settled = [];
+  const floorY = () => {
+    if (document.body.classList.contains('watch')) return H();
+    const nav = document.querySelector('nav');
+    return nav ? Math.round(nav.getBoundingClientRect().top) : H();
+  };
+  function resetPile() { settled.forEach(q => q.el.remove()); settled = []; heights = new Array(Math.ceil(W() / BIN) + 2).fill(0); }
+  const binsFor = (x, w) => { const out = []; for (let b = Math.max(0, Math.floor(x / BIN)); b <= Math.min(heights.length - 1, Math.floor((x + w) / BIN)); b++) out.push(b); return out; };
+  const landY = (x, s, sink) => { if (!heights.length) resetPile(); return floorY() - Math.max(0, ...binsFor(x, s).map(b => heights[b])) - s * sink; };
+  function fadeOut(q) {
+    q.bins.forEach(b => { heights[b] = Math.max(0, heights[b] - q.add); });
+    const a = q.el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 2600, fill: 'forwards' });
+    a.onfinish = () => q.el.remove();
+  }
+  function settle(html, x, y, rot, s) {
+    if (!heights.length) resetPile();
+    const q = { el: box(html, 'fx', `transform:translate(${x}px,${y}px) rotate(${rot}deg)`), bins: binsFor(x, s), add: s * .38 };
+    q.bins.forEach(b => { heights[b] += q.add; });
+    settled.push(q);
+    const maxH = Math.max(44, Math.min(80, H() * .1));
+    for (let guard = 0; guard < 40 && settled.length; guard++) {
+      const top = Math.max(...heights), tall = heights.indexOf(top);
+      if (top <= maxH && settled.length <= 90) break;
+      const i = settled.length > 90 ? 0 : Math.max(0, settled.findIndex(o => o.bins.includes(tall)));
+      fadeOut(settled.splice(i, 1)[0]);
+    }
+    timers.push(setTimeout(() => { const i = settled.indexOf(q); if (i >= 0) fadeOut(settled.splice(i, 1)[0]); }, rnd(40, 70) * 1000));
+  }
+
   // An endless stream: each particle gets a new random look and path every time it finishes.
+  // If the path has a landing spot, the piece is left on the pile before the next one starts.
   function stream(n, make, layer = 'fx') {
     for (let i = 0; i < n; i++) {
       const d = box('', layer);
@@ -113,22 +231,28 @@
         const p = make(i);
         d.innerHTML = p.html;
         const a = d.animate(p.frames, { duration: p.dur, easing: p.ease || 'linear', fill: 'both' });
-        if (first) a.currentTime = Math.random() * p.dur;
-        a.onfinish = () => { if (d.isConnected) run(false); };
+        if (first) a.currentTime = Math.random() * p.dur * (p.land ? .8 : 1);
+        a.onfinish = () => {
+          if (!d.isConnected) return;
+          if (p.land) settle(p.pile || p.html, p.land.x, p.land.y, p.land.rot, p.land.s);
+          if (p.onEnd) p.onEnd();
+          run(false);
+        };
         anims.push(a);
       };
       run(true);
     }
   }
-  // Something that crosses once, then is gone.
-  function pass(html, frames, dur, layer = 'fx', css = '', ease = 'linear') {
+  // Something that crosses once, then is gone (or does something when it arrives).
+  function pass(html, frames, dur, layer = 'fx', css = '', ease = 'linear', onDone) {
     const d = box(html, layer, css);
-    track(d.animate(frames, { duration: dur, easing: ease, fill: 'both' })).onfinish = () => d.remove();
+    track(d.animate(frames, { duration: dur, easing: ease, fill: 'both' })).onfinish = () => { d.remove(); if (onDone) onDone(); };
   }
   function every(lo, hi, fn, first) {
     const go = (a, b) => { const id = setTimeout(() => { if (!document.hidden) fn(); go(lo, hi); }, rnd(a, b) * 1000); timers.push(id); };
     go(...(first || [lo * .3, hi * .5]));
   }
+  // Straight through the screen (used for things that rise, like bubbles and balloons).
   const fall = (x, s, dur, sway = 40, spin = 360, up = false) => {
     const h = H(), frames = [];
     for (let k = 0; k <= 6; k++) {
@@ -137,12 +261,28 @@
     }
     return { frames, dur };
   };
+  // Falls from the top, swaying and spinning, and comes to rest on the pile.
+  const drop = (s, dur, sway = 40, spin = 360, sink = .6) => {
+    const w = W(), x0 = rnd(0, w - s), x1 = Math.min(w - s, Math.max(0, x0 + rnd(-sway, sway))), y1 = landY(x1, s, sink), frames = [];
+    for (let k = 0; k <= 8; k++) {
+      const t = k / 8, y = -s - 10 + Math.pow(t, 1.08) * (y1 + s + 10);
+      const x = x0 + (x1 - x0) * t + Math.sin(t * Math.PI * 3 + x0) * sway * (1 - t);
+      frames.push({ transform: `translate(${x}px,${y}px) rotate(${t * spin}deg)` });
+    }
+    return { frames, dur: dur * Math.max(.35, (y1 + s) / (H() + s)), land: { x: x1, y: y1, rot: spin, s } };
+  };
   const across = (y, w, ltr, dy = 0) => {
     const x0 = ltr ? -w - 20 : W() + 20, x1 = ltr ? W() + 20 : -w - 20, f = ltr ? 1 : -1;
     return [{ transform: `translate(${x0}px,${y}px) scaleX(${f})` }, { transform: `translate(${(x0 + x1) / 2}px,${y + dy / 2}px) scaleX(${f})` }, { transform: `translate(${x1}px,${y + dy}px) scaleX(${f})` }];
   };
+  const wavy = (y, w, ltr, amp, waves = 2) => {
+    const x0 = ltr ? -w - 20 : W() + 20, x1 = ltr ? W() + 20 : -w - 20, f = ltr ? 1 : -1, out = [];
+    for (let k = 0; k <= 10; k++) { const t = k / 10; out.push({ transform: `translate(${x0 + (x1 - x0) * t}px,${y + Math.sin(t * Math.PI * 2 * waves) * amp}px) scaleX(${f})` }); }
+    return out;
+  };
   const twinkles = (n, maxTop, c, layer = 'bg') => Array.from({ length: n }, (_, i) =>
     `<span class="bgx-tw" style="left:${(i * 37 + 7) % 100}%;top:${(i * 53 + 11) % maxTop}%;width:${2 + (i % 3)}px;height:${2 + (i % 3)}px;background:${c};animation-delay:-${(i % 7) * .45}s"></span>`).join('');
+  const full = 'inset:0;width:100%;height:100%';
 
   /* ======================= the backgrounds ======================= */
   const HDR = {
@@ -171,7 +311,7 @@
       thumb: petal(16, '#FF8FB8'), build() {
         box(['blossom', 'tulip', 'sunflower', 'tulip', 'blossom', 'sunflower', 'tulip', 'blossom', 'sunflower'].map((f, i) =>
           `<img class="bgx-sway" src="decor/${f}.webp" alt="" style="position:absolute;bottom:${4 + (i % 3) * 9}px;left:${i * 11.5}%;height:${44 + (i % 3) * 10}px;animation-delay:-${i * .5}s">`).join(''), 'bg', 'inset:0;width:100%;height:100%');
-        stream(26, () => { const s = rnd(16, 30); return { html: petal(s, pick(['#FF4F9A', '#FF8FB8', '#FFFFFF', '#F472B6', '#C084FC', '#FDE047', '#FB7185'])), ...fall(rnd(0, W()), s, rnd(9, 16) * 1000, rnd(30, 80), rnd(-540, 540)) }; });
+        stream(26, () => { const s = rnd(16, 30); return { html: petal(s, pick(['#FF4F9A', '#FF8FB8', '#FFFFFF', '#F472B6', '#C084FC', '#FDE047', '#FB7185'])), ...drop(s, rnd(9, 16) * 1000, rnd(30, 80), rnd(-540, 540), .55) }; });
         every(9, 16, () => { const w = rnd(30, 44); pass(petSVG('butterfly', w), across(rnd(120, H() * .7), w, Math.random() < .5, rnd(-120, 120)), rnd(9, 14) * 1000); }, [2, 5]);
       } },
 
@@ -205,7 +345,7 @@
       thumb: maple(26), build() {
         box(`<img src="decor/pumpkin.webp" alt="" style="position:absolute;right:6%;bottom:14px;height:58px"><img src="decor/pumpkin.webp" alt="" style="position:absolute;right:20%;bottom:10px;height:40px">
           <img src="decor/chestnut.webp" alt="" style="position:absolute;left:8%;bottom:14px;height:34px">`, 'bg', 'inset:0;width:100%;height:100%');
-        stream(10, () => { const s = rnd(28, 52); return { html: maple(s), ...fall(rnd(0, W()), s, rnd(11, 18) * 1000, rnd(30, 60), rnd(-300, 300)) }; });
+        stream(12, () => { const s = rnd(28, 52); return { html: maple(s), ...drop(s, rnd(11, 18) * 1000, rnd(30, 60), rnd(-300, 300), .55) }; });
         every(14, 24, () => { for (let k = 0; k < 7; k++) { const s = rnd(26, 46), y = rnd(80, H() - 120);
           pass(maple(s), [{ transform: `translate(${-s - 20}px,${y}px) rotate(0)` }, { transform: `translate(${W() * .5}px,${y + rnd(-90, 90)}px) rotate(${rnd(200, 400)}deg)` },
             { transform: `translate(${W() + 40}px,${y + rnd(-60, 160)}px) rotate(${rnd(500, 800)}deg)` }], rnd(3.2, 5) * 1000 + k * 160); } }, [6, 10]);
@@ -218,7 +358,7 @@
           <div style="position:absolute;left:4%;bottom:52px">${pine(110)}</div><div style="position:absolute;left:19%;bottom:44px">${pine(80)}</div>
           <div style="position:absolute;right:5%;bottom:50px">${pine(120)}</div><img src="decor/snowman.webp" alt="" style="position:absolute;right:28%;bottom:26px;height:70px">`, 'bg', 'inset:0;width:100%;height:100%');
         stream(30, i => { const s = i % 5 === 0 ? rnd(26, 40) : rnd(6, 18); return { html: i % 3 ? flake(s, rnd(.75, 1)) : `<span class="bgx-dot" style="width:${s / 2}px;height:${s / 2}px"></span>`,
-          ...fall(rnd(0, W()), s, rnd(8, 16) * 1000, rnd(20, 50), rnd(-200, 200)) }; });
+          ...drop(s, rnd(8, 16) * 1000, rnd(20, 50), rnd(-200, 200), .45), pile: snowPile(s) }; });
         every(10, 18, () => { const s = rnd(170, 300), x = rnd(-60, W() - s * .6);
           pass(flake(s, .55), [{ transform: `translate(${x}px,${-s}px) rotate(0)` }, { transform: `translate(${x + rnd(-60, 60)}px,${H() + s * .2}px) rotate(${rnd(60, 140)}deg)` }], rnd(7, 10) * 1000, 'fx', 'filter:blur(1.5px)'); }, [3, 6]);
       } },
@@ -231,7 +371,7 @@
         const candies = [() => { const g = pick(GD), s = rnd(32, 50); return [gumdrop(s, ...g), s]; }, () => { const s = rnd(52, 74); return [wrapped(s, pick(['#E8304A', '#3B82F6', '#22C55E', '#FACC15', '#A855F7'])), s]; },
           () => { const s = rnd(34, 48); return [mint(s), s]; }, () => { const s = rnd(30, 42); return [bean(s, pick(['#E8304A', '#FACC15', '#22C55E', '#FB923C', '#A855F7', '#111'])), s]; },
           () => { const s = rnd(24, 34); return [lolly(s, pick(['#FF4FA0', '#38BDF8', '#FACC15']), '#fff'), s * 2]; }];
-        stream(18, () => { const [html, s] = pick(candies)(); return { html, ...fall(rnd(0, W()), s, rnd(8, 14) * 1000, rnd(20, 50), rnd(-420, 420)) }; });
+        stream(18, () => { const [html, s] = pick(candies)(); return { html, ...drop(s, rnd(8, 14) * 1000, rnd(20, 50), rnd(-420, 420), .6) }; });
       } },
 
     { id: 'jungle', e: '🌴', n: 'Jungle', cost: 1600, dark: true, hdr: HDR.jungle, tc: '#14532D', base: '#14532D', sky: 'linear-gradient(#1B7A43,#14532D 50%,#0B3D23)',
@@ -276,11 +416,106 @@
       thumb: coin(26), build() {
         box(`<img src="decor/crown.webp" alt="" class="bgx-float" style="position:absolute;right:8%;top:16%;height:64px"><img src="decor/gem.webp" alt="" class="bgx-float" style="position:absolute;left:7%;top:60%;height:46px;animation-delay:-3s">
           <img src="decor/trophy.webp" alt="" style="position:absolute;right:10%;bottom:20px;height:62px">`, 'bg', 'inset:0;width:100%;height:100%');
-        stream(14, () => { const s = rnd(22, 36); return { html: `<div class="bgx-spin">${coin(s)}</div>`, ...fall(rnd(0, W()), s, rnd(7, 12) * 1000, rnd(10, 30), 0) }; });
+        stream(14, () => { const s = rnd(22, 36); return { html: `<div class="bgx-spin">${coin(s)}</div>`, ...drop(s, rnd(7, 12) * 1000, rnd(10, 30), 0, .45), pile: flatCoin(s) }; });
         stream(18, () => { const x = rnd(0, W()), y = rnd(80, H() - 40), s = rnd(10, 22);
           return { html: star4(s), dur: rnd(2, 4) * 1000, frames: [{ transform: `translate(${x}px,${y}px) scale(0)`, opacity: 0 }, { transform: `translate(${x}px,${y}px) scale(1) rotate(45deg)`, opacity: 1, offset: .5 }, { transform: `translate(${x}px,${y}px) scale(0) rotate(90deg)`, opacity: 0 }] }; });
       } },
+
+    { id: 'faith', e: '✝️', n: 'Faith', cost: 0, dark: true, hdr: 'linear-gradient(135deg,#0B1B4D,#27407A 55%,#B7791F)', tc: '#0B1B4D', base: '#27407A',
+      sky: 'linear-gradient(#081638 0%,#1E3A7A 36%,#7E5BA0 62%,#F2A65A 84%,#FFD79A 100%)', thumb: crossIcon, build() {
+        box(twinkles(44, 42, '#fff'), 'bg', full);
+        box('<div class="bgx-dawn"></div>', 'bg', 'left:50%;top:auto;bottom:-140px;transform:translateX(-50%)');
+        box('<div class="bgx-holyrays"></div>', 'bg', 'left:50%;top:auto;bottom:110px;transform:translateX(-50%)');
+        box(`<div class="bgx-bigstar">${bigStar(118)}</div>`, 'bg', `left:50%;top:${Math.max(84, H() * .12)}px;transform:translateX(-50%)`);
+        box(crossesHill(), 'bg', 'top:auto;bottom:0;width:100%');
+        stream(18, () => { const x = rnd(0, W()), s = rnd(8, 18), y0 = H() - rnd(60, 160);
+          return { html: star4(s, '#FFE7A0'), dur: rnd(6, 10) * 1000, ease: 'ease-out',
+            frames: [{ transform: `translate(${x}px,${y0}px) scale(.4)`, opacity: 0 }, { opacity: 1, offset: .3 }, { transform: `translate(${x + rnd(-40, 40)}px,${y0 - rnd(200, 380)}px) scale(1) rotate(90deg)`, opacity: 0 }] }; });
+        every(9, 16, () => { const w = rnd(70, 100); pass(dove(w), wavy(rnd(100, H() * .5), w, Math.random() < .5, rnd(10, 30), 1.5), rnd(10, 15) * 1000); }, [2, 5]);
+      } },
+
+    { id: 'valentine', e: '💘', n: "Valentine's Day", cost: 600, dark: true, hdr: 'linear-gradient(135deg,#880E4F,#D81B60 55%,#FF4081)', tc: '#C2185B', base: '#D81B60',
+      sky: 'radial-gradient(ellipse at 50% 35%,#FF7EB0 0%,#E91E63 50%,#9C0F4E 100%)', thumb: heart(26, '#FF1744'), build() {
+        box([[8, 18, 120], [70, 40, 160], [20, 64, 140], [76, 78, 110]].map(([x, y, z], i) =>
+          `<div class="bgx-beat" style="position:absolute;left:${x}%;top:${y}%;opacity:.13;animation-delay:-${i * .4}s">${heart(z, '#fff')}</div>`).join(''), 'bg', full);
+        stream(16, () => { const s = rnd(20, 40), r = Math.random();
+          return { html: r < .62 ? heart(s, pick(HEARTS)) : r < .86 ? convo(s * 1.25) : letter(s * 1.3), ...drop(s, rnd(8, 13) * 1000, rnd(30, 70), rnd(-220, 220), .5) }; });
+        stream(8, () => { const s = rnd(16, 34); return { html: heart(s, pick(HEARTS)), ...fall(rnd(0, W()), s, rnd(9, 14) * 1000, rnd(20, 50), rnd(-60, 60), true) }; });
+        stream(6, () => { const s = rnd(20, 36); return { html: heart(s, pick(HEARTS)), dur: rnd(8, 13) * 1000, frames: wavy(rnd(120, H() - 200), s, Math.random() < .5, rnd(20, 50), rnd(1.5, 3)) }; });
+        every(3, 6, () => { const cx = rnd(60, W() - 60), cy = rnd(140, H() - 220), n = 12;
+          for (let k = 0; k < n; k++) { const a = k / n * Math.PI * 2, dist = rnd(70, 140), s = rnd(14, 26);
+            pass(heart(s, pick(HEARTS)), [{ transform: `translate(${cx}px,${cy}px) scale(.2)`, opacity: 1 }, { transform: `translate(${cx + Math.cos(a) * dist}px,${cy + Math.sin(a) * dist}px) scale(1) rotate(${rnd(-60, 60)}deg)`, opacity: 0 }],
+              rnd(1, 1.5) * 1000, 'fx', '', 'cubic-bezier(.2,.7,.4,1)'); } }, [1, 2]);
+      } },
+
+    { id: 'rain', e: '⛈️', n: 'Rainy Day', cost: 800, dark: true, hdr: 'linear-gradient(135deg,#111827,#1F2937 55%,#4B5563)', tc: '#1F2937', base: '#3A4655',
+      sky: 'linear-gradient(#141B24,#26313E 45%,#3E4C5E)', thumb: darkCloud(34), build() {
+        stream(5, () => { const w = rnd(170, 300), y = rnd(60, H() * .32); return { html: darkCloud(w, pick(['#566170', '#4A5462', '#606B7A'])), dur: rnd(40, 70) * 1000, frames: across(y, w, Math.random() < .5) }; }, 'bg');
+        box(`<div style="position:absolute;left:0;right:0;bottom:0;height:60px;background:linear-gradient(#36414F,#2A333E)"></div>` +
+          [12, 38, 66, 88].map((x, i) => `<div class="bgx-puddle" style="left:${x}%;bottom:${14 + (i % 2) * 14}px"><i></i><i style="animation-delay:-1s"></i></div>`).join(''), 'bg', full);
+        stream(54, () => { const len = rnd(16, 34), x = rnd(-40, W() + 120), fy = floorY();
+          return { html: `<span class="bgx-rain" style="height:${len}px"></span>`, dur: rnd(.5, .85) * 1000,
+            frames: [{ transform: `translate(${x}px,${-len}px) rotate(14deg)` }, { transform: `translate(${x - (fy + len) * .25}px,${fy - len}px) rotate(14deg)` }],
+            onEnd: Math.random() < .3 ? () => { const sx = x - (fy + len) * .25; pass('<span class="bgx-splash"></span>', [{ transform: `translate(${sx - 8}px,${fy - 8}px) scale(.3)`, opacity: .9 }, { transform: `translate(${sx - 8}px,${fy - 8}px) scale(1.4)`, opacity: 0 }], 420); } : null }; });
+        every(6, 13, () => {
+          pass('<div class="bgx-flash"></div>', [{ opacity: 0 }, { opacity: .85, offset: .08 }, { opacity: .1, offset: .2 }, { opacity: .6, offset: .3 }, { opacity: 0 }], 900, 'fx', full);
+          const h = rnd(180, 300), x = rnd(20, W() - 100);
+          pass(bolt(h), [{ opacity: 0 }, { opacity: 1, offset: .08 }, { opacity: .2, offset: .2 }, { opacity: 1, offset: .3 }, { opacity: 0 }], 900, 'fx', `left:${x}px;top:${rnd(40, 120)}px;filter:drop-shadow(0 0 12px #fff)`);
+        }, [2, 4]);
+        every(16, 26, () => { const w = rnd(46, 64); pass(`<div class="bgx-bob">${boat(w)}</div>`, across(floorY() - w * .62, w, Math.random() < .5), rnd(14, 20) * 1000); }, [5, 9]);
+        every(20, 34, () => { const w = rnd(50, 70), ltr = Math.random() < .5, y = rnd(150, H() * .55), x0 = ltr ? -w : W() + w, x1 = ltr ? W() + w : -w;
+          pass(umbrella(w), [{ transform: `translate(${x0}px,${y}px) rotate(0)` }, { transform: `translate(${(x0 + x1) / 2}px,${y - rnd(30, 80)}px) rotate(${ltr ? 300 : -300}deg)` }, { transform: `translate(${x1}px,${y + rnd(-40, 80)}px) rotate(${ltr ? 640 : -640}deg)` }], rnd(4, 6) * 1000); }, [8, 14]);
+      } },
+
+    { id: 'stpat', e: '☘️', n: "St. Patrick's Day", cost: 1000, dark: true, hdr: 'linear-gradient(135deg,#064E3B,#047857 55%,#10B981)', tc: '#047857', base: '#0E7A45',
+      sky: 'linear-gradient(#0B5D3B,#138A55 50%,#0A4A2E)', thumb: shamrock(26), build() {
+        const rw = Math.max(320, W() * 1.05), potW = Math.min(110, W() * .26), potX = W() - potW - 14;
+        box(`<div style="position:absolute;left:${potX + potW * .5 - rw * .97}px;bottom:${H() - floorY() + potW * .45}px;opacity:.9">${rainbow(rw)}</div>`, 'bg', full);
+        box(`<div class="bgx-goldglow" style="left:${potX - 20}px;bottom:${H() - floorY() - 10}px;width:${potW + 40}px;height:${potW}px"></div>`, 'fx', full);
+        box(`<div style="position:absolute;left:${potX}px;top:${floorY() - potW * .8}px">${potOfGold(potW)}</div>`, 'fx', full);
+        stream(16, () => { const r = Math.random();
+          if (r < .6) { const s = rnd(28, 46); return { html: shamrock(s), ...drop(s, rnd(8, 13) * 1000, rnd(30, 60), rnd(-300, 300), .55) }; }
+          if (r < .9) { const s = rnd(20, 28); return { html: `<div class="bgx-spin">${coin(s)}</div>`, ...drop(s, rnd(7, 11) * 1000, rnd(10, 30), 0, .45), pile: flatCoin(s) }; }
+          const s = rnd(30, 40); return { html: lepHat(s), ...drop(s, rnd(9, 13) * 1000, rnd(20, 40), rnd(-120, 120), .5) }; });
+        stream(12, () => { const x = rnd(0, W()), y = rnd(100, H() - 80), s = rnd(10, 20);
+          return { html: star4(s, '#FFE27A'), dur: rnd(2, 4) * 1000, frames: [{ transform: `translate(${x}px,${y}px) scale(0)`, opacity: 0 }, { transform: `translate(${x}px,${y}px) scale(1) rotate(45deg)`, opacity: 1, offset: .5 }, { transform: `translate(${x}px,${y}px) scale(0)`, opacity: 0 }] }; });
+        every(9, 15, () => { const px = potX + potW * .4, py = floorY() - potW * .8;
+          for (let k = 0; k < 9; k++) { const s = rnd(18, 26), x1 = Math.min(W() - s, Math.max(0, px + rnd(-W() * .55, W() * .1))), y1 = landY(x1, s, .45), peak = py - rnd(120, 240);
+            pass(`<div class="bgx-spin">${coin(s)}</div>`, [{ transform: `translate(${px}px,${py}px)` }, { transform: `translate(${(px + x1) / 2}px,${peak}px)`, offset: .45 }, { transform: `translate(${x1}px,${y1}px)` }],
+              rnd(1.3, 1.9) * 1000 + k * 90, 'fx', '', 'linear', () => settle(flatCoin(s), x1, y1, 0, s)); } }, [3, 6]);
+      } },
+
+    { id: 'easter', e: '🐣', n: 'Easter', cost: 1400, hdr: 'linear-gradient(135deg,#6D28D9,#8B5CF6 50%,#10B981)', tc: '#7C3AED', base: '#BFE9C9',
+      sky: 'linear-gradient(#7CC8FF,#C4EBFF 38%,#BDF0A8 66%,#73C761)', thumb: egg(28), build() {
+        box(['tulip', 'blossom', 'tulip', 'sunflower', 'tulip', 'blossom', 'tulip'].map((f, i) =>
+          `<img class="bgx-sway" src="decor/${f}.webp" alt="" style="position:absolute;bottom:${H() - floorY() + 4 + (i % 2) * 8}px;left:${i * 14 + 1}%;height:${40 + (i % 3) * 10}px;animation-delay:-${i * .6}s">`).join('') +
+          `<div style="position:absolute;right:4%;bottom:${H() - floorY()}px">${basket(Math.min(120, W() * .28))}</div>`, 'bg', full);
+        stream(14, () => { const s = rnd(30, 46); return { html: egg(s), ...drop(s, rnd(8, 13) * 1000, rnd(20, 50), rnd(-260, 260), .55) }; });
+        every(12, 20, () => { const h = 56; pass(`<div class="walking">${petSVG('bunny', h)}</div>`, across(floorY() - h, h * 1.43, Math.random() < .5), rnd(9, 12) * 1000); }, [2, 5]);
+        every(10, 18, () => { const ltr = Math.random() < .5, w = rnd(30, 38), n = Math.round(rnd(2, 4));
+          const parade = Array.from({ length: n }, (_, k) => `<div style="position:absolute;left:${k * w * 1.15}px;top:0">${chick(w * (k ? .85 : 1))}</div>`).join('');
+          pass(`<div style="position:relative;width:${n * w * 1.2}px;height:${w * 1.1}px">${parade}</div>`, across(floorY() - w * 1.05, n * w * 1.2, ltr), rnd(12, 16) * 1000); }, [6, 10]);
+        every(12, 20, () => { const w = rnd(30, 40); pass(petSVG('butterfly', w), across(rnd(120, H() * .6), w, Math.random() < .5, rnd(-100, 100)), rnd(9, 13) * 1000); }, [4, 8]);
+      } },
+
+    { id: 'christmas', e: '🎅', n: 'Christmas', cost: 2200, dark: true, hdr: 'linear-gradient(135deg,#7F1D1D,#B91C1C 50%,#166534)', tc: '#B91C1C', base: '#13234F',
+      sky: 'linear-gradient(#08122E,#13234F 50%,#26407A)', thumb: xmasTree(30), build() {
+        box(twinkles(46, 60, '#fff'), 'bg', full);
+        box('<div class="bgx-moon"></div>', 'bg', `left:10%;top:${Math.max(90, H() * .13)}px`);
+        box(`<svg viewBox="0 0 400 90" preserveAspectRatio="none" style="position:absolute;left:0;bottom:${H() - floorY() - 20}px;width:100%;height:90px"><path d="M0 40 C80 14 160 22 230 40 C300 58 350 30 400 36 L400 90 L0 90Z" fill="#E8F0FB"/><path d="M0 62 C90 46 170 56 250 70 C320 82 360 62 400 66 L400 90 L0 90Z" fill="#fff"/></svg>
+          <div style="position:absolute;left:4%;bottom:${H() - floorY() + 26}px">${xmasTree(Math.min(170, H() * .22))}</div>
+          <div style="position:absolute;left:30%;bottom:${H() - floorY() + 22}px">${present(46, '#E8304A', '#FFD23F')}</div>
+          <div style="position:absolute;left:43%;bottom:${H() - floorY() + 20}px">${present(36, '#3AA0FF', '#fff')}</div>
+          <div style="position:absolute;right:8%;bottom:${H() - floorY() + 30}px">${pine(110)}</div>`, 'bg', full);
+        box(xmasLights(), 'fx', 'left:0;right:0;width:100%');
+        stream(26, i => { const s = i % 5 === 0 ? rnd(22, 32) : rnd(6, 16);
+          return { html: i % 3 ? flake(s, rnd(.8, 1)) : `<span class="bgx-dot" style="width:${s / 2}px;height:${s / 2}px"></span>`, ...drop(s, rnd(9, 16) * 1000, rnd(20, 50), rnd(-200, 200), .45), pile: snowPile(s) }; });
+        stream(3, () => { const s = rnd(30, 44); return { html: cane(s), ...drop(s, rnd(9, 13) * 1000, rnd(20, 40), rnd(-300, 300), .4) }; });
+        every(16, 28, () => { const w = Math.min(W() * 1.1, rnd(320, 460)), y = rnd(90, H() * .3);
+          pass(sleigh(w), wavy(y, w, Math.random() < .7, rnd(12, 26), 1.5), rnd(9, 13) * 1000); }, [3, 6]);
+      } },
   ];
+  BG.sort((a, b) => a.cost - b.cost);  // the grid shows them in unlock order
 
   /* ======================= styles ======================= */
   const css = document.createElement('style');
@@ -323,7 +558,37 @@
   .bgx-spin{animation:bgxCoin 1.2s linear infinite}
   @keyframes bgxCoin{50%{transform:scaleX(.15)}}
   .bgx-shift{background-size:400% 400% !important;animation:bgxShift 24s ease-in-out infinite alternate}
-  @keyframes bgxShift{from{background-position:0% 50%}to{background-position:100% 50%}}`;
+  @keyframes bgxShift{from{background-position:0% 50%}to{background-position:100% 50%}}
+  .bgx-mound{display:block;border-radius:50% 50% 40% 40%;background:radial-gradient(ellipse at 50% 30%,#fff 0 55%,#E3ECF8 100%);box-shadow:0 2px 3px rgba(0,0,0,.12)}
+  .bgx-rain{display:block;width:2.6px;border-radius:2px;background:linear-gradient(rgba(190,215,255,0),rgba(215,232,255,1))}
+  .bgx-splash{display:block;width:16px;height:6px;border-radius:50%;border:2px solid rgba(200,225,255,.85)}
+  .bgx-puddle{position:absolute;width:90px;height:16px;border-radius:50%;background:rgba(120,150,190,.35)}
+  .bgx-puddle i{position:absolute;inset:3px 20px;border-radius:50%;border:1.5px solid rgba(220,235,255,.7);animation:bgxRipple 2s ease-out infinite}
+  @keyframes bgxRipple{from{transform:scale(.2);opacity:1}to{transform:scale(1.6);opacity:0}}
+  .bgx-flash{position:absolute;inset:0;background:#EAF2FF}
+  .bgx-bob{animation:bgxBob 1.4s ease-in-out infinite alternate}
+  @keyframes bgxBob{from{transform:translateY(-3px) rotate(-4deg)}to{transform:translateY(3px) rotate(4deg)}}
+  .bgx-moon{width:74px;height:74px;border-radius:50%;background:radial-gradient(circle at 38% 38%,#FFFDEB,#F3EAC0 70%);box-shadow:0 0 40px 12px rgba(255,248,200,.35)}
+  .bgx-dawn{width:820px;height:420px;border-radius:50%;background:radial-gradient(ellipse,rgba(255,226,150,.95) 0%,rgba(255,180,90,.55) 35%,rgba(255,160,80,0) 70%)}
+  .bgx-holyrays{width:620px;height:620px;border-radius:50%;margin-bottom:-310px;opacity:.45;
+    background:repeating-conic-gradient(from 0deg,rgba(255,236,170,.9) 0 5deg,transparent 5deg 15deg);
+    -webkit-mask:radial-gradient(circle,#000 0 20%,transparent 70%);mask:radial-gradient(circle,#000 0 20%,transparent 70%);animation:bgxSpin 90s linear infinite}
+  .bgx-bigstar{filter:drop-shadow(0 0 18px rgba(255,240,170,.95)) drop-shadow(0 0 40px rgba(255,220,120,.6));animation:bgxShine 3.4s ease-in-out infinite}
+  @keyframes bgxShine{50%{transform:scale(1.08);filter:drop-shadow(0 0 26px rgba(255,245,190,1)) drop-shadow(0 0 60px rgba(255,220,120,.8))}}
+  .bgx-beat{animation:bgxBeat 1.6s ease-in-out infinite}
+  @keyframes bgxBeat{0%,100%{transform:scale(1)}15%{transform:scale(1.12)}30%{transform:scale(1)}45%{transform:scale(1.08)}}
+  .bgx-gallop{animation:bgxGallop .32s ease-in-out infinite alternate}
+  .bgx-gallop2{animation:bgxGallop .32s ease-in-out infinite alternate-reverse}
+  @keyframes bgxGallop{from{transform:rotate(-24deg)}to{transform:rotate(24deg)}}
+  .bgx-nose{filter:drop-shadow(0 0 4px #ff3b3b);animation:bgxTw 1s ease-in-out infinite}
+  .bgx-glowstar{filter:drop-shadow(0 0 4px #FFE27A);animation:bgxTw 1.8s ease-in-out infinite}
+  .bgx-hop{animation:bgxHop .5s ease-in-out infinite}
+  @keyframes bgxHop{50%{transform:translateY(-5px)}}
+  .bgx-goldglow{position:absolute;border-radius:50%;background:radial-gradient(ellipse,rgba(255,220,80,.6),rgba(255,220,80,0) 70%);animation:bgxTw 2.4s ease-in-out infinite}`;
+  const eggDefs = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  eggDefs.setAttribute('width', 0); eggDefs.setAttribute('height', 0); eggDefs.style.position = 'absolute';
+  eggDefs.innerHTML = `<defs><clipPath id="rr-egg"><path d="${EGG}"/></clipPath></defs>`;
+  (document.body ? Promise.resolve() : new Promise(r => addEventListener('DOMContentLoaded', r))).then(() => document.body.prepend(eggDefs));
   document.head.appendChild(css);
 
   /* ======================= public ======================= */
@@ -331,6 +596,7 @@
     timers.forEach(clearTimeout); timers = [];
     anims.forEach(a => { try { a.cancel(); } catch (e) {} }); anims = [];
     if (fxEl) fxEl.innerHTML = '';
+    settled = []; heights = [];
     if (bgEl) { bgEl.innerHTML = ''; bgEl.classList.remove('bgx-shift'); }
   }
   function apply(id, force) {
@@ -339,9 +605,12 @@
     stop(); current = id;
     const b = BG.find(x => x.id === id) || BG[0];
     bgEl.style.background = b.sky;
+    resetPile();
     b.build();
   }
   // Rebuild after the phone turns or the window changes size, so paths fit the new screen.
   let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => current && apply(current, true), 400); });
-  window.RRBG = { list: BG.map(({ build, ...rest }) => rest), apply };
+  // Watch mode moves the floor, so the pile starts fresh; the scene is rebuilt to fit the new floor.
+  const reflow = () => current && apply(current, true);
+  window.RRBG = { list: BG.map(({ build, ...rest }) => rest), apply, reflow };
 })();

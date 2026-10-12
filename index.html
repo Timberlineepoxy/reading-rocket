@@ -809,11 +809,13 @@ function startWatch() {
   clearTimeout(watchT); watchT = setTimeout(() => tap.classList.add('faded'), 2500);
   pets.forEach(o => { if (o.fly) o.base = petSkyY(); else { o.wait = 0; petTarget(o); } });
   if (!pets.length) toast('No animals are out yet. Tap some in Unlocks first!');
+  RRBG.reflow();
 }
 function endWatch() {
   if (!document.body.classList.contains('watch')) return;
   document.body.classList.remove('watch');
   pets.forEach(o => { if (!o.fly) { const A = petArea(); o.y = Math.min(Math.max(o.y, A.top), A.bot - o.h); petTarget(o); } else o.base = petSkyY(); });
+  RRBG.reflow();
 }
 $('#watchTap').addEventListener('click', () => { if (history.state && history.state.watch) history.back(); else endWatch(); });
 addEventListener('popstate', endWatch);
