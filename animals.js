@@ -373,6 +373,62 @@
     </g>`;
   }};
 
+  A.squirrel = { w: 100, h: 70, T: .42, draw() {
+    const c = '#8E8E96', dk = '#6E6E77', lt = '#ECE6DB', rim = '#B5B5BC';
+    return `<g class="hopbody">
+      <g class="kick" style="transform-origin:40px 56px"><path d="M30 60 C32 56 42 56 50 60 L51 66 L28 66Z" fill="${dk}"/></g>
+      <g class="tail" style="transform-origin:36px 50px">
+        <path d="M36 54 C16 57 4 40 7 23 C9 9 22 1 35 5 C46 9 46 25 37 27 C30 29 28 20 33 18 C24 18 23 31 32 33 C41 35 46 45 36 54Z" fill="${c}"/>
+        <path d="M12 26 C13 15 22 7 32 8" stroke="${rim}" stroke-width="3" fill="none" stroke-linecap="round" opacity=".8"/></g>
+      <ellipse cx="54" cy="46" rx="18" ry="13" fill="${c}"/><ellipse cx="44" cy="50" rx="11" ry="11" fill="${c}"/>
+      <path d="M52 56 C60 58 68 56 70 50" stroke="${lt}" stroke-width="5" stroke-linecap="round" fill="none"/>
+      <g class="head" style="transform-origin:68px 36px">
+        <circle cx="71" cy="33" r="9.5" fill="${c}"/><path d="M65 26 L65 15 L71 23Z" fill="${c}"/><path d="M66 23 L66.5 18 L69 22Z" fill="#D9A4A4"/>
+        <path d="M74 37 C78 37 81 35 81 33" stroke="${lt}" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+        <circle cx="80.6" cy="31.5" r="1.6" fill="#2b2222"/>${eye(74, 30, 1.8)}
+      </g>
+      <g class="reach" style="transform-origin:64px 48px"><rect x="62" y="46" width="5" height="13" rx="2.5" fill="${dk}"/>
+        <path d="M68 50 C68 46 74 46 74 50 C74 54 68 54 68 50Z" fill="#9C6B3B"/><path d="M67.5 48.5 C69 45.5 73 45.5 74.5 48.5Z" fill="#6B4423"/></g>
+    </g>`;
+  }};
+
+  A.polarbear = { w: 160, h: 100, T: .82, draw(T) {
+    const c = '#F6F4EE', sh = '#DCD7CB', far = '#E2DED4';
+    const L = (x, ph, col) => leg({ x, y: 60, up: 18, low: 17, wu: 14, wl: 12.5, col, foot: paw('#cfc9bc'), phase: ph, a: 18, k: 26, T });
+    return `${L(58, .5, far)}${L(106, 0, far)}
+      <circle cx="38" cy="50" r="5" fill="${c}"/>
+      <g class="torso">
+        <path d="M38 52 C38 34 62 29 88 31 C108 33 118 37 121 49 C123 61 115 68 102 68 L52 68 C42 68 38 62 38 52Z" fill="${c}"/>
+        <ellipse cx="54" cy="56" rx="15" ry="13" fill="${c}"/><ellipse cx="104" cy="54" rx="13" ry="14" fill="${c}"/>
+        <path d="M50 64 C70 70 96 70 112 62" stroke="${sh}" stroke-width="5" stroke-linecap="round" fill="none" opacity=".8"/>
+        <path d="M112 44 C118 41 124 41 130 43 L133 56 C127 59 120 59 114 57Z" fill="${c}"/>
+        <g class="head" style="transform-origin:128px 48px">
+          <path d="M123 40 C129 33 142 35 149 41 C153 45 153 51 149 54 C143 57 132 57 125 54Z" fill="${c}"/>
+          <circle cx="128" cy="37.5" r="4" fill="${c}"/><circle cx="128" cy="37.5" r="2" fill="${sh}"/>
+          <path d="M140 52 C144 53 148 52 150 50" stroke="${sh}" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <ellipse cx="151" cy="45.5" rx="3.2" ry="2.6" fill="#1d1d1f"/>${eye(138, 42.5, 1.9)}
+        </g></g>
+      ${L(54, 0, c)}${L(102, .5, c)}`;
+  }};
+
+  A.chicken = { w: 80, h: 80, T: .46, draw(T) {
+    const c = '#C8632B', dk = '#9E4A1C', red = '#E8302E', ft = '#F2A71B';
+    const toes = (x, y) => `<path d="M${x - 5} ${y + 1} L${x + 7} ${y + 1} M${x + 1} ${y + 1} L${x + 4} ${y - 2}" stroke="${ft}" stroke-width="2" stroke-linecap="round"/>`;
+    const L = (x, ph) => leg({ x, y: 62, up: 7, low: 7, wu: 3.6, wl: 3, col: ft, foot: toes, phase: ph, a: 22, k: 24, T });
+    return `<g class="waddle" style="transform-origin:40px 76px">${L(36, .5)}
+      <path d="M20 42 C10 32 11 20 20 21 C23 28 25 34 27 40Z" fill="#7A3410"/><path d="M22 40 C15 34 15 26 22 26" stroke="#2F5D3A" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <g class="torso">
+        <path d="M18 44 C18 30 34 26 48 32 C58 36 62 46 58 56 C54 64 40 66 30 62 C22 58 18 52 18 44Z" fill="${c}"/>
+        <path d="M27 42 C35 36 47 40 50 48 C44 54 34 54 27 48Z" fill="${dk}"/><path d="M31 45 C37 43 43 44 47 47" stroke="#B5592A" stroke-width="1.6" fill="none"/>
+        <path d="M50 38 C52 32 52 28 54 26 L60 30 C58 34 56 40 54 44Z" fill="${c}"/>
+        <g class="head" style="transform-origin:54px 30px">
+          <circle cx="56" cy="24" r="8" fill="${c}"/>
+          <path d="M50 18 C50 13 53 12 54.5 15.5 C55.5 11 59 11 59 15.5 C61 13 63.5 15.5 61 19Z" fill="${red}"/>
+          <path d="M63 23 L69.5 25.5 L63 28Z" fill="#F4B51B"/><path d="M62 29 C63.5 33.5 60 35 59.5 30.5Z" fill="${red}"/>${eye(59, 22, 1.6)}
+        </g></g>
+      ${L(44, 0)}</g>`;
+  }};
+
   /* ---------------- fliers ---------------- */
   A.bird = { w: 90, h: 60, fly: true, draw() {
     const c = '#3B6FD6', dk = '#284FA3', lt = '#EEF2FA';

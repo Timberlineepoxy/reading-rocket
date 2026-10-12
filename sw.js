@@ -1,5 +1,5 @@
 // Reading Rocket service worker: lets the app open with no internet.
-const SHELL = 'rr-shell-v13';
+const SHELL = 'rr-shell-v14';
 const MEDIA = 'rr-media-v1';
 const FILES = ['./', 'index.html', 'animals.js', 'backgrounds.js', 'manifest.webmanifest',
   'icons/icon-180.png', 'icons/icon-192.png', 'icons/icon-512.png'];
@@ -25,7 +25,7 @@ self.addEventListener('fetch', e => {
   // The app itself: always get the newest version; use the saved copy only when offline.
   if (url.origin === location.origin) {
     e.respondWith(caches.open(SHELL).then(c =>
-      fetch(req).then(r => { if (r.ok) c.put(req, r.clone()); return r; })
+      fetch(req, { cache: 'no-cache' }).then(r => { if (r.ok) c.put(req, r.clone()); return r; })
         .catch(() => c.match(req, { ignoreSearch: true }))
     ));
     return;

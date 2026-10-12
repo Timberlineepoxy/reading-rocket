@@ -491,10 +491,12 @@ const ANIMALS = [  // drawn and animated in animals.js
   { id: 'dog',       e: '🐕', n: 'Dog',       cost: 50,   move: 'walk',   speed: 75, size: 54, chase: 'cat' },
   { id: 'cat',       e: '🐈', n: 'Cat',       cost: 100,  move: 'walk',   speed: 60, size: 48 },
   { id: 'bird',      e: '🐦', n: 'Bird',      cost: 150,  move: 'fly',    speed: 60, size: 34 },
+  { id: 'chicken',   e: '🐔', n: 'Chicken',   cost: 250,  move: 'waddle', speed: 30, size: 46 },
   { id: 'butterfly', e: '🦋', n: 'Butterfly', cost: 200,  move: 'fly',    speed: 30, size: 30 },
   { id: 'turtle',    e: '🐢', n: 'Turtle',    cost: 300,  move: 'walk',   speed: 12, size: 32 },
   { id: 'duck',      e: '🦆', n: 'Duck',      cost: 400,  move: 'waddle', speed: 35, size: 46 },
   { id: 'chipmunk',  e: '🐿️', n: 'Chipmunk',  cost: 500,  move: 'hop',    speed: 80, size: 36 },
+  { id: 'squirrel',  e: '🐿️', n: 'Squirrel',  cost: 600,  move: 'hop',    speed: 80, size: 42 },
   { id: 'sheep',     e: '🐑', n: 'Sheep',     cost: 650,  move: 'walk',   speed: 25, size: 54 },
   { id: 'kangaroo',  e: '🦘', n: 'Kangaroo',  cost: 800,  move: 'hop',    speed: 70, size: 70, chase: 'bunny' },
   { id: 'horse',     e: '🐎', n: 'Horse',     cost: 1000, move: 'walk',   speed: 85, size: 72 },
@@ -504,6 +506,7 @@ const ANIMALS = [  // drawn and animated in animals.js
   { id: 'elephant',  e: '🐘', n: 'Elephant',  cost: 2000, move: 'walk',   speed: 18, size: 82 },
   { id: 'llama',     e: '🦙', n: 'Llama',     cost: 2300, move: 'walk',   speed: 32, size: 88 },
   { id: 'tiger',     e: '🐅', n: 'Tiger',     cost: 2700, move: 'walk',   speed: 50, size: 58 },
+  { id: 'polarbear', e: '🐻‍❄️', n: 'Polar Bear', cost: 2900, move: 'walk',  speed: 28, size: 62 },
   { id: 'penguin',   e: '🐧', n: 'Penguin',   cost: 3100, move: 'waddle', speed: 22, size: 54 },
   { id: 'zebra',     e: '🦓', n: 'Zebra',     cost: 3500, move: 'walk',   speed: 70, size: 72 },
   { id: 'sauropod',  e: '🦕', n: 'Long-Neck Dino', cost: 4000, move: 'walk', speed: 16, size: 92 },
@@ -604,8 +607,9 @@ function shelfView() {
       ${rp >= 1 ? '<div style="color:var(--green-d);margin-top:6px">You earned it! Show a grown-up! 🙌</div>' : ''}</div></div>`;
   }
 
-  const counts = { all: S.books.length, reading: S.books.filter(b => b.status !== 'finished').length, finished: finishedCount() };
-  const list = S.books.filter(b => shelfFilter === 'all' || (shelfFilter === 'finished' ? b.status === 'finished' : b.status !== 'finished')).sort(sortTitle);
+  const inProgress = b => b.status !== 'finished' && b.page > 0;  // started, not done yet
+  const counts = { all: S.books.length, reading: S.books.filter(inProgress).length, finished: finishedCount() };
+  const list = S.books.filter(b => shelfFilter === 'all' || (shelfFilter === 'finished' ? b.status === 'finished' : inProgress(b))).sort(sortTitle);
   html += `<div class="sectionhead"><h2>My Bookshelf</h2></div>`;
   if (S.books.length) {
     html += `<div class="filters">${[['all', 'All'], ['reading', 'Reading'], ['finished', 'Finished']].map(([f, l]) =>
@@ -615,7 +619,7 @@ function shelfView() {
     html += `<div class="card empty"><div class="big">📚</div><h2>Your shelf is empty!</h2><p>Add the books you're reading and watch your shelf fill up.</p>
       <button class="btn orange" data-act="addBook">＋ Add my first book</button></div>`;
   } else if (!list.length) {
-    html += `<div class="empty"><p>${shelfFilter === 'finished' ? 'No finished books yet. You can do it! 💪' : 'Every book is finished! Time to add a new one.'}</p></div>`;
+    html += `<div class="empty"><p>${shelfFilter === 'finished' ? 'No finished books yet. You can do it! 💪' : 'No books in progress right now. Pick one and start reading! 📖'}</p></div>`;
   } else {
     html += `<div class="shelf">${list.map(tileHTML).join('')}</div>`;
   }
@@ -834,7 +838,7 @@ function makePet(a) {
   return o;
 }
 function syncPets() {
-  const want = (S.pets || []).filter(id => S.unlocked?.[id] && ANIMALS.some(a => a.id === id));
+  const want = (S.pets || []).filter(id => S.unlocked?.[id] && ANIMALS.some(a => a.id === id) && PETART[id]);  // skip any drawing that hasn't loaded
   pets = pets.filter(o => want.includes(o.a.id) || (o.el.remove(), false));
   for (const id of want) if (!pets.some(o => o.a.id === id)) pets.push(makePet(ANIMALS.find(a => a.id === id)));
   if (pets.length && !petRAF) { petLast = performance.now(); petRAF = requestAnimationFrame(petFrame); }
