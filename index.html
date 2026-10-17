@@ -933,6 +933,15 @@ function parentView() {
   </div>
 
   <div class="card" style="margin-top:16px">
+    <h2>🎉 Celebrations</h2>
+    <div class="hint">Pick the sound for each big moment. Tap ▶ to try it.</div>
+    ${[['goal', '🚀 Daily goal reached', 'Rocket blast-off and confetti'], ['bonus', '🎆 Extra reading (1½× and 2× the goal)', 'Fireworks show'], ['book', '🏆 Book finished', 'Confetti cannons']].map(([k, label, show]) => `
+      <label class="l" style="margin-top:14px">${label}</label><div class="hint" style="margin-top:0">${show}</div>
+      <div class="sfxrow"><select data-sfx="${k}">${Object.entries(SOUNDS).map(([id, name]) => `<option value="${id}" ${((S.sfx || {})[k] || SFX_DEFAULT[k]) === id ? 'selected' : ''}>${name}</option>`).join('')}</select>
+      <button class="btn white" data-act="testSfx" data-k="${k}">▶ Try</button></div>`).join('')}
+  </div>
+
+  <div class="card" style="margin-top:16px">
     <h2>Reading log</h2>
     <div class="hint" style="margin-bottom:6px">Handy for school reading logs. Last 30 days with reading.</div>
     ${days.length ? `<ul class="log">${days.map(d => {
@@ -944,22 +953,13 @@ function parentView() {
   </div>
 
   <div class="card" style="margin-top:16px">
-    <h2>🎉 Celebrations</h2>
-    <div class="hint">Pick the sound for each big moment. Tap ▶ to try it.</div>
-    ${[['goal', '🚀 Daily goal reached', 'Rocket blast-off and confetti'], ['bonus', '🎆 Extra reading (1½× and 2× the goal)', 'Fireworks show'], ['book', '🏆 Book finished', 'Confetti cannons']].map(([k, label, show]) => `
-      <label class="l" style="margin-top:14px">${label}</label><div class="hint" style="margin-top:0">${show}</div>
-      <div class="sfxrow"><select data-sfx="${k}">${Object.entries(SOUNDS).map(([id, name]) => `<option value="${id}" ${((S.sfx || {})[k] || SFX_DEFAULT[k]) === id ? 'selected' : ''}>${name}</option>`).join('')}</select>
-      <button class="btn white" data-act="testSfx" data-k="${k}">▶ Try</button></div>`).join('')}
-  </div>
-
-  <div class="card" style="margin-top:16px">
     <h2>Backup</h2>
     <div class="hint">Everything is saved on this phone only. Download a backup now and then, so a lost or reset phone doesn't lose his shelf.</div>
     <div class="row2" style="margin-top:12px"><button class="btn white small" data-act="exportData">⬇ Download</button>
     <button class="btn white small" data-act="importData">⬆ Restore</button></div>
     <div style="text-align:center;margin-top:10px"><button class="link" data-act="eraseAll" style="color:#D33">Erase everything</button></div>
   </div>
-  <p class="hint" style="text-align:center;margin:18px 10px 0">Background art: Microsoft Fluent Emoji (MIT license). Animals drawn for Reading Rocket.<br>Celebration sounds: Freesound.org contributors (CC0 public domain).</p>`;
+  <p class="hint" style="text-align:center;margin:18px 10px 0">Background art: Microsoft Fluent Emoji (MIT license). Animals drawn for Reading Rocket.<br>Celebration sounds: Freesound.org contributors (CC0 public domain).<br>App version ${APP_VERSION.replace('rr-shell-v', '')}</p>`;
 }
 
 /* =========================================================
@@ -1516,7 +1516,7 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) naviga
 // ---------- staying up to date ----------
 // Phones often resume the app from memory instead of reloading it, so check for a newer
 // version whenever the app opens or comes back on screen, and reload into it.
-const APP_VERSION = 'rr-shell-v19';  // must match SHELL in sw.js
+const APP_VERSION = 'rr-shell-v20';  // must match SHELL in sw.js
 async function checkForUpdate() {
   if (!location.protocol.startsWith('http')) return;
   try {
