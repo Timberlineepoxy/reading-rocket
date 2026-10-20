@@ -178,6 +178,50 @@
     <g class="bgx-wing" style="transform-origin:48px 30px"><path d="M48 30 C38 6 54 -4 76 0 C70 14 60 24 52 35Z" fill="#fff"/><path d="M54 14 L66 8 M53 20 L64 16" stroke="#DDE3EC" stroke-width="1.5"/></g></svg>`;
   const crossIcon = '<svg viewBox="0 0 20 30" width="20" height="30"><rect x="8" y="0" width="4" height="30" fill="#FFE7A0"/><rect x="2" y="7" width="16" height="4" fill="#FFE7A0"/></svg>';
 
+  /* ---- Arizona desert artwork ---- */
+  const saguaro = (h, flower) => `<svg viewBox="0 0 60 120" width="${h / 2}" height="${h}">
+    <path d="M8 66 C8 74 14 76 24 76 L24 66 L19 66 C17 66 17 64 17 62 L17 40 C17 33 8 33 8 40Z" fill="#3E8C4C"/>
+    <path d="M52 52 C52 60 46 62 36 62 L36 52 L41 52 C43 52 43 50 43 48 L43 26 C43 19 52 19 52 26Z" fill="#3E8C4C"/>
+    <path d="M23 120 L23 14 C23 4 37 4 37 14 L37 120Z" fill="#46A055"/>
+    <path d="M27 10 V120 M30 7 V120 M33 10 V120 M12 38 V70 M48 24 V56" stroke="#2F7A3D" stroke-width="1.3" fill="none"/>
+    <path d="M25.5 14 C25.5 10 27 8 28.5 7.5" stroke="#8EDB8F" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    ${flower ? '<circle cx="27" cy="7" r="3" fill="#FFF7E0"/><circle cx="33" cy="6" r="3" fill="#FFF7E0"/><circle cx="27" cy="7" r="1.2" fill="#FFD23F"/><circle cx="33" cy="6" r="1.2" fill="#FFD23F"/>' : ''}</svg>`;
+  const pear = h => `<svg viewBox="0 0 70 70" width="${h}" height="${h}"><g fill="#5FA34E" stroke="#3F7C33" stroke-width="1.5">
+    <ellipse cx="35" cy="54" rx="13" ry="16"/><ellipse cx="18" cy="34" rx="11" ry="14" transform="rotate(-24 18 34)"/><ellipse cx="50" cy="30" rx="11" ry="14" transform="rotate(20 50 30)"/><ellipse cx="34" cy="22" rx="9" ry="12"/></g>
+    <g fill="#E83E8C"><ellipse cx="30" cy="10" rx="3.4" ry="4"/><ellipse cx="38" cy="10" rx="3.4" ry="4"/><ellipse cx="56" cy="17" rx="3.4" ry="4"/><ellipse cx="12" cy="21" rx="3.4" ry="4"/></g>
+    <g fill="#F7F0C8"><circle cx="30" cy="48" r=".9"/><circle cx="40" cy="58" r=".9"/><circle cx="16" cy="32" r=".9"/><circle cx="50" cy="26" r=".9"/><circle cx="34" cy="20" r=".9"/><circle cx="38" cy="44" r=".9"/></g></svg>`;
+  const barrel = h => `<svg viewBox="0 0 50 50" width="${h}" height="${h}"><ellipse cx="25" cy="30" rx="20" ry="19" fill="#4F9A4A"/>
+    <path d="M25 11 V49 M15 14 C11 24 11 38 15 47 M35 14 C39 24 39 38 35 47 M8 22 C5 30 6 40 10 45 M42 22 C45 30 44 40 40 45" stroke="#356F33" stroke-width="1.5" fill="none"/>
+    <g fill="#FF8A1F"><circle cx="19" cy="12" r="3.5"/><circle cx="25" cy="10" r="3.8"/><circle cx="31" cy="12" r="3.5"/></g><circle cx="25" cy="10" r="1.4" fill="#FFE03B"/></svg>`;
+  const tumbleweed = s => { const r = [0, 22, 45, 67, 90, 112, 135, 157].map(a => `<ellipse rx="17" ry="${6 + (a % 3) * 2}" transform="rotate(${a})"/>`).join('');
+    const r2 = [10, 50, 95, 140].map(a => `<ellipse rx="11" ry="8" transform="rotate(${a}) translate(2 1)"/>`).join('');
+    return `<svg viewBox="-20 -20 40 40" width="${s}" height="${s}"><circle r="17" fill="#C9A066" opacity=".25"/><g fill="none" stroke="#8C5E2E" stroke-width="1.4" stroke-linecap="round">${r}</g>
+      <g fill="none" stroke="#C99A5B" stroke-width="1" stroke-linecap="round">${r2}</g><path d="M-17 -4 l-3 -2 M15 9 l4 1 M3 -17 l1 -3 M-8 15 l-2 3" stroke="#8C5E2E" stroke-width="1.3" stroke-linecap="round"/></svg>`; };
+  // The rattlesnake is a row of beads; each bead bobs a moment after the one behind it, so a wave runs down the body.
+  const snake = w => { const n = 22, seg = w / (n + 3), out = [];
+    // two passes: a dark outline bead under every bead first, then the coloured beads on top
+    for (const pass2 of [0, 1]) for (let i = 0; i < n; i++) { const t = i / (n - 1), r = seg * (.38 + .7 * Math.min(1, t * 2.4)) * (t > .93 ? .85 : 1), cx = seg * 2 + i * seg;
+      out.push(`<g class="bgx-sn" style="animation-delay:-${(i * .07).toFixed(2)}s">${pass2 ? `<circle cx="${cx}" cy="0" r="${r.toFixed(1)}" fill="${i % 3 === 1 ? '#5A3618' : '#B07E43'}"/>${i % 3 === 1 ? `<circle cx="${cx}" cy="0" r="${(r * .45).toFixed(1)}" fill="#EBCB8E"/>` : ''}`
+        : `<circle cx="${cx}" cy="0" r="${(r + seg * .18).toFixed(1)}" fill="#3B2410"/>`}</g>`); }
+    const hx = seg * 2 + n * seg;
+    return `<svg viewBox="0 ${-seg * 2} ${w + seg * 2} ${seg * 4}" width="${w + seg * 2}" height="${seg * 4}" style="overflow:visible">
+      <g class="bgx-sn bgx-rattle" style="animation-delay:.07s"><ellipse cx="${seg * .6}" cy="0" rx="${seg * .5}" ry="${seg * .32}" fill="#E9D7A8"/><ellipse cx="${seg * 1.3}" cy="0" rx="${seg * .5}" ry="${seg * .36}" fill="#D9C38E"/></g>
+      ${out.join('')}
+      <g class="bgx-sn" style="animation-delay:-${(n * .07).toFixed(2)}s"><path class="bgx-tongue" d="M${hx + seg * 1.1} 0 l${seg * 1.2} 0 l${seg * .4} -${seg * .3} M${hx + seg * 2.3} 0 l${seg * .4} ${seg * .3}" stroke="#E8304A" stroke-width="${seg * .14}" fill="none" stroke-linecap="round" style="transform-origin:${hx + seg}px 0"/>
+        <ellipse cx="${hx}" cy="0" rx="${seg * 1.3}" ry="${seg * .8}" fill="#9C6B36" stroke="#3B2410" stroke-width="${seg * .18}"/><circle cx="${hx + seg * .5}" cy="-${seg * .3}" r="${seg * .22}" fill="#111"/></g></svg>`; };
+  const hawk = w => `<svg viewBox="0 0 120 50" width="${w}" height="${w * .42}"><g class="bgx-glide" style="transform-origin:60px 26px">
+    <path d="M60 26 C46 14 26 8 2 12 C20 16 36 22 50 30Z M60 26 C74 14 94 8 118 12 C100 16 84 22 70 30Z" fill="#5A3A22"/>
+    <path d="M2 12 l6 3 M118 12 l-6 3" stroke="#2c1c10" stroke-width="2"/>
+    <ellipse cx="60" cy="28" rx="7" ry="11" fill="#6E4A2C"/><path d="M55 37 L60 48 L65 37Z" fill="#C2552A"/><circle cx="60" cy="18" r="4.5" fill="#6E4A2C"/></g></svg>`;
+  const mesas = () => `<svg viewBox="0 0 400 130" preserveAspectRatio="none" style="width:100%;height:100%;display:block">
+    <path d="M0 130 L0 92 L18 92 L26 60 L70 60 L80 96 L130 100 L142 74 L150 74 L156 102 L240 104 L252 44 L262 40 L300 40 L310 46 L322 104 L360 100 L368 80 L380 80 L388 98 L400 96 L400 130Z" fill="#E49A6A"/>
+    <path d="M0 130 L0 110 L40 108 L56 84 L64 70 L74 70 L80 86 L96 112 L180 116 L200 92 L206 64 L214 62 L220 66 L226 94 L250 118 L400 114 L400 130Z" fill="#C4592F"/>
+    <path d="M64 70 L74 70 L76 76 L66 76Z M206 64 L214 62 L216 70 L207 71Z M252 44 L300 40 L302 48 L254 50Z" fill="#9C3F20" opacity=".6"/></svg>`;
+  const dunes = () => `<svg viewBox="0 0 400 80" preserveAspectRatio="none" style="width:100%;height:100%;display:block">
+    <path d="M0 30 C70 10 140 22 210 30 C280 38 340 16 400 24 L400 80 L0 80Z" fill="#EDBB7A"/>
+    <path d="M0 52 C90 38 170 46 250 56 C320 64 360 48 400 50 L400 80 L0 80Z" fill="#DFA05C"/>
+    <g fill="#B97A3E" opacity=".55"><ellipse cx="60" cy="60" rx="10" ry="4"/><ellipse cx="300" cy="66" rx="14" ry="5"/><ellipse cx="180" cy="44" rx="6" ry="2.5"/></g></svg>`;
+
   /* ======================= engine ======================= */
   let fxEl, bgEl, anims = [], timers = [], current = '';
   function box(html, layer, css = '') {
@@ -517,12 +561,53 @@
         every(16, 28, () => { const w = Math.min(W() * 1.1, rnd(320, 460)), y = rnd(90, H() * .3);
           pass(sleigh(w), wavy(y, w, Math.random() < .7, rnd(12, 26), 1.5), rnd(9, 13) * 1000); }, [3, 6]);
       } },
+
+    { id: 'desert', e: '🌵', n: 'Arizona Desert', cost: 1800, hdr: 'linear-gradient(135deg,#7C2D12,#C2410C 55%,#0E9F9A)', tc: '#B4461B', base: '#F2C38A',
+      sky: 'linear-gradient(#2F86DA,#74BDF2 34%,#FFE2AE 66%,#F5B46A)', thumb: saguaro(30, true), build() {
+        const fy = floorY(), up = H() - fy;
+        box('<div class="bgx-sun"></div>', 'bg', `left:auto;right:12%;top:${Math.max(100, H() * .13)}px`);
+        box(mesas(), 'bg', `top:auto;bottom:${up + 40}px;width:100%;height:${Math.min(170, H() * .2)}px`);
+        box(dunes(), 'bg', `top:auto;bottom:${up - 6}px;width:100%;height:70px`);
+        const ch = Math.min(200, H() * .25);
+        box(`<div style="position:absolute;left:3%;bottom:${up + 10}px">${saguaro(ch, true)}</div>
+          <div style="position:absolute;right:5%;bottom:${up + 16}px">${saguaro(ch * .7)}</div>
+          <div style="position:absolute;left:38%;bottom:${up + 30}px">${saguaro(ch * .38)}</div>
+          <div style="position:absolute;left:24%;bottom:${up + 4}px">${barrel(40)}</div>
+          <div style="position:absolute;right:28%;bottom:${up + 2}px">${pear(64)}</div>`, 'bg', full);
+        // The wind blows left to right: sand grains, dust clouds and tumbleweeds all go with it.
+        stream(20, () => { const y = rnd(H() * .35, fy - 6), x = rnd(-40, W() * .3), s = rnd(2, 4.5);
+          return { html: `<span class="bgx-sand" style="width:${s}px;height:${s}px"></span>`, dur: rnd(1.4, 2.8) * 1000,
+            frames: [{ transform: `translate(${x}px,${y}px)`, opacity: 0 }, { opacity: .8, offset: .2 }, { transform: `translate(${x + W() * rnd(.6, 1)}px,${y + rnd(-30, 20)}px)`, opacity: 0 }] }; });
+        const roll = (s, delay = 0) => { const x0 = -s - 30, x1 = W() + 30, hops = Math.round(rnd(3, 6)), N = hops * 8, hh = Array.from({ length: hops }, () => rnd(.35, 1) * rnd(30, 90)), frames = [];
+          for (let k = 0; k <= N; k++) { const t = k / N, j = Math.min(hops - 1, Math.floor(t * hops)), ph = t * hops - j, x = x0 + (x1 - x0) * t;
+            frames.push({ transform: `translate(${x}px,${fy - s * .92 - Math.sin(ph * Math.PI) * hh[j]}px) rotate(${(x - x0) / (Math.PI * s) * 360}deg)` }); }
+          timers.push(setTimeout(() => pass(tumbleweed(s), frames, rnd(4.5, 7.5) * 1000), delay)); };
+        every(5, 10, () => { roll(rnd(42, 74)); if (Math.random() < .35) roll(rnd(30, 48), rnd(600, 1600)); }, [1, 3]);
+        every(12, 20, () => { const w = rnd(160, 260), h = w * .45;
+          pass(`<div class="bgx-dust" style="width:${w}px;height:${h}px"></div>`, [{ transform: `translate(${-w}px,${fy - h * .8}px)`, opacity: 0 }, { opacity: .9, offset: .2 }, { opacity: .7, offset: .8 }, { transform: `translate(${W() + 20}px,${fy - h * .9}px)`, opacity: 0 }], rnd(5, 8) * 1000);
+          roll(rnd(50, 70), 400); }, [6, 10]);
+        // Critters scurry, slither, zoom and soar.
+        every(9, 16, () => { const h = 26; pass(`<div class="walking">${petSVG('lizard', h)}</div>`, across(fy - h + 2, h * 3, Math.random() < .5), rnd(3, 4.5) * 1000); }, [3, 6]);
+        every(14, 24, () => { const w = rnd(150, 200); pass(snake(w), across(fy - w * .12, w, Math.random() < .5), rnd(13, 18) * 1000); }, [7, 12]);
+        every(16, 28, () => { const h = 64; pass(`<div class="walking">${petSVG('roadrunner', h)}</div>`, across(fy - h + 2, h * 1.33, Math.random() < .5), rnd(2.2, 3) * 1000); }, [10, 16]);
+        every(18, 30, () => { const w = rnd(70, 100); pass(hawk(w), wavy(rnd(110, H() * .35), w, Math.random() < .5, rnd(20, 40), 1), rnd(14, 20) * 1000); }, [4, 9]);
+      } },
   ];
   BG.sort((a, b) => a.cost - b.cost);  // the grid shows them in unlock order
 
   /* ======================= styles ======================= */
   const css = document.createElement('style');
   css.textContent = `
+  .bgx-sn{animation:bgxSn .8s ease-in-out infinite alternate}
+  @keyframes bgxSn{from{transform:translateY(-5px)}to{transform:translateY(5px)}}
+  .bgx-rattle ellipse{animation:bgxRattle .08s linear infinite alternate}
+  @keyframes bgxRattle{to{transform:translateY(-1.5px)}}
+  .bgx-tongue{animation:bgxTongue 1.2s ease-in-out infinite}
+  @keyframes bgxTongue{0%,60%,100%{transform:scaleX(0)}70%,90%{transform:scaleX(1)}}
+  .bgx-glide{animation:bgxGlide 3s ease-in-out infinite alternate}
+  @keyframes bgxGlide{from{transform:rotate(-7deg)}to{transform:rotate(7deg)}}
+  .bgx-sand{display:block;border-radius:50%;background:#C98B45}
+  .bgx-dust{border-radius:50%;background:radial-gradient(ellipse,rgba(222,170,110,.75),rgba(222,170,110,.35) 45%,rgba(222,170,110,0) 70%)}
   .bgx-tail{animation:bgxWag .5s ease-in-out infinite alternate}
   @keyframes bgxWag{from{transform:rotate(-12deg)}to{transform:rotate(12deg)}}
   .bgx-pulse{animation:bgxPulse 1.4s ease-in-out infinite}

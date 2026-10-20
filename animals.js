@@ -559,6 +559,49 @@
       ${L(54, 0, bk)}${L(102, .5, bk)}`;
   }};
 
+  /* ---------------- desert critters (Arizona Desert background only, not pets) ---------------- */
+  A.lizard = { w: 130, h: 44, T: .26, draw(T) {
+    const c = '#2E9E9A', dk = '#1F7774', hd = '#EBC64C', ft = '#2A8682';
+    const toes = (x, y) => `<path d="M${x - 3} ${y} l9 0 M${x + 2} ${y} l4 -3" stroke="${ft}" stroke-width="1.6" stroke-linecap="round"/>`;
+    const L = (x, ph, col) => leg({ x, y: 28, up: 6, low: 6, wu: 4.5, wl: 3.4, col, foot: toes, phase: ph, a: 32, k: 30, T });
+    return `${L(54, .5, dk)}${L(90, 0, dk)}
+      <g class="tail" style="transform-origin:46px 27px"><path d="M48 22 C30 21 14 26 2 35 C14 31 30 31 48 32Z" fill="${c}"/>
+        <path d="M30 24 l0 7 M20 27 l0 5 M12 30 l0 3" stroke="${dk}" stroke-width="2" stroke-linecap="round"/></g>
+      <g class="torso">
+        <path d="M44 27 C44 19 60 17 80 18 C92 19 100 21 104 25 C100 31 90 33 78 33 C60 33 44 32 44 27Z" fill="${c}"/>
+        <g fill="#BDF2E8" opacity=".85"><circle cx="58" cy="22" r="1.3"/><circle cx="66" cy="25" r="1.3"/><circle cx="74" cy="21" r="1.3"/><circle cx="82" cy="25" r="1.3"/><circle cx="62" cy="28" r="1.1"/><circle cx="78" cy="29" r="1.1"/></g>
+        <path d="M50 31 C62 33 80 33 96 30" stroke="#E7F5C9" stroke-width="2" fill="none" stroke-linecap="round" opacity=".7"/>
+        <g class="head" style="transform-origin:100px 25px">
+          <path d="M92 19 C91 24 91 29 93 32" stroke="#151515" stroke-width="2.4" fill="none"/><path d="M97 18.5 C96 24 96 29 98 32" stroke="#151515" stroke-width="3" fill="none"/>
+          <path d="M100 18 C110 15 122 18 128 23 C124 27 112 29 101 31Z" fill="${hd}"/>
+          <path d="M110 26.5 L127 23.5" stroke="#8A6D1C" stroke-width=".9"/>${eye(112, 21, 1.8)}
+        </g></g>
+      ${L(50, 0, c)}${L(86, .5, c)}`;
+  }};
+
+  A.roadrunner = { w: 120, h: 90, T: .22, draw(T) {
+    const c = '#7A5A3A', dk = '#4A3422', lt = '#E2D1AE', ft = '#5B6B7A';
+    const toes = (x, y) => `<path d="M${x - 6} ${y} L${x + 7} ${y} M${x} ${y} L${x + 3} ${y - 3}" stroke="${ft}" stroke-width="2" stroke-linecap="round"/>`;
+    const L = (x, ph, col) => leg({ x, y: 56, up: 14, low: 16, wu: 3.6, wl: 3, col, foot: toes, phase: ph, a: 40, k: 55, T });
+    return `${L(52, .5, '#46525E')}
+      <g class="tail" style="transform-origin:38px 46px"><path d="M40 43 L2 24 L5 20 L43 37Z" fill="${dk}"/><path d="M40 47 L4 33 L7 29 L43 41Z" fill="${c}"/>
+        <path d="M4 22 l3 -2 M6 31 l3 -2" stroke="#fff" stroke-width="2" stroke-linecap="round"/></g>
+      <g class="torso">
+        <path d="M34 46 C36 34 54 30 70 32 C80 33 86 38 86 44 C84 54 66 60 50 58 C40 57 33 53 34 46Z" fill="${c}"/>
+        <path d="M48 56 C60 58 74 54 82 47 C80 54 66 60 50 58Z" fill="${lt}"/>
+        <path d="M50 38 C60 33 72 35 77 42 C68 47 58 47 50 44Z" fill="${dk}"/>
+        <path d="M46 41 l7 2 M56 37 l7 2 M52 48 l7 2 M64 45 l7 2" stroke="${lt}" stroke-width="1.6" stroke-linecap="round"/>
+        <path d="M78 36 C82 30 86 26 90 24 L96 30 C92 32 88 38 84 44Z" fill="${c}"/>
+        <g class="head" style="transform-origin:90px 28px">
+          <path d="M86 22 L83 9 L89 17 L90 6 L94 17 L98 11 L97 22Z" fill="${dk}"/>
+          <ellipse cx="95" cy="24" rx="8" ry="6.5" fill="${c}"/>
+          <path d="M101 21.5 L119 24 L101 27Z" fill="#3A3A3A"/>
+          <path d="M94 20 C98 19 101 21 102 23" stroke="#3AA0FF" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+          <path d="M96 25.5 C98 27.5 100 27.5 101.5 26" stroke="#FF7A1A" stroke-width="1.8" fill="none" stroke-linecap="round"/>${eye(96, 22, 1.7)}
+        </g></g>
+      ${L(58, 0, ft)}`;
+  }};
+
   /* ---------------- fliers ---------------- */
   A.parrot = { w: 110, h: 64, fly: true, draw() {
     const r = '#E8302E', b = '#1E5BD6', y = '#FFD23F';
