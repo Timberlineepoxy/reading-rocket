@@ -90,10 +90,9 @@
     ${[30, 70, 110, 150, 185].map((y, i) => `<path d="M20 ${y} C${i % 2 ? 36 : 4} ${y - 8} ${i % 2 ? 38 : 2} ${y + 6} 20 ${y + 8}Z" fill="#4CAF50"/>`).join('')}</svg>`;
   const bigLeaf = (h, flip) => `<svg viewBox="0 0 60 120" width="${h / 2}" height="${h}" style="${flip ? 'transform:scaleX(-1)' : ''}"><path d="M4 120 C0 70 20 20 58 0 C50 50 40 90 4 120Z" fill="#2E8B48"/>
     <path d="M6 116 C20 80 34 40 54 6" stroke="#1B5E30" stroke-width="2.4" fill="none"/><path d="M16 90 L34 80 M22 70 L42 58 M30 50 L48 36" stroke="#1B5E30" stroke-width="1.6"/></svg>`;
-  const maple = s => `<img src="decor/maple.webp" alt="" style="height:${s}px;display:block;filter:${pick(LEAF_TINTS)} drop-shadow(0 4px 4px rgba(0,0,0,.18))">`;
-  // The maple picture is pinkish red (hue 337), so each tint turns it toward red, orange or yellow.
-  const LEAF_TINTS = ['hue-rotate(52deg) saturate(1.3)', 'hue-rotate(26deg) saturate(1.15)', 'hue-rotate(72deg) saturate(1.5) brightness(1.2)', 'hue-rotate(44deg) saturate(1.3)',
-    'hue-rotate(60deg) saturate(1.4) brightness(1.1)', 'hue-rotate(34deg) saturate(1.2)', 'hue-rotate(80deg) saturate(1.6) brightness(1.25)'];
+  // maple0-6 are the maple picture already coloured red, orange or yellow, with its shadow drawn in.
+  // (Colouring with a CSS filter made iPhones leave stuck copies of falling leaves on the screen.)
+  const maple = s => `<img src="decor/maple${Math.floor(Math.random() * 7)}.webp" alt="" style="height:${Math.round(s * 1.09)}px;display:block">`;
 
   /* ---- holiday artwork ---- */
   const HEART_PATH = 'M16 29 C6 21 1 15 1 9 C1 4 5 1 9 1 C12 1 14.5 3 16 5.5 C17.5 3 20 1 23 1 C27 1 31 4 31 9 C31 15 26 21 16 29Z';
@@ -196,12 +195,14 @@
   let heights = [], settled = [];
   const floorY = () => {
     if (document.body.classList.contains('watch')) return H();
+    // The bar is pinned to the bottom, so use its height: its on-screen position can jump while
+    // the page bounces or the keyboard is open, and leaves would then land in mid-air.
     const nav = document.querySelector('nav');
-    return nav ? Math.round(nav.getBoundingClientRect().top) : H();
+    return nav ? H() - nav.offsetHeight : H();
   };
   function resetPile() { settled.forEach(q => q.el.remove()); settled = []; heights = new Array(Math.ceil(W() / BIN) + 2).fill(0); }
   const binsFor = (x, w) => { const out = []; for (let b = Math.max(0, Math.floor(x / BIN)); b <= Math.min(heights.length - 1, Math.floor((x + w) / BIN)); b++) out.push(b); return out; };
-  const landY = (x, s, sink) => { if (!heights.length) resetPile(); return floorY() - Math.max(0, ...binsFor(x, s).map(b => heights[b])) - s * sink; };
+  const landY = (x, s, sink) => { if (!heights.length) resetPile(); return Math.max(H() * .6, floorY() - Math.max(0, ...binsFor(x, s).map(b => heights[b])) - s * sink); };
   function fadeOut(q) {
     q.bins.forEach(b => { heights[b] = Math.max(0, heights[b] - q.add); });
     const a = q.el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 2600, fill: 'forwards' });
@@ -227,7 +228,9 @@
   function stream(n, make, layer = 'fx') {
     for (let i = 0; i < n; i++) {
       const d = box('', layer);
+      let prev;
       const run = first => {
+        if (prev) { const j = anims.indexOf(prev); if (j >= 0) anims.splice(j, 1); prev.cancel(); }
         const p = make(i);
         d.innerHTML = p.html;
         const a = d.animate(p.frames, { duration: p.dur, easing: p.ease || 'linear', fill: 'both' });
@@ -238,7 +241,7 @@
           if (p.onEnd) p.onEnd();
           run(false);
         };
-        anims.push(a);
+        anims.push(a); prev = a;
       };
       run(true);
     }
@@ -612,5 +615,7 @@
   let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => current && apply(current, true), 400); });
   // Watch mode moves the floor, so the pile starts fresh; the scene is rebuilt to fit the new floor.
   const reflow = () => current && apply(current, true);
+  // Coming back after the phone slept: start the scene fresh so nothing is left frozen mid-screen.
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) reflow(); });
   window.RRBG = { list: BG.map(({ build, ...rest }) => rest), apply, reflow };
 })();
