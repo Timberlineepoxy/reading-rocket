@@ -350,6 +350,44 @@ function save() {
   catch (e) { toast('Uh oh, the phone is out of room to save!'); }
 }
 
+/* ---------- photo covers ----------
+   The shelf is saved in the browser's small storage (about 5 MB per website, however empty the phone is).
+   Photos of covers are big, so they live in the phone's much bigger database (IndexedDB) and a book keeps
+   only a short "idb:<id>" tag. PHOTOS keeps them in memory so pages can draw them straight away. */
+const PHOTOS = {};
+const photoDB = new Promise(res => {
+  try { const r = indexedDB.open('readingRocket', 1); r.onupgradeneeded = () => r.result.createObjectStore('covers'); r.onsuccess = () => res(r.result); r.onerror = () => res(null); }
+  catch (e) { res(null); }
+});
+async function photoTx(mode, fn) {
+  const db = await photoDB; if (!db) throw new Error('no photo database');
+  return new Promise((res, rej) => { const tx = db.transaction('covers', mode); fn(tx.objectStore('covers')); tx.oncomplete = res; tx.onerror = tx.onabort = () => rej(tx.error); });
+}
+const coverSrc = c => c && c.startsWith('idb:') ? (PHOTOS[c.slice(4)] || '') : c;
+// Keeps a photo in the database and returns its tag; if the database can't be used, the photo stays inline.
+async function storePhoto(dataURL) {
+  const id = uid();
+  try { await photoTx('readwrite', st => st.put(dataURL, id)); PHOTOS[id] = dataURL; return 'idb:' + id; }
+  catch (e) { return dataURL; }
+}
+function loadPhotos() {
+  return photoTx('readonly', st => { const r = st.openCursor(); r.onsuccess = () => { const c = r.result; if (c) { PHOTOS[c.key] = c.value; c.continue(); } }; }).catch(() => {});
+}
+// Moves photos still saved inside the shelf (older versions, restored backups) into the database.
+async function movePhotos() {
+  let moved = false;
+  for (const b of S.books) if (b.cover && b.cover.startsWith('data:')) { const tag = await storePhoto(b.cover); if (tag !== b.cover) { b.cover = tag; moved = true; } }
+  if (moved) save();
+  return moved;
+}
+// Deletes photos of books that are no longer on the shelf.
+function prunePhotos() {
+  const used = new Set(S.books.map(b => b.cover).filter(c => c && c.startsWith('idb:')).map(c => c.slice(4)));
+  if (addFlow && addFlow.chosen.cover && addFlow.chosen.cover.startsWith('idb:')) used.add(addFlow.chosen.cover.slice(4));
+  const gone = Object.keys(PHOTOS).filter(id => !used.has(id));
+  if (gone.length) photoTx('readwrite', st => gone.forEach(id => st.delete(id))).then(() => gone.forEach(id => delete PHOTOS[id])).catch(() => {});
+}
+
 /* ---------- little helpers ---------- */
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -394,7 +432,7 @@ const finishedCount = () => S.books.filter(b => b.status === 'finished').length;
 
 /* ---------- covers ---------- */
 function coverHTML(b, extra = '') {
-  return `<div class="cover" style="--h:${hue(b.title)}">${b.cover ? `<img src="${esc(b.cover)}" alt="" loading="lazy" onerror="this.remove()">` : ''}<span class="gen">${esc(b.title)}</span>${extra}</div>`;
+  return `<div class="cover" style="--h:${hue(b.title)}">${coverSrc(b.cover) ? `<img src="${esc(coverSrc(b.cover))}" alt="" loading="lazy" onerror="this.remove()">` : ''}<span class="gen">${esc(b.title)}</span>${extra}</div>`;
 }
 function ring(pct, size, stroke, color) {
   const r = (size - stroke) / 2, c = 2 * Math.PI * r, p = Math.max(0, Math.min(1, pct));
@@ -1116,13 +1154,15 @@ $('#photoIn').addEventListener('change', e => {
   const file = e.target.files[0]; e.target.value = '';
   if (!file || !addFlow) return;
   const img = new Image(), url = URL.createObjectURL(file);
-  img.onload = () => {
+  img.onload = async () => {
     const h = 420, w = Math.round(img.width * (h / img.height));
     const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
     cv.getContext('2d').drawImage(img, 0, 0, w, h);
     URL.revokeObjectURL(url);
+    const tag = await storePhoto(cv.toDataURL('image/jpeg', .8));
+    if (!addFlow) return;
     grabDetails();
-    addFlow.chosen.cover = cv.toDataURL('image/jpeg', .8);
+    addFlow.chosen.cover = tag;
     if (addFlow.step === 'search') addFlow.chosen.title = addFlow.chosen.title || ($('#q') ? $('#q').value.trim() : '');
     addFlow.step = 'details';
     renderAdd();
@@ -1474,7 +1514,8 @@ const ACT = {
     celebrate({ e: '🎁', title: 'Reward unlocked!', text: `Enjoy: ${S.reward.text}`, confetti: true });
   },
   exportData() {
-    const blob = new Blob([JSON.stringify(S, null, 1)], { type: 'application/json' });
+    const withPhotos = (k, v) => k === 'cover' && typeof v === 'string' && v.startsWith('idb:') ? coverSrc(v) : v;
+    const blob = new Blob([JSON.stringify(S, withPhotos, 1)], { type: 'application/json' });
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
     a.download = `reading-rocket-backup-${dayKey()}.json`; document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 5000);
@@ -1493,7 +1534,9 @@ $('#importIn').addEventListener('change', async e => {
     const data = JSON.parse(await f.text());
     if (!Array.isArray(data.books)) throw 0;
     if (!confirm(`Restore this backup (${data.books.length} books)? It replaces what is on this phone now.`)) return;
-    S = Object.assign(JSON.parse(JSON.stringify(DEFAULTS)), data); save(); render(); toast('Backup restored!');
+    S = Object.assign(JSON.parse(JSON.stringify(DEFAULTS)), data);
+    if (!(await movePhotos())) save();
+    render(); toast('Backup restored!');
   } catch (err) { toast('That file is not a Reading Rocket backup.'); }
 });
 document.addEventListener('change', e => {
@@ -1511,12 +1554,14 @@ document.addEventListener('click', e => {
 /* ---------- go! ---------- */
 checkUnlocks(); render(); updateTimerUI(); checkBadges(); syncPets();
 if (S.timer) { view = 'read'; render(); updateTimerUI(); }
+loadPhotos().then(movePhotos).then(() => { prunePhotos(); if (!$('#shade').classList.contains('open')) render(); });
+if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
 
 // ---------- staying up to date ----------
 // Phones often resume the app from memory instead of reloading it, so check for a newer
 // version whenever the app opens or comes back on screen, and reload into it.
-const APP_VERSION = 'rr-shell-v22';  // must match SHELL in sw.js
+const APP_VERSION = 'rr-shell-v23';  // must match SHELL in sw.js
 async function checkForUpdate() {
   if (!location.protocol.startsWith('http')) return;
   try {
