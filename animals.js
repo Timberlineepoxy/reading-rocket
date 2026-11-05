@@ -602,6 +602,414 @@
       ${L(58, 0, ft)}`;
   }};
 
+  /* ---------------- more friends (2,600+ stars) ---------------- */
+  A.fox = { w: 156, h: 96, T: .5, draw(T) {
+    const c = '#E8702A', dk = '#C2561A', wt = '#FFF6EC', bk = '#2A1C14';
+    const L = (x, ph, col) => leg({ x, y: 58, up: 17, low: 18, wu: 8, wl: 6, col, foot: paw(bk), phase: ph, a: 24, k: 34, T });
+    return `${L(60, .5, '#3A2418')}${L(102, 0, '#3A2418')}
+      <g class="tail" style="transform-origin:46px 50px"><path d="M46 48 C30 42 12 48 4 64 C2 71 6 75 12 73 C22 69 34 62 48 58Z" fill="${c}"/><path d="M4 64 C2 71 6 75 12 73 C16 71 18 69 19 66 C13 65 8 65 4 64Z" fill="${wt}"/></g>
+      <g class="torso">
+        <path d="M44 52 C44 42 62 40 82 41 C100 42 108 40 112 47 C116 55 111 64 100 64 L56 64 C47 64 44 59 44 52Z" fill="${c}"/>
+        <path d="M60 62 C74 65 90 65 102 61" stroke="${wt}" stroke-width="4" stroke-linecap="round" fill="none"/>
+        <path d="M102 50 C106 42 112 38 118 37 L124 46 C118 50 114 56 112 62Z" fill="${c}"/>
+        <path d="M109 50 C113 56 113 62 109 64 C115 62 119 56 118 48Z" fill="${wt}"/>
+        <g class="head" style="transform-origin:118px 40px">
+          <path d="M121 31 L127 14 L131 30Z" fill="${dk}"/>
+          <path d="M113 33 L115 15 L124 28Z" fill="${c}"/><path d="M115.5 30 L116.5 20 L121 28Z" fill="${bk}"/>
+          <path d="M112 36 C116 28 128 26 134 32 L148 40 C149 43 147 45 144 45 L130 48 C120 50 113 44 112 36Z" fill="${c}"/>
+          <path d="M124 42 L144 44.5 L130 48 C124 49 120 46 120 44Z" fill="${wt}"/>
+          <circle cx="147" cy="41.5" r="2.1" fill="${bk}"/>${eye(129, 36, 1.8)}
+        </g></g>
+      ${L(56, 0, '#5A3420')}${L(98, .5, '#5A3420')}`;
+  }};
+
+  A.raccoon = { w: 132, h: 84, T: .42, draw(T) {
+    const c = '#8E8A86', dk = '#6E6A66', lt = '#E2DED8', bk = '#2A2826';
+    const L = (x, ph, col) => leg({ x, y: 56, up: 11, low: 12, wu: 9, wl: 7, col, foot: paw(bk), phase: ph, a: 24, k: 30, T });
+    return `${L(48, .5, dk)}${L(88, 0, dk)}
+      <g class="tail" style="transform-origin:34px 48px"><path d="M36 46 C24 42 12 46 6 56 C4 62 8 66 14 64 C22 60 30 56 38 54Z" fill="${c}"/>
+        <path d="M30 44.5 C28 48 28 53 30 56 M22 45 C19 49 19 55 21 59 M13.5 49 C11 53 11 58 13 62" stroke="${bk}" stroke-width="4" fill="none"/></g>
+      <g class="torso">
+        <path d="M32 52 C30 38 50 32 70 34 C88 36 98 40 100 50 C102 58 96 64 86 64 L44 64 C36 64 32 59 32 52Z" fill="${c}"/>
+        <path d="M46 62 C60 65 76 65 88 61" stroke="${lt}" stroke-width="4" stroke-linecap="round" fill="none"/>
+        <g class="head" style="transform-origin:96px 46px">
+          <path d="M104 31 L111 21 L113 32Z" fill="${dk}"/><path d="M96 33 L98 22 L106 30Z" fill="${c}"/><path d="M98.5 31 L99.5 25 L103.5 30Z" fill="${lt}"/>
+          <path d="M94 40 C96 30 110 28 116 34 L127 42 C129 46 126 49 122 49 L108 52 C99 52 93 47 94 40Z" fill="${c}"/>
+          <path d="M99 35 C105 32 112 32 117 35 L119 38 C113 36 106 36 100 38Z" fill="${lt}"/>
+          <path d="M98 40 C103 36 112 36 119 39 C117 43 111 44 104 44 C100 44 98 42 98 40Z" fill="${bk}"/>
+          <path d="M111 44 L127 43 C125 47 119 50 110 50Z" fill="${lt}"/>
+          <circle cx="126.5" cy="43.5" r="1.9" fill="${bk}"/><circle cx="110" cy="40" r="1.9" fill="#fff"/><circle cx="110.5" cy="40" r="1" fill="#111"/>
+        </g></g>
+      ${L(44, 0, c)}${L(84, .5, c)}`;
+  }};
+
+  A.otter = { w: 142, h: 62, T: .36, draw(T) {
+    const c = '#6B4A30', dk = '#55391F', lt = '#C9A27E';
+    const L = (x, ph, col) => leg({ x, y: 44, up: 6, low: 7, wu: 8, wl: 7, col, foot: (fx, fy) => `<ellipse cx="${fx + 2}" cy="${fy}" rx="5" ry="2.4" fill="${dk}"/>`, phase: ph, a: 28, k: 26, T });
+    return `${L(48, .5, dk)}${L(96, 0, dk)}
+      <g class="tail" style="transform-origin:36px 40px"><path d="M38 33 C24 33 10 40 2 48 C14 48 28 46 40 46Z" fill="${c}"/></g>
+      <g class="torso">
+        <path d="M34 40 C34 28 56 24 80 25 C100 26 110 30 112 38 C112 46 104 50 92 50 L46 50 C38 50 34 46 34 40Z" fill="${c}"/>
+        <path d="M50 48 C66 51 84 51 98 47" stroke="${lt}" stroke-width="4" stroke-linecap="round" fill="none" opacity=".8"/>
+        <g class="head" style="transform-origin:108px 34px">
+          <circle cx="108" cy="21" r="3.6" fill="${dk}"/>
+          <ellipse cx="118" cy="31" rx="15" ry="12" fill="${c}"/>
+          <ellipse cx="126" cy="36" rx="9.5" ry="6.2" fill="${lt}"/>
+          <ellipse cx="133" cy="32" rx="2.8" ry="2.1" fill="#1d130c"/>${eye(120, 26, 1.9)}
+          <path d="M126 37 l11 -1.5 M126 39 l11 2" stroke="#3a2a1a" stroke-width=".7"/>
+        </g></g>
+      ${L(44, 0, c)}${L(92, .5, c)}`;
+  }};
+
+  A.monkey = { w: 122, h: 92, T: .46, draw(T) {
+    const c = '#7A4E2D', dk = '#5E3A1F', fc = '#E8C39A';
+    const L = (x, ph, col) => leg({ x, y: 56, up: 15, low: 16, wu: 7, wl: 6, col, foot: (fx, fy) => `<ellipse cx="${fx + 2}" cy="${fy}" rx="4.4" ry="2.4" fill="${dk}"/>`, phase: ph, a: 24, k: 30, T });
+    return `${L(42, .5, dk)}${L(80, 0, dk)}
+      <g class="tail" style="transform-origin:34px 48px"><path d="M34 48 C22 46 15 34 19 24 C23 15 34 16 33 24 C32 30 25 29 26 24" stroke="${c}" stroke-width="4" fill="none" stroke-linecap="round"/></g>
+      <g class="torso">
+        <path d="M32 54 C30 42 44 36 62 38 C78 40 88 44 88 54 C88 62 80 66 70 66 L44 66 C36 66 32 61 32 54Z" fill="${c}"/>
+        <path d="M46 62 C56 65 68 65 78 62" stroke="${fc}" stroke-width="3.4" stroke-linecap="round" fill="none" opacity=".7"/>
+        <g class="head" style="transform-origin:86px 46px">
+          <circle cx="79" cy="35" r="5.5" fill="${c}"/><circle cx="79" cy="35" r="3" fill="${fc}"/>
+          <circle cx="92" cy="35" r="14" fill="${c}"/>
+          <path d="M88 31 C88 25 96 24 100 27 C104 24 108 27 106 32 C110 35 108 45 98 46 C90 46 86 39 88 31Z" fill="${fc}"/>
+          ${eye(95, 31, 1.8)}${eye(102.5, 31, 1.6)}
+          <ellipse cx="103" cy="38" rx="1.6" ry="1" fill="#5a3a24"/><path d="M96 41 C99 43 103 43 105 41" stroke="#5a3a24" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+        </g></g>
+      ${L(38, 0, c)}${L(76, .5, c)}`;
+  }};
+
+  A.wolf = { w: 166, h: 104, T: .58, draw(T) {
+    const c = '#7D828A', dk = '#5E636B', lt = '#DADDE1', bk = '#2a2c30';
+    const L = (x, ph, col) => leg({ x, y: 60, up: 19, low: 21, wu: 10, wl: 7, col, foot: paw(dk), phase: ph, a: 22, k: 34, T });
+    return `${L(58, .5, dk)}${L(108, 0, dk)}
+      <g class="tail" style="transform-origin:44px 50px"><path d="M44 48 C30 50 20 60 16 74 C22 76 30 70 36 64 C40 60 44 56 48 56Z" fill="${c}"/><path d="M16 74 C18 70 20 68 23 66 C22 72 20 75 16 74Z" fill="${bk}"/></g>
+      <g class="torso">
+        <path d="M42 54 C40 40 64 36 86 38 C106 40 116 38 120 46 C124 56 118 66 106 67 L54 67 C45 67 42 61 42 54Z" fill="${c}"/>
+        <path d="M60 41 C72 38 86 38 100 40" stroke="${dk}" stroke-width="4" stroke-linecap="round" fill="none" opacity=".7"/>
+        <path d="M58 64 C74 68 94 68 108 63" stroke="${lt}" stroke-width="5" stroke-linecap="round" fill="none"/>
+        <path d="M108 50 C110 40 118 34 126 34 L132 46 C126 50 120 58 116 64Z" fill="${c}"/>
+        <path d="M114 46 C116 54 116 60 112 64 C120 62 124 54 122 46Z" fill="${lt}"/>
+        <g class="head" style="transform-origin:126px 40px">
+          <path d="M129 29 L135 13 L138 30Z" fill="${dk}"/><path d="M121 31 L123 14 L131 28Z" fill="${c}"/><path d="M123.5 28 L124.3 19 L128.5 27Z" fill="${bk}"/>
+          <path d="M120 36 C122 28 134 26 140 32 L156 40 C157 44 155 46 152 46 L138 49 C128 51 120 45 120 36Z" fill="${c}"/>
+          <path d="M132 44 L152 45.5 L138 49 C133 50 130 47 131 45Z" fill="${lt}"/>
+          <circle cx="155" cy="41.5" r="2.2" fill="${bk}"/>
+          <ellipse cx="136" cy="35.5" rx="2.1" ry="1.8" fill="#E8B80E"/><circle cx="136.3" cy="35.5" r="1" fill="#111"/>
+        </g></g>
+      ${L(54, 0, c)}${L(104, .5, c)}`;
+  }};
+
+  A.koala = { w: 118, h: 86, T: .7, draw(T) {
+    const c = '#9DA3AA', dk = '#80868D', lt = '#E6E8EA';
+    const L = (x, ph, col) => leg({ x, y: 58, up: 10, low: 11, wu: 11, wl: 10, col, foot: paw('#5c6168'), phase: ph, a: 18, k: 22, T });
+    return `${L(40, .5, dk)}${L(76, 0, dk)}
+      <g class="torso">
+        <path d="M26 56 C24 40 42 34 60 36 C76 38 86 44 86 56 C86 66 78 70 68 70 L38 70 C30 70 26 64 26 56Z" fill="${c}"/>
+        <path d="M38 66 C50 69 64 69 74 65" stroke="${lt}" stroke-width="4" stroke-linecap="round" fill="none"/>
+        <g class="head" style="transform-origin:84px 44px">
+          <circle cx="104" cy="25" r="10" fill="${dk}"/><circle cx="104" cy="25" r="6" fill="#cfd3d7"/>
+          <circle cx="92" cy="38" r="16" fill="${c}"/>
+          <circle cx="79" cy="23" r="11" fill="${c}"/><circle cx="79" cy="23" r="6.5" fill="${lt}"/>
+          <ellipse cx="100" cy="42" rx="5.5" ry="7" fill="#2f3236"/><ellipse cx="98.5" cy="39" rx="1.6" ry="2.2" fill="#6a6f75"/>
+          ${eye(90, 34, 1.9)}${eye(106, 34, 1.7)}
+        </g></g>
+      ${L(36, 0, c)}${L(72, .5, c)}`;
+  }};
+
+  A.giraffe = { w: 154, h: 190, T: .95, draw(T) {
+    const c = '#F2B94B', sp = '#B5651D', dk = '#D99A2E';
+    const L = (x, ph, col) => leg({ x, y: 104, up: 34, low: 36, wu: 9, wl: 6.5, col, foot: hoof('#3a2a20'), phase: ph, a: 16, k: 30, T });
+    const spots = pts => pts.map(([x, y, r]) => `<path d="M${x - r} ${y} L${x - r * .4} ${y - r} L${x + r * .6} ${y - r * .8} L${x + r} ${y + r * .1} L${x + r * .3} ${y + r} L${x - r * .7} ${y + r * .8}Z" fill="${sp}"/>`).join('');
+    return `${L(54, .5, dk)}${L(100, 0, dk)}
+      <g class="tail" style="transform-origin:40px 88px"><path d="M40 88 C34 96 32 108 33 120" stroke="${c}" stroke-width="2.6" fill="none"/><path d="M30 116 C29 124 33 128 36 126 C37 122 36 118 34 116Z" fill="#3a2a20"/></g>
+      <g class="torso">
+        <path d="M38 94 C38 80 58 74 80 76 C100 78 110 80 114 90 C118 100 112 110 100 110 L52 110 C42 110 38 104 38 94Z" fill="${c}"/>
+        ${spots([[52, 90, 6], [66, 84, 7], [82, 86, 6.5], [98, 88, 6], [60, 100, 6], [76, 100, 6.5], [92, 101, 6], [106, 98, 5]])}
+        <path d="M100 86 C104 62 112 40 120 22 L132 26 C126 46 120 68 114 96Z" fill="${c}"/>
+        ${spots([[112, 72, 4.5], [116, 55, 4.5], [121, 40, 4], [108, 87, 4]])}
+        <path d="M101 84 C105 62 112 42 120 24" stroke="${sp}" stroke-width="3" fill="none" stroke-dasharray="3 2"/>
+        <g class="head" style="transform-origin:124px 24px">
+          <path d="M121 13 L120 5 M128 12 L129 4" stroke="${sp}" stroke-width="2.6" stroke-linecap="round"/><circle cx="120" cy="4" r="2.6" fill="#5a3010"/><circle cx="129" cy="3.5" r="2.6" fill="#5a3010"/>
+          <path d="M116 18 C120 10 132 10 138 16 L150 26 C152 31 149 34 144 33 L130 30 C121 28 115 24 116 18Z" fill="${c}"/>
+          <path d="M116 17 L105 13 L115 22Z" fill="${dk}"/>
+          <circle cx="148" cy="28" r="1.2" fill="#3a2a20"/>${eye(130, 18, 2)}
+          <path d="M140 31 C144 32 147 32 149 31" stroke="#8a5a20" stroke-width="1.2" fill="none"/>
+        </g></g>
+      ${L(50, 0, c)}${L(96, .5, c)}`;
+  }};
+
+  A.lion = { w: 170, h: 108, T: .66, draw(T) {
+    const c = '#E3A64B', dk = '#C68A32', mn = '#A0521C', mn2 = '#C26A24', wt = '#F7E6C4';
+    const L = (x, ph, col) => leg({ x, y: 62, up: 19, low: 20, wu: 11, wl: 8.5, col, foot: paw(dk), phase: ph, a: 22, T });
+    return `${L(56, .5, dk)}${L(108, 0, dk)}
+      <g class="tail" style="transform-origin:42px 50px"><path d="M42 50 C28 52 18 60 14 72" stroke="${c}" stroke-width="5" stroke-linecap="round" fill="none"/><path d="M14 67 C8 71 9 80 14 82 C18 78 19 72 16 67Z" fill="${mn}"/></g>
+      <g class="torso">
+        <path d="M40 54 C40 42 62 40 84 41 C104 42 114 40 118 48 C123 57 117 68 104 69 L54 69 C43 69 39 62 40 54Z" fill="${c}"/>
+        <ellipse cx="52" cy="58" rx="12" ry="12" fill="${c}"/>
+        <path d="M60 66 C74 70 92 70 106 65" stroke="${wt}" stroke-width="5" stroke-linecap="round" fill="none"/>
+        <g class="head" style="transform-origin:124px 46px">
+          <path d="M106 40 C104 26 116 16 130 18 C144 18 152 30 150 44 C150 58 140 68 126 68 C112 66 104 56 106 40Z" fill="${mn}"/>
+          ${[[107, 30], [113, 21], [123, 16], [135, 16], [145, 22], [150, 33], [151, 46], [146, 58], [137, 66], [124, 68], [112, 63], [105, 52], [104, 41]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="6.5" fill="${mn}"/>`).join('')}
+          <path d="M112 42 C110 30 120 22 130 23 C142 24 146 34 145 44 C144 56 136 62 126 62 C116 60 112 52 112 42Z" fill="${mn2}"/>
+          <path d="M118 40 C118 30 126 27 134 28 C142 30 146 36 147 42 L152 46 C153 50 150 52 146 52 L136 54 C126 55 118 50 118 40Z" fill="${c}"/>
+          <path d="M136 46 C140 44 148 44 151 47 C150 51 144 53 138 53 C135 51 134 48 136 46Z" fill="${wt}"/>
+          <path d="M146.5 43 l5 1 l-2.2 3.2Z" fill="#5a2a2a"/>
+          <circle cx="123" cy="28" r="4.2" fill="${c}"/><circle cx="123" cy="28" r="2" fill="${dk}"/>
+          <ellipse cx="135" cy="36" rx="2.2" ry="1.9" fill="#C08A0E"/><circle cx="135.3" cy="36" r="1.05" fill="#111"/>
+        </g></g>
+      ${L(52, 0, c)}${L(104, .5, c)}`;
+  }};
+
+  A.cheetah = { w: 170, h: 100, T: .4, draw(T) {
+    const c = '#EBC07A', dk = '#CFA25C', bk = '#2A1C10', wt = '#FBF0DC';
+    const L = (x, ph, col) => leg({ x, y: 56, up: 20, low: 22, wu: 8, wl: 6, col, foot: paw(dk), phase: ph, a: 30, k: 44, T });
+    const dots = [[54, 46], [62, 52], [70, 44], [78, 50], [86, 44], [94, 50], [102, 45], [58, 57], [74, 57], [90, 56], [48, 52], [110, 50], [66, 40], [82, 41], [98, 41]]
+      .map(([x, y]) => `<circle cx="${x}" cy="${y}" r="2" fill="${bk}"/>`).join('');
+    return `${L(58, .5, dk)}${L(110, 0, dk)}
+      <g class="tail" style="transform-origin:44px 48px"><path d="M44 48 C30 50 18 56 10 66 C6 72 8 76 12 76" stroke="${c}" stroke-width="5" stroke-linecap="round" fill="none"/>
+        <path d="M44 48 C30 50 18 56 10 66 C6 72 8 76 12 76" stroke="${bk}" stroke-width="5.2" stroke-dasharray="2 6" fill="none"/></g>
+      <g class="torso">
+        <path d="M42 50 C42 40 62 38 86 39 C106 40 116 38 120 46 C123 54 118 61 106 62 L54 62 C45 62 42 57 42 50Z" fill="${c}"/>
+        <path d="M58 60 C76 63 94 63 108 59" stroke="${wt}" stroke-width="4" stroke-linecap="round" fill="none"/>
+        ${dots}
+        <path d="M110 46 C114 40 120 36 126 35 L130 44 C124 47 120 52 118 58Z" fill="${c}"/>
+        <g class="head" style="transform-origin:126px 40px">
+          <circle cx="127" cy="29.5" r="3.4" fill="${c}"/><circle cx="127" cy="29.5" r="1.6" fill="${bk}"/>
+          <circle cx="133" cy="38" r="10" fill="${c}"/>
+          <path d="M135 40 C141 39 146 41 146 45 C144 48 138 48 134 47Z" fill="${wt}"/>
+          <path d="M144.5 40.5 l3 .5 l-1.5 2.6Z" fill="${bk}"/>
+          <path d="M136.5 37 C136.5 41 138 44 140 46" stroke="${bk}" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+          <ellipse cx="137" cy="34.5" rx="2" ry="1.7" fill="#C08A0E"/><circle cx="137.3" cy="34.5" r="1" fill="#111"/>
+        </g></g>
+      ${L(54, 0, c)}${L(106, .5, c)}`;
+  }};
+
+  A.gorilla = { w: 152, h: 112, T: .9, draw(T) {
+    const c = '#3A3A3E', dk = '#262629', sv = '#A3A5AB', fc = '#5A5560';
+    const back = (x, ph, col) => leg({ x, y: 72, up: 14, low: 16, wu: 14, wl: 12, col, foot: (fx, fy) => `<ellipse cx="${fx + 3}" cy="${fy}" rx="8" ry="3.4" fill="${dk}"/>`, phase: ph, a: 16, k: 24, T });
+    const arm = (x, ph, col) => leg({ x, y: 50, up: 24, low: 28, wu: 14, wl: 12, col, foot: (fx, fy) => `<ellipse cx="${fx + 2}" cy="${fy}" rx="7" ry="4" fill="${dk}"/>`, phase: ph, a: 16, k: 18, T });
+    return `${back(48, .5, dk)}${arm(100, 0, dk)}
+      <g class="torso">
+        <path d="M30 74 C26 56 44 38 72 36 C96 34 112 40 116 54 C118 66 108 78 92 82 L48 84 C36 84 32 80 30 74Z" fill="${c}"/>
+        <path d="M50 46 C64 40 84 38 100 42" stroke="${sv}" stroke-width="9" stroke-linecap="round" fill="none" opacity=".8"/>
+        <g class="head" style="transform-origin:112px 48px">
+          <path d="M108 40 C108 26 120 18 132 22 C142 26 146 38 144 48 C142 58 132 62 122 60 C112 58 108 50 108 40Z" fill="${c}"/>
+          <path d="M122 36 C126 32 136 32 140 38 C144 44 142 54 134 56 C126 57 120 52 120 46 C120 42 120 39 122 36Z" fill="${fc}"/>
+          <path d="M121 37 C127 33.5 134 33.5 141 37" stroke="#18181a" stroke-width="2.8" stroke-linecap="round" fill="none"/>
+          <circle cx="127" cy="40" r="1.6" fill="#E2B04A"/><circle cx="134.5" cy="40" r="1.6" fill="#E2B04A"/><circle cx="127.2" cy="40" r=".8" fill="#111"/><circle cx="134.7" cy="40" r=".8" fill="#111"/>
+          <ellipse cx="133" cy="46" rx="4.2" ry="2.6" fill="#2a2a2e"/><circle cx="131.5" cy="46" r=".9" fill="#111"/><circle cx="134.5" cy="46" r=".9" fill="#111"/>
+          <path d="M128 52 C131 53.5 135 53.5 138 52" stroke="#18181a" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+        </g></g>
+      ${back(44, 0, c)}${arm(96, .5, c)}`;
+  }};
+
+  A.moose = { w: 172, h: 132, T: .82, draw(T) {
+    const c = '#5A3A24', dk = '#43291A', lg = '#8A6A50';
+    const L = (x, ph, col) => leg({ x, y: 74, up: 24, low: 26, wu: 10, wl: 7, col, foot: hoof('#2a1a10'), phase: ph, a: 18, k: 34, T });
+    return `${L(56, .5, '#6E5440')}${L(108, 0, '#6E5440')}
+      <g class="tail" style="transform-origin:42px 66px"><path d="M42 64 L36 74 L43 72Z" fill="${c}"/></g>
+      <g class="torso">
+        <path d="M40 72 C38 58 52 50 74 50 C96 50 110 44 118 52 C126 62 122 82 106 86 L54 86 C44 86 40 80 40 72Z" fill="${c}"/>
+        <path d="M96 52 C102 42 112 40 120 46 C116 50 110 52 104 56Z" fill="${c}"/>
+        <path d="M58 84 C76 88 94 88 108 82" stroke="${lg}" stroke-width="4" stroke-linecap="round" fill="none" opacity=".6"/>
+        <path d="M110 58 C114 50 122 46 130 46 L136 58 C128 62 122 70 118 78Z" fill="${c}"/>
+        <g class="head" style="transform-origin:132px 52px">
+          <path d="M138 42 C142 30 154 24 162 28 C160 20 156 14 150 16 L150 10 L146 18 L142 12 L140 20 L136 16 C134 24 134 34 136 42Z" fill="#C9B088"/>
+          <path d="M130 44 L121 40 L127 51Z" fill="${dk}"/>
+          <path d="M128 46 C132 38 144 38 150 44 L162 58 C165 64 162 68 156 68 C150 68 144 66 138 62 C130 58 126 52 128 46Z" fill="${c}"/>
+          <path d="M152 58 C158 58 164 62 162 67 C158 70 152 68 150 64Z" fill="${dk}"/>
+          <path d="M138 62 C138 70 136 76 134 80 C140 76 142 70 142 64Z" fill="${dk}"/>
+          <path d="M131 42 C127 30 115 26 107 30 C109 22 113 16 119 18 L121 12 L125 20 L129 14 L131 22 L135 18 C137 26 137 34 135 42Z" fill="#E3CDA4"/>
+          ${eye(142, 49, 1.9)}<circle cx="159" cy="63" r="1.2" fill="#1a100a"/>
+        </g></g>
+      ${L(52, 0, c)}${L(104, .5, c)}`;
+  }};
+
+  A.flamingo = { w: 100, h: 130, T: .7, draw(T) {
+    const c = '#FF8FB1', dk = '#F2648F';
+    const L = (x, ph, col) => leg({ x, y: 72, up: 24, low: 28, wu: 3.4, wl: 3, col, foot: (fx, fy) => `<path d="M${fx - 3} ${fy} L${fx + 8} ${fy}" stroke="${col}" stroke-width="3" stroke-linecap="round"/>`, phase: ph, a: 22, k: 46, T });
+    return `${L(44, .5, '#E06A8E')}
+      <g class="torso">
+        <path d="M18 60 L5 55 L12 63 L3 66 L20 68Z" fill="${dk}"/>
+        <path d="M16 62 C16 50 30 44 46 46 C58 48 66 54 64 64 C60 74 44 76 32 74 C22 72 16 68 16 62Z" fill="${c}"/>
+        <path d="M26 56 C36 50 50 52 56 60 C48 66 36 66 28 62Z" fill="${dk}"/><path d="M30 61 C26 64 22 66 18 66 C22 62 26 60 30 59Z" fill="#2b2b2b"/>
+        <path d="M58 52 C66 44 64 34 58 28 C52 22 54 12 62 10 C70 9 74 14 74 18" stroke="${c}" stroke-width="7" fill="none" stroke-linecap="round"/>
+        <g class="head" style="transform-origin:66px 14px">
+          <circle cx="70" cy="14" r="6.2" fill="${c}"/>
+          <path d="M74 11 C82 11 87 16 87 22 C85 20 80 18 75 18Z" fill="#FBE9EE"/><path d="M85 17 C87 19 87 22 87 24.5 C85 22 83 20 83 18Z" fill="#222"/>
+          ${eye(71, 12.5, 1.4)}
+        </g></g>
+      ${L(52, 0, '#F27B9E')}`;
+  }};
+
+  A.crocodile = { w: 190, h: 58, T: .5, draw(T) {
+    const c = '#4E7D3A', dk = '#3A5E2B', lt = '#C9D98E';
+    const toes = (x, y) => `<path d="M${x - 4} ${y} l11 0 M${x + 3} ${y} l4 -3" stroke="${dk}" stroke-width="2.4" stroke-linecap="round"/>`;
+    const L = (x, ph, col) => leg({ x, y: 38, up: 7, low: 8, wu: 8, wl: 6.5, col, foot: toes, phase: ph, a: 30, k: 26, T });
+    return `${L(66, .5, dk)}${L(114, 0, dk)}
+      <g class="tail" style="transform-origin:56px 36px;animation-duration:1.6s"><path d="M58 29 C40 29 20 34 0 42 C20 42 40 42 58 43Z" fill="${c}"/>
+        <path d="M10 39 l3 -4 l3 4 M20 37 l3 -4 l3 4 M30 35 l3 -4 l3 4 M40 33 l3 -4 l3 4" stroke="${dk}" stroke-width="2" fill="none"/></g>
+      <g class="torso">
+        <path d="M54 36 C54 26 76 22 100 23 C120 24 132 26 136 32 C138 38 132 44 120 44 L64 44 C58 44 54 41 54 36Z" fill="${c}"/>
+        <path d="M62 27 l3 -4 l3 4 l3 -4 l3 4 l3 -4 l3 4 l3 -4 l3 4 l3 -4 l3 4 l3 -4 l3 4 l3 -4 l3 4 l3 -4 l3 4 l3 -4 l3 4 l3 -4 l3 4" stroke="${dk}" stroke-width="2" fill="none" stroke-linejoin="round"/>
+        <path d="M66 43 C84 46 106 46 124 42" stroke="${lt}" stroke-width="3" stroke-linecap="round" fill="none"/>
+        <g class="head" style="transform-origin:132px 32px">
+          <path d="M128 26 C134 22 144 22 150 25 L184 30 C188 31 188 36 184 37 L150 40 C140 41 130 38 128 34Z" fill="${c}"/>
+          <ellipse cx="146" cy="23" rx="5" ry="3.6" fill="${c}"/>
+          <path d="M154 37.6 l2 3 l2 -3 M162 37 l2 3 l2 -3 M170 36.4 l2 3 l2 -3 M178 35.8 l2 3 l2 -3" stroke="#fff" stroke-width="1.4" fill="none" stroke-linejoin="round"/>
+          <path d="M140 35 L185 34" stroke="${dk}" stroke-width="1.4"/>
+          <circle cx="183" cy="30.5" r="1.2" fill="#1d2a14"/>
+          <ellipse cx="147" cy="22.5" rx="2.2" ry="1.7" fill="#E8C40E"/><rect x="146.6" y="21" width="1" height="3" fill="#111"/>
+        </g></g>
+      ${L(62, 0, c)}${L(110, .5, c)}`;
+  }};
+
+  A.rhino = { w: 170, h: 112, T: .85, draw(T) {
+    const c = '#8F8A86', dk = '#726E6A', lt = '#B3AEA9';
+    const L = (x, ph, col) => leg({ x, y: 78, up: 14, low: 16, wu: 16, wl: 15, col, foot: bigFoot(col), phase: ph, a: 14, k: 18, T });
+    return `${L(54, .5, dk)}${L(108, 0, dk)}
+      <g class="tail" style="transform-origin:32px 58px"><path d="M32 58 C27 64 25 72 26 78" stroke="${c}" stroke-width="3" fill="none"/><path d="M24 76 l2 6 l3 -5Z" fill="#3e3a36"/></g>
+      <g class="torso">
+        <path d="M30 62 C30 42 52 34 84 36 C112 38 128 44 130 62 C132 78 118 86 100 86 L50 86 C36 86 30 76 30 62Z" fill="${c}"/>
+        <path d="M58 40 C54 54 56 72 60 84 M104 40 C110 54 110 72 106 84" stroke="${dk}" stroke-width="2" fill="none" opacity=".7"/>
+        <path d="M48 82 C68 88 96 88 118 80" stroke="${lt}" stroke-width="4" stroke-linecap="round" fill="none" opacity=".6"/>
+        <g class="head" style="transform-origin:124px 56px">
+          <path d="M122 44 L117 31 L128 40Z" fill="${dk}"/>
+          <path d="M118 50 C122 40 136 38 146 44 L162 56 C166 62 164 70 156 72 L134 72 C124 72 118 64 118 50Z" fill="${c}"/>
+          <path d="M150 50 C154 40 158 32 162 26 C162 36 160 46 158 54Z" fill="#E3DCCB"/><path d="M140 46 C142 40 144 36 147 34 C147 40 146 44 145 48Z" fill="#D6CEBB"/>
+          ${eye(136, 52, 1.8)}
+          <path d="M155 65 C157 67 160 68 163 67" stroke="#4a4642" stroke-width="1.4" fill="none"/><circle cx="160" cy="60" r="1.2" fill="#3e3a36"/>
+        </g></g>
+      ${L(50, 0, c)}${L(104, .5, c)}`;
+  }};
+
+  A.hippo = { w: 172, h: 104, T: 1, draw(T) {
+    const c = '#8C7C94', dk = '#6E5F76', pk = '#D9A2B0';
+    const L = (x, ph, col) => leg({ x, y: 78, up: 10, low: 12, wu: 17, wl: 16, col, foot: bigFoot(col), phase: ph, a: 12, k: 14, T });
+    return `${L(54, .5, dk)}${L(108, 0, dk)}
+      <g class="tail" style="transform-origin:28px 56px"><path d="M28 56 L21 63 L28 63Z" fill="${dk}"/></g>
+      <g class="torso">
+        <path d="M26 60 C24 38 50 30 84 32 C116 34 134 42 134 62 C134 80 116 88 96 88 L50 88 C34 88 28 78 26 60Z" fill="${c}"/>
+        <path d="M44 84 C68 90 100 90 122 80" stroke="${pk}" stroke-width="5" stroke-linecap="round" fill="none" opacity=".7"/>
+        <g class="head" style="transform-origin:128px 50px">
+          <ellipse cx="132" cy="32" rx="3.2" ry="4.6" fill="${dk}"/><ellipse cx="141" cy="31" rx="3.2" ry="4.6" fill="${c}"/>
+          <path d="M120 44 C124 32 140 30 150 36 C158 40 160 46 158 52 C166 54 170 60 168 68 C166 76 156 78 144 76 C132 74 122 64 120 44Z" fill="${c}"/>
+          <path d="M150 54 C160 54 168 60 167 68 C165 74 156 76 148 74 C150 66 150 60 150 54Z" fill="${pk}" opacity=".55"/>
+          <ellipse cx="160" cy="58" rx="1.7" ry="1.1" fill="#4a3a52"/><ellipse cx="165" cy="60" rx="1.5" ry="1" fill="#4a3a52"/>
+          <path d="M146 72 C152 74 160 74 166 70" stroke="#5a4a62" stroke-width="1.6" fill="none"/><path d="M152 73.4 l1.4 3 l1.6 -3Z" fill="#fff"/>
+          ${eye(144, 40, 2)}
+        </g></g>
+      ${L(50, 0, c)}${L(104, .5, c)}`;
+  }};
+
+  A.grizzly = { w: 165, h: 104, T: .82, draw(T) {
+    const c = '#7A4E2C', far = '#5E3A1E', lt = '#A7754A', sh = '#5A3820';
+    const L = (x, ph, col) => leg({ x, y: 62, up: 18, low: 18, wu: 15, wl: 13, col, foot: paw('#3a2414'), phase: ph, a: 18, k: 26, T });
+    return `${L(58, .5, far)}${L(106, 0, far)}
+      <circle cx="38" cy="52" r="5" fill="${c}"/>
+      <g class="torso">
+        <path d="M38 54 C38 36 60 30 82 31 C96 30 104 26 112 30 C120 36 122 46 122 52 C123 63 115 70 102 70 L52 70 C42 70 38 64 38 54Z" fill="${c}"/>
+        <path d="M92 32 C100 28 108 28 114 32" stroke="${lt}" stroke-width="4" stroke-linecap="round" fill="none"/>
+        <ellipse cx="54" cy="58" rx="15" ry="13" fill="${c}"/>
+        <path d="M50 66 C70 72 96 72 112 64" stroke="${sh}" stroke-width="5" stroke-linecap="round" fill="none" opacity=".7"/>
+        <path d="M112 46 C118 43 124 43 130 45 L133 58 C127 61 120 61 114 59Z" fill="${c}"/>
+        <g class="head" style="transform-origin:128px 50px">
+          <circle cx="128" cy="38.5" r="4.4" fill="${c}"/><circle cx="128" cy="38.5" r="2.2" fill="${sh}"/>
+          <path d="M122 42 C128 34 142 36 149 43 C153 47 153 53 149 56 C143 59 132 59 125 56Z" fill="${c}"/>
+          <path d="M140 46 C146 44 152 46 153 50 C151 55 144 56 139 54Z" fill="${lt}"/>
+          <ellipse cx="151.5" cy="47.5" rx="3" ry="2.4" fill="#1d1d1f"/>${eye(137, 44, 1.9)}
+          <path d="M142 54 C146 55 149 54 151 52" stroke="${sh}" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+        </g></g>
+      ${L(54, 0, c)}${L(102, .5, c)}`;
+  }};
+
+  A.triceratops = { w: 182, h: 118, T: 1, draw(T) {
+    const c = '#6F8FB0', dk = '#55728F', fr = '#E07A3A', lt = '#B8CCE0';
+    const L = (x, ph, col) => leg({ x, y: 82, up: 14, low: 16, wu: 16, wl: 15, col, foot: bigFoot(col), phase: ph, a: 14, k: 16, T });
+    return `${L(58, .5, dk)}${L(110, 0, dk)}
+      <g class="tail" style="transform-origin:36px 66px"><path d="M38 60 C24 62 12 68 2 78 C16 76 28 74 40 74Z" fill="${c}"/></g>
+      <g class="torso">
+        <path d="M34 68 C34 48 58 40 88 42 C114 44 128 52 128 70 C128 84 114 90 96 90 L54 90 C40 90 34 82 34 68Z" fill="${c}"/>
+        <path d="M50 86 C70 92 98 92 118 84" stroke="${lt}" stroke-width="5" stroke-linecap="round" fill="none" opacity=".7"/>
+        <circle cx="64" cy="54" r="4" fill="${dk}"/><circle cx="80" cy="50" r="3.4" fill="${dk}"/><circle cx="96" cy="53" r="4" fill="${dk}"/><circle cx="74" cy="63" r="3" fill="${dk}"/>
+        <g class="head" style="transform-origin:126px 62px">
+          <path d="M118 66 C110 50 114 30 130 24 C146 20 158 30 156 46 C150 56 138 64 126 70Z" fill="${fr}"/>
+          <path d="M116 46 l-5 -2 M118 36 l-4 -5 M124 28 l-2 -6 M134 23 l1 -6 M145 24 l4 -5 M153 32 l6 -3" stroke="${fr}" stroke-width="4" stroke-linecap="round"/>
+          <path d="M124 62 C118 50 122 36 132 32 C142 30 150 36 148 46 C144 54 134 60 124 62Z" fill="#F4A15A"/>
+          <path d="M122 60 C126 48 140 44 152 50 L170 62 C172 68 168 74 160 74 L138 76 C128 76 122 70 122 60Z" fill="${c}"/>
+          <path d="M164 62 L179 66 L166 74Z" fill="${dk}"/>
+          <path d="M134 52 C138 42 144 36 152 32 C146 40 142 46 140 54Z" fill="#E6DCC8"/><path d="M140 52 C146 40 156 32 168 28 C160 38 154 46 150 54Z" fill="#F4EDE0"/>
+          <path d="M160 60 C162 54 166 50 170 48 C168 54 166 58 164 62Z" fill="#F4EDE0"/>
+          ${eye(146, 59, 2)}
+        </g></g>
+      ${L(54, 0, c)}${L(106, .5, c)}`;
+  }};
+
+  A.raptor = { w: 150, h: 100, T: .44, draw(T) {
+    const c = '#8A7A4A', dk = '#6A5C34', st = '#4E4226', lt = '#D9CFA0';
+    const L = (x, ph, col) => leg({ x, y: 56, up: 18, low: 20, wu: 10, wl: 6, col, foot: claw(col), phase: ph, a: 28, k: 46, T, thigh: 8 });
+    return `${L(70, .5, dk)}
+      <g class="torso">
+        <g class="tail" style="transform-origin:42px 50px;animation-duration:1.2s"><path d="M46 44 C28 42 12 42 0 46 C12 50 28 54 48 56Z" fill="${c}"/><path d="M8 46 l6 -2 M18 45 l6 -2 M28 45 l6 -2" stroke="${st}" stroke-width="2.4" stroke-linecap="round"/></g>
+        <path d="M40 48 C48 36 70 32 90 36 C102 38 108 44 106 54 C102 64 86 66 72 64 C58 62 46 58 40 48Z" fill="${c}"/>
+        <path d="M58 38 L56 48 M68 35 L66 46 M78 35 L77 46 M88 37 L88 46" stroke="${st}" stroke-width="3" stroke-linecap="round"/>
+        <path d="M58 62 C72 66 88 64 100 58" stroke="${lt}" stroke-width="5" stroke-linecap="round" fill="none" opacity=".75"/>
+        <path d="M100 52 L108 60 L112 58 M108 60 L106 64" stroke="${dk}" stroke-width="3.4" stroke-linecap="round" fill="none"/>
+        <path d="M96 42 C100 32 106 26 112 24 L118 32 C112 36 108 42 106 50Z" fill="${c}"/>
+        <g class="head" style="transform-origin:112px 28px">
+          <path d="M113 19 L104 12 L112 15 L106 6 L117 15Z" fill="#E8602A"/>
+          <path d="M108 26 C112 16 128 14 140 18 C148 20 150 26 146 30 C140 33 130 34 122 34 L114 36 C108 36 106 31 108 26Z" fill="${c}"/>
+          <path d="M120 32 L146 28" stroke="${st}" stroke-width="1.6" stroke-linecap="round"/>
+          <path d="M126 31 l1.5 2.6 l1.5 -2.6 M133 30 l1.5 2.6 l1.5 -2.6 M140 29 l1.5 2.6 l1.5 -2.6" stroke="#fff" stroke-width="1.2" fill="none"/>
+          <circle cx="126" cy="21.5" r="2.3" fill="#E8C40E"/><circle cx="126" cy="21.5" r="1.1" fill="#111"/>
+        </g></g>
+      ${L(64, 0, c)}`;
+  }};
+
+  A.mammoth = { w: 178, h: 136, T: 1, draw(T) {
+    const c = '#7A4F2E', dk = '#5E3A1F', lt = '#9A6A40', tk = '#F2E8D2';
+    const L = (x, ph, col) => leg({ x, y: 90, up: 18, low: 20, wu: 19, wl: 18, col, foot: bigFoot(col), phase: ph, a: 14, k: 16, T });
+    const fur = (y, n, x0, x1) => Array.from({ length: n }, (_, i) => { const x = x0 + (x1 - x0) * i / (n - 1); return `<path d="M${x - 3} ${y - 2} l3 ${7 + (i % 3) * 3} l3 ${-7 - (i % 3) * 3}Z" fill="${dk}"/>`; }).join('');
+    return `${L(56, .5, dk)}${L(110, 0, dk)}
+      <g class="tail" style="transform-origin:32px 64px"><path d="M32 64 C26 70 24 80 25 88" stroke="${c}" stroke-width="3" fill="none"/><path d="M22 84 C21 90 25 94 28 92 C29 88 28 86 26 84Z" fill="${dk}"/></g>
+      <g class="torso">
+        <path d="M30 66 C28 40 52 26 86 28 C108 29 122 22 132 32 C140 42 140 62 136 72 C132 86 120 94 100 94 L50 94 C36 94 30 82 30 66Z" fill="${c}"/>
+        ${fur(94, 13, 40, 132)}
+        <path d="M50 40 C62 34 76 34 88 32 M44 58 C58 52 74 52 90 48 M96 40 C106 36 116 36 124 40" stroke="${lt}" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".85"/>
+        <g class="head" style="transform-origin:134px 50px">
+          <path d="M120 44 C120 22 140 14 154 24 C162 32 162 50 156 60 L154 96 C154 104 148 108 143 104 L145 70 C136 72 126 66 122 58Z" fill="${c}"/>
+          <path d="M150 78 h6 M149 86 h6 M149 94 h6" stroke="${dk}" stroke-width="1.6" stroke-linecap="round"/>
+          <path d="M128 40 C120 40 118 52 124 58 C130 58 132 50 130 44Z" fill="${dk}"/>
+          <path d="M142 66 C150 84 166 88 175 74 C168 80 156 78 148 64Z" fill="${tk}"/>
+          <path d="M136 19 l2 -6 l2 5 l3 -6 l1 6" stroke="${dk}" stroke-width="2" fill="none"/>
+          ${eye(146, 42, 2)}
+        </g></g>
+      ${L(52, 0, c)}${L(106, .5, c)}`;
+  }};
+
+  A.unicorn = { w: 160, h: 112, T: .7, draw(T) {
+    const c = '#FAF7FF', dk = '#E4DDF2', rb = ['#FF7AB6', '#FFB55C', '#FFE66B', '#7EE0A1', '#7CC4FF', '#B794FF'];
+    const L = (x, ph, col) => leg({ x, y: 57, up: 26, low: 23, wu: 10, wl: 6.5, col, foot: hoof('#E8B84A'), phase: ph, a: 22, k: 40, T });
+    return `${L(58, .5, dk)}${L(108, 0, dk)}
+      <g class="tail" style="transform-origin:44px 44px">${rb.map((col, i) => `<path d="M44 ${42 + i} C${34 - i} ${48 + i} ${30 - i} ${62 + i * 2} ${32 - i} ${80 + i}" stroke="${col}" stroke-width="3.4" fill="none" stroke-linecap="round"/>`).join('')}</g>
+      <g class="torso">
+        <path d="M42 50 C42 36 64 34 82 36 C100 38 110 36 115 44 C121 54 115 66 101 68 L57 68 C45 68 42 60 42 50Z" fill="${c}" stroke="${dk}" stroke-width="1"/>
+        <ellipse cx="55" cy="53" rx="14" ry="15" fill="${c}"/><ellipse cx="107" cy="53" rx="11" ry="14" fill="${c}"/>
+        <path d="M58 66 C74 70 92 70 106 64" stroke="${dk}" stroke-width="4" stroke-linecap="round" fill="none"/>
+        <path d="M104 49 C106 33 114 19 124 13 L134 21 C128 29 120 43 117 59Z" fill="${c}"/>
+        ${rb.map((col, i) => `<path d="M${104 - i * .8} ${47 - i * 1.4} C${106 - i} ${33 - i} ${114 - i} ${19 - i} ${123 - i * .6} ${11 - i * .3}" stroke="${col}" stroke-width="3" fill="none" stroke-linecap="round"/>`).join('')}
+        <g class="head" style="transform-origin:126px 16px">
+          <path d="M121 10 C130 5 141 12 149 24 C153 31 149 35 142 33 C136 31 129 26 123 22Z" fill="${c}" stroke="${dk}" stroke-width="1"/>
+          <path d="M128 9 L137 0 L132.5 11Z" fill="#FFD23F"/><path d="M130.5 7 l3.5 -.6 M132.5 4 l2.6 -.5" stroke="#E0A100" stroke-width="1"/>
+          <path d="M123 10 L125 1 L130 9Z" fill="${c}" stroke="${dk}" stroke-width="1"/>
+          <circle cx="139" cy="23" r="2.8" fill="#FFB3CC" opacity=".7"/>
+          <path d="M140 31 C144 33 149 33 150 29" stroke="#C9B8E8" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <circle cx="146.5" cy="27" r="1.2" fill="#9a8ab8"/>${eye(131, 15, 2)}
+        </g></g>
+      ${L(54, 0, c)}${L(104, .5, c)}`;
+  }};
+
   /* ---------------- fliers ---------------- */
   A.parrot = { w: 110, h: 64, fly: true, draw() {
     const r = '#E8302E', b = '#1E5BD6', y = '#FFD23F';
@@ -683,6 +1091,21 @@
         <circle cx="127" cy="24" r="2.2" fill="#FFD23F"/><circle cx="127.3" cy="24" r="1.1" fill="#111"/><circle cx="145" cy="25" r="1.1" fill="${dk}"/>
       </g>
       ${wing('', mem)}`;
+  }};
+
+  A.phoenix = { w: 160, h: 92, fly: true, draw() {
+    const r = '#E8402A', o = '#FF8A1F', y = '#FFD23F', dk = '#B02A18';
+    return `<g class="wing" style="transform-origin:70px 44px;animation-delay:-.2s;opacity:.85"><path d="M70 44 C56 16 74 0 108 4 C124 6 134 12 140 16 C126 16 116 18 110 22 C102 30 88 40 78 50Z" fill="${dk}"/></g>
+      <path d="M42 48 C28 44 12 50 2 64 C14 60 22 60 30 62 C20 68 14 76 12 88 C22 78 32 72 42 66 C38 74 38 82 40 90 C46 80 50 70 52 58Z" fill="${o}"/>
+      <path d="M42 52 C32 52 22 58 14 68 C24 63 32 62 42 62Z" fill="${y}"/>
+      <path d="M34 50 C40 38 60 36 80 40 C96 43 104 48 104 54 C100 60 84 62 64 60 C48 59 36 56 34 50Z" fill="${r}"/>
+      <path d="M50 58 C64 62 84 62 98 56" stroke="${y}" stroke-width="4" stroke-linecap="round" fill="none"/>
+      <g class="wing" style="transform-origin:72px 44px"><path d="M72 44 C58 14 78 -2 114 4 C130 7 138 14 142 18 C128 18 118 22 112 26 C104 34 90 44 80 52Z" fill="${r}"/>
+        <path d="M80 32 C92 22 108 14 124 12" stroke="${o}" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M86 40 C98 32 112 26 128 22" stroke="${y}" stroke-width="4" fill="none" stroke-linecap="round"/></g>
+      <path d="M110 33 L104 19 L114 28 L112 14 L120 28 L125 18 L123 33Z" fill="${y}"/>
+      <path d="M98 44 C102 34 112 30 120 32 C128 34 132 40 130 46 C124 50 112 52 102 52Z" fill="${r}"/>
+      <path d="M128 38 C136 38 142 42 140 48 C136 48 132 47 129 46Z" fill="${y}"/>
+      <circle cx="120" cy="39" r="2.2" fill="#fff"/><circle cx="120.7" cy="39" r="1.1" fill="#111"/>`;
   }};
 
   // Patterns shared by every drawing (zebra stripes), added to the page once.

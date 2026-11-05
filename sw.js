@@ -1,5 +1,5 @@
 // Reading Rocket service worker: lets the app open with no internet.
-const SHELL = 'rr-shell-v24';
+const SHELL = 'rr-shell-v25';
 const MEDIA = 'rr-media-v1';
 const FILES = ['./', 'index.html', 'animals.js', 'backgrounds.js', 'bookmarks.js', 'manifest.webmanifest',
   'icons/icon-180.png', 'icons/icon-192.png', 'icons/icon-512.png'];

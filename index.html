@@ -627,7 +627,28 @@ const ANIMALS = [  // drawn and animated in animals.js
   { id: 'sauropod',  e: '🦕', n: 'Long-Neck Dino', cost: 4000, move: 'walk', speed: 16, size: 92 },
   { id: 'trex',      e: '🦖', n: 'T-Rex',     cost: 5000, move: 'walk',   speed: 40, size: 78 },
   { id: 'dragon',    e: '🐉', n: 'Dragon',    cost: 6000, move: 'fly',    speed: 70, size: 64 },
-].map(a => ({ ...a, kind: 'animal' }));
+  { id: 'fox',         e: '🦊', n: 'Fox',          cost: 2600, move: 'walk', speed: 70,  size: 50 },
+  { id: 'raccoon',     e: '🦝', n: 'Raccoon',      cost: 2800, move: 'walk', speed: 45,  size: 38 },
+  { id: 'otter',       e: '🦦', n: 'Otter',        cost: 3000, move: 'walk', speed: 40,  size: 30 },
+  { id: 'monkey',      e: '🐒', n: 'Monkey',       cost: 3200, move: 'walk', speed: 55,  size: 46 },
+  { id: 'wolf',        e: '🐺', n: 'Wolf',         cost: 3400, move: 'walk', speed: 65,  size: 60 },
+  { id: 'koala',       e: '🐨', n: 'Koala',        cost: 3600, move: 'walk', speed: 15,  size: 42 },
+  { id: 'giraffe',     e: '🦒', n: 'Giraffe',      cost: 3800, move: 'walk', speed: 30,  size: 124 },
+  { id: 'lion',        e: '🦁', n: 'Lion',         cost: 3900, move: 'walk', speed: 45,  size: 64 },
+  { id: 'cheetah',     e: '🐆', n: 'Cheetah',      cost: 4200, move: 'walk', speed: 120, size: 54 },
+  { id: 'gorilla',     e: '🦍', n: 'Gorilla',      cost: 4400, move: 'walk', speed: 25,  size: 70 },
+  { id: 'moose',       e: '🫎', n: 'Moose',        cost: 4600, move: 'walk', speed: 35,  size: 88 },
+  { id: 'flamingo',    e: '🦩', n: 'Flamingo',     cost: 4800, move: 'walk', speed: 25,  size: 76 },
+  { id: 'crocodile',   e: '🐊', n: 'Crocodile',    cost: 5200, move: 'walk', speed: 20,  size: 30 },
+  { id: 'rhino',       e: '🦏', n: 'Rhino',        cost: 5400, move: 'walk', speed: 30,  size: 70 },
+  { id: 'hippo',       e: '🦛', n: 'Hippo',        cost: 5600, move: 'walk', speed: 18,  size: 64 },
+  { id: 'grizzly',     e: '🐻', n: 'Grizzly Bear', cost: 5800, move: 'walk', speed: 30,  size: 64 },
+  { id: 'triceratops', e: '🦕', n: 'Triceratops',  cost: 6300, move: 'walk', speed: 20,  size: 76 },
+  { id: 'raptor',      e: '🦖', n: 'Raptor',       cost: 6600, move: 'walk', speed: 80,  size: 58 },
+  { id: 'mammoth',     e: '🦣', n: 'Woolly Mammoth', cost: 7000, move: 'walk', speed: 16, size: 92 },
+  { id: 'unicorn',     e: '🦄', n: 'Unicorn',      cost: 7500, move: 'walk', speed: 75,  size: 72 },
+  { id: 'phoenix',     e: '🔥', n: 'Phoenix',      cost: 8000, move: 'fly',  speed: 70,  size: 56 },
+].map(a => ({ ...a, kind: 'animal' })).sort((a, b) => a.cost - b.cost);
 const animalImg = (a, h) => petSVG(a.id, h);
 // Whole-app backgrounds: drawn and animated in backgrounds.js
 const BACKGROUNDS = RRBG.list.map(x => ({ ...x, kind: 'bg' }));
@@ -1793,7 +1814,7 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) naviga
 // ---------- staying up to date ----------
 // Phones often resume the app from memory instead of reloading it, so check for a newer
 // version whenever the app opens or comes back on screen, and reload into it.
-const APP_VERSION = 'rr-shell-v24';  // must match SHELL in sw.js
+const APP_VERSION = 'rr-shell-v25';  // must match SHELL in sw.js
 async function checkForUpdate() {
   if (!location.protocol.startsWith('http')) return;
   try {
