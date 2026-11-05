@@ -1,7 +1,7 @@
 // Reading Rocket service worker: lets the app open with no internet.
-const SHELL = 'rr-shell-v23';
+const SHELL = 'rr-shell-v24';
 const MEDIA = 'rr-media-v1';
-const FILES = ['./', 'index.html', 'animals.js', 'backgrounds.js', 'manifest.webmanifest',
+const FILES = ['./', 'index.html', 'animals.js', 'backgrounds.js', 'bookmarks.js', 'manifest.webmanifest',
   'icons/icon-180.png', 'icons/icon-192.png', 'icons/icon-512.png'];
 
 self.addEventListener('install', e => {
@@ -30,6 +30,9 @@ self.addEventListener('fetch', e => {
     ));
     return;
   }
+
+  // Covers read for their colours (bookmarks) need a real CORS answer, so they skip the saved copies.
+  if (req.mode === 'cors' && req.destination === 'image' && url.origin !== location.origin) return;
 
   // Book covers and fonts: keep a copy so they show offline.
   if (/covers\.openlibrary\.org|archive\.org|books\.google|fonts\.(googleapis|gstatic)\.com/.test(url.hostname)) {
