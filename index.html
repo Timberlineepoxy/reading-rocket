@@ -233,6 +233,27 @@ body.watch{overflow:hidden}
 .badge b{display:block;font-family:'Fredoka';font-weight:600;font-size:14px;margin-top:6px;line-height:1.15}
 .badge small{display:block;color:var(--muted);font-size:11px;margin-top:4px;line-height:1.2}
 .badge.locked .e{filter:grayscale(1);opacity:.35}
+button.badge{border:0;font:inherit;color:inherit;cursor:pointer;width:100%}
+button.badge:active{transform:scale(.96)}
+.badge .mini{display:block;height:5px;border-radius:9px;background:#EEE7F8;margin:7px 8px 0;overflow:hidden}
+.badge .mini i{display:block;height:100%;background:linear-gradient(90deg,var(--yellow),var(--orange));border-radius:9px}
+.bdetail{text-align:center;padding:4px 4px 6px;clear:both}
+.bd-e{font-size:92px;line-height:1.05;margin-top:6px;animation:pop .45s cubic-bezier(.2,1.6,.4,1),wobble 1.4s .5s ease-in-out infinite}
+.bdetail.locked .bd-e{filter:grayscale(1);opacity:.4;animation:pop .45s cubic-bezier(.2,1.6,.4,1)}
+.bdetail h2{font-size:28px;margin:8px 0 2px}
+.bd-group{display:inline-block;background:#fff;border-radius:999px;padding:4px 12px;font-size:13px;color:var(--muted)}
+.bd-d{font-family:'Fredoka';font-size:19px;font-weight:600;margin:12px 0}
+.bd-won{background:linear-gradient(135deg,#FFF4C9,#FFE08A);border-radius:18px;padding:12px 14px;font-size:16px}
+.bd-won b{font-family:'Fredoka';font-size:19px;font-weight:600;display:block}
+.bd-lock{background:#fff;border-radius:18px;padding:12px 14px;font-size:16px;color:var(--muted)}
+.bd-prog{background:#fff;border-radius:18px;padding:12px 14px;margin-top:10px;text-align:left}
+.bd-prog .bar{height:14px}
+.bd-prog small{display:block;color:var(--muted);margin-top:6px;text-align:center}
+.bd-tip{margin:12px 6px 0;color:var(--muted);font-size:15px}
+.bd-nav{display:flex;justify-content:space-between;align-items:center;margin-top:16px}
+.bd-nav button{background:#fff;border:0;border-radius:999px;padding:10px 16px;font-family:'Fredoka';font-size:16px;font-weight:600;color:var(--purple);cursor:pointer}
+.bd-nav button[disabled]{opacity:.3}
+.bd-nav span{color:var(--muted);font-size:14px}
 .badge.locked b{color:var(--muted)}
 .bgroup{display:flex;align-items:baseline;justify-content:space-between;margin:20px 2px 10px}
 .bgroup h3{font-size:18px}
@@ -590,6 +611,66 @@ const BADGES = [
   { c: 'special', id: 'st2000', e: '💫', n: 'Superstar',      d: 'Earn 2,000 stars',                 t: () => starsEarned() >= 2000 },
   { c: 'special', id: 'treat',  e: '🎁', n: 'Treat Time',     d: 'Get your first reward',            t: () => (S.rewardsGiven || 0) >= 1 },
 ];
+// How far along each badge is: [now, goal, what is being counted]
+const daysRead = () => new Set(S.sessions.map(s => s.day)).size;
+const longestMins = () => Math.max(0, ...S.sessions.map(s => s.secs)) / 60;
+const weekMins = () => most(tally(s => weekOf(s.day), s => s.secs / 60));
+const biggestBook = () => Math.max(0, ...finishedBooks().map(b => b.totalPages || 0));
+const sameAuthor = () => { const n = {}; for (const b of finishedBooks()) if (b.author) { const a = b.author.toLowerCase(); n[a] = (n[a] || 0) + 1; } return most(n); };
+const reading = () => S.books.filter(b => b.status !== 'finished' && b.page > 0).length;
+const PROGRESS = {
+  first: () => [S.sessions.length, 1, 'reading times'], goal1: () => [Object.keys(S.goalDays).length, 1, 'goal days'], shelf5: () => [S.books.length, 5, 'books on your shelf'],
+  p100: () => [S.pagesRead, 100, 'pages'], p500: () => [S.pagesRead, 500, 'pages'], p1000: () => [S.pagesRead, 1000, 'pages'], p2000: () => [S.pagesRead, 2000, 'pages'],
+  p5000: () => [S.pagesRead, 5000, 'pages'], p10000: () => [S.pagesRead, 10000, 'pages'],
+  pday50: () => [most(tally(s => s.day, pagesOf)), 50, 'pages in your best day'], pwk150: () => [most(tally(s => weekOf(s.day), pagesOf)), 150, 'pages in your best week'],
+  b1: () => [finishedCount(), 1, 'books finished'], b3: () => [finishedCount(), 3, 'books finished'], b5: () => [finishedCount(), 5, 'books finished'], b10: () => [finishedCount(), 10, 'books finished'],
+  b20: () => [finishedCount(), 20, 'books finished'], b30: () => [finishedCount(), 30, 'books finished'], b50: () => [finishedCount(), 50, 'books finished'],
+  big200: () => [biggestBook(), 200, 'pages in your biggest finished book'], big400: () => [biggestBook(), 400, 'pages in your biggest finished book'],
+  fan: () => [sameAuthor(), 3, 'books by one author'], juggle: () => [reading(), 3, 'books going at once'], again: () => [S.rereads || 0, 1, 'books started over'],
+  long30: () => [longestMins(), 30, 'minutes in your longest reading'], long60: () => [longestMins(), 60, 'minutes in your longest reading'],
+  twice: () => [most(tally(s => s.day, () => 1)), 2, 'readings in one day'], x2goal: () => [most(minsByDay()), 2 * S.goal, 'minutes in your best day'],
+  wk150: () => [weekMins(), 150, 'minutes in your best week'], wk300: () => [weekMins(), 300, 'minutes in your best week'],
+  m60: () => [totalSecs() / 60, 60, 'minutes in all'], m300: () => [totalSecs() / 60, 300, 'minutes in all'], m1000: () => [totalSecs() / 60, 1000, 'minutes in all'],
+  m1440: () => [totalSecs() / 60, 1440, 'minutes in all'], m3000: () => [totalSecs() / 60, 3000, 'minutes in all'], m6000: () => [totalSecs() / 60, 6000, 'minutes in all'],
+  s3: () => [bestStreak(), 3, 'days in a row (your best)'], s7: () => [bestStreak(), 7, 'days in a row (your best)'], s14: () => [bestStreak(), 14, 'days in a row (your best)'],
+  s30: () => [bestStreak(), 30, 'days in a row (your best)'], s50: () => [bestStreak(), 50, 'days in a row (your best)'], s100: () => [bestStreak(), 100, 'days in a row (your best)'],
+  days50: () => [daysRead(), 50, 'days you read'], days100: () => [daysRead(), 100, 'days you read'],
+  st500: () => [starsEarned(), 500, 'stars earned'], st2000: () => [starsEarned(), 2000, 'stars earned'], treat: () => [S.rewardsGiven || 0, 1, 'rewards'],
+};
+const BADGE_TIPS = {
+  speedy: 'Add a new book and finish it within a week. A short, fun book makes it easier!',
+  two7: 'Finish two books in the same week. Pick a short one to go with a long one!',
+  perfect: 'Reach your goal every day from Monday all the way to Sunday.',
+  wkend: 'Read a little on a Saturday and the very next Sunday.',
+  bounce: 'Missed a day? No problem! Reach your goal the next time and this one is yours.',
+  early: 'Read before 8 o’clock in the morning.', lunch: 'Start a reading between 11 and 1 o’clock.', bed: 'Start a reading after 7 o’clock at night.',
+  spooky: 'Read on Halloween, October 31.', xmas: 'Read on Christmas Eve or Christmas Day.', newyr: 'Read on New Year’s Day.',
+};
+const CHEERS = ['Way to go!', 'You did it!', 'Awesome reading!', 'Super job!', 'Keep it up!', 'So proud of you!', 'Look at you go!'];
+const fmtN = n => Math.floor(n).toLocaleString();
+function badgeInfo(id) {
+  const b = BADGES.find(x => x.id === id); if (!b) return;
+  const got = S.badges[b.id], pr = PROGRESS[b.id] ? PROGRESS[b.id]() : null;
+  const list = BADGES.filter(x => x.c === b.c), i = list.indexOf(b), group = (BADGE_GROUPS.find(g => g[0] === b.c) || [, ''])[1];
+  const when = got ? new Date(got) : null;
+  const ago = when ? Math.round((keyToDate(dayKey()) - keyToDate(dayKey(when))) / DAY) : 0;
+  // badges won at the same moment are numbered in list order
+  const order = got ? BADGES.filter(x => S.badges[x.id]).sort((x, y) => S.badges[x.id] - S.badges[y.id] || BADGES.indexOf(x) - BADGES.indexOf(y)).indexOf(b) + 1 : 0;
+  const progress = pr ? `<div class="bd-prog"><div class="bar"><i style="width:${Math.min(100, pr[0] / pr[1] * 100)}%"></i></div>
+    <small>${got ? `Now: <b>${fmtN(pr[0])}</b> ${pr[2]}` : `<b>${fmtN(Math.min(pr[0], pr[1]))}</b> of ${fmtN(pr[1])} ${pr[2]} · ${fmtN(Math.max(0, pr[1] - pr[0]))} to go!`}</small></div>` : '';
+  openSheet(`<button class="x" data-act="closeSheet">✕</button>
+    <div class="bdetail ${got ? '' : 'locked'}"><div class="bd-e">${b.e}</div><h2>${esc(b.n)}</h2><span class="bd-group">${group}</span>
+    <p class="bd-d">${esc(b.d)}</p>
+    ${got ? `<div class="bd-won">🏆 You earned it on<b>${when.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</b>
+      ${ago === 0 ? 'That’s today!' : ago === 1 ? 'That was yesterday.' : `That was ${ago} days ago.`} It was your badge #${order}.</div>`
+      : '<div class="bd-lock">🔒 Not yet. You can do it!</div>'}
+    ${progress}
+    <p class="bd-tip">${got ? CHEERS[RRBM.hash(b.id) % CHEERS.length] + ' 🎉' : BADGE_TIPS[b.id] ? '💡 ' + BADGE_TIPS[b.id] : '💡 Keep reading and it will pop up by itself!'}</p>
+    <div class="bd-nav"><button data-act="badgeInfo" data-id="${list[i - 1]?.id || ''}" ${i > 0 ? '' : 'disabled'}>◀ Back</button>
+      <span>${i + 1} of ${list.length}</span>
+      <button data-act="badgeInfo" data-id="${list[i + 1]?.id || ''}" ${i < list.length - 1 ? '' : 'disabled'}>Next ▶</button></div></div>`);
+}
+
 /* ---------- unlocks ---------- */
 // Unlocks go by every star he has ever earned, so spending stars on a reward never locks anything again.
 const ANIMALS = [  // drawn and animated in animals.js
@@ -1016,7 +1097,10 @@ function trophiesView() {
   ${BADGE_GROUPS.map(([c, label]) => {
     const list = BADGES.filter(b => b.c === c);
     return `<div class="bgroup"><h3>${label}</h3><span>${list.filter(b => S.badges[b.id]).length} / ${list.length}</span></div>
-    <div class="badges">${list.map(b => `<div class="badge ${S.badges[b.id] ? '' : 'locked'}"><div class="e">${b.e}</div><b>${b.n}</b><small>${S.badges[b.id] ? '✓ Earned!' : b.d}</small></div>`).join('')}</div>`;
+    <div class="badges">${list.map(b => { const got = S.badges[b.id], pr = !got && PROGRESS[b.id] ? PROGRESS[b.id]() : null;
+      return `<button class="badge ${got ? '' : 'locked'}" data-act="badgeInfo" data-id="${b.id}"><div class="e">${b.e}</div><b>${b.n}</b>
+        <small>${got ? `✓ ${new Date(got).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}` : b.d}</small>
+        ${pr ? `<span class="mini"><i style="width:${Math.min(100, pr[0] / pr[1] * 100)}%"></i></span>` : ''}</button>`; }).join('')}</div>`;
   }).join('')}`;
 }
 
@@ -1719,6 +1803,7 @@ const ACT = {
     save(); view = 'shelf'; render();
   },
   partyNext() { nextParty(); },
+  badgeInfo(el) { if (el.dataset.id) badgeInfo(el.dataset.id); },
   openMarks, showEnvelope, tearOpen, closeReveal,
   markInfo(el) {
     const id = el.dataset.id, m = S.marks[id], isBook = id.startsWith('b:'), b = isBook ? book(id.slice(2)) : null;
@@ -1814,7 +1899,7 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) naviga
 // ---------- staying up to date ----------
 // Phones often resume the app from memory instead of reloading it, so check for a newer
 // version whenever the app opens or comes back on screen, and reload into it.
-const APP_VERSION = 'rr-shell-v25';  // must match SHELL in sw.js
+const APP_VERSION = 'rr-shell-v26';  // must match SHELL in sw.js
 async function checkForUpdate() {
   if (!location.protocol.startsWith('http')) return;
   try {
