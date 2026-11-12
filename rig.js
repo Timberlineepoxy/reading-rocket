@@ -39,6 +39,7 @@
     const r = { svg, spec, p: Math.random(), W: 0, t0: Math.random() * 10, blinkAt: 1 + Math.random() * 3, look: { a: 0, v: 0, target: 0, next: 2 },
       body: q('[data-p=body]'), head: q('[data-p=head]'), tail: q('[data-p=tail]'), lids: [...svg.querySelectorAll('[data-p=lid]')], pupils: [...svg.querySelectorAll('[data-p=pupil]')],
       flaps: [...svg.querySelectorAll('[data-flap]')].map(e => ({ e, o: e.dataset.o.split(' ').map(Number), amp: +e.dataset.flap, k: +(e.dataset.k || 1), ph: +(e.dataset.ph || 0), w: e.hasAttribute('data-w') })),
+      beats: [...svg.querySelectorAll('[data-beat]')].map(e => ({ e, o: e.dataset.o.split(' ').map(Number), lo: +e.dataset.beat, k: +(e.dataset.k || 1), ph: +(e.dataset.ph || 0) })),
       springs: [...svg.querySelectorAll('[data-spring]')].map(e => ({ e, o: e.dataset.o.split(' ').map(Number), amp: +e.dataset.spring, s: { a: 0, v: 0 } })), legs: [] };
     for (const L of spec.legs) {
       const host = q(`[data-l=${L.far ? 'far' : 'near'}]`), g = el('g', {});
@@ -90,6 +91,10 @@
       const drive = sp.e === r.tail ? (W ? Math.sin(2 * Math.PI * p * 2) : Math.sin(tt * (S.wag || 7))) : Math.sin(4 * Math.PI * p - 1) * W + Math.sin(tt * 1.7) * .3;
       const a = spring(sp.s, drive * sp.amp, dt, 90, 9);
       sp.e.setAttribute('transform', `rotate(${a.toFixed(2)} ${sp.o[0]} ${sp.o[1]})`);
+    }
+    for (const b of r.beats) {
+      const s = (1 + b.lo) / 2 + (1 - b.lo) / 2 * Math.sin(2 * Math.PI * (p * b.k + b.ph)), [ox, oy] = b.o;
+      b.e.setAttribute('transform', `translate(${ox} ${oy}) scale(1 ${s.toFixed(3)}) translate(${-ox} ${-oy})`);
     }
     for (const f of r.flaps) {
       const a = f.amp * Math.sin(2 * Math.PI * (p * f.k + f.ph)) * (f.w ? W : 1);
@@ -381,43 +386,44 @@
           <circle cx="158" cy="56" r="2" fill="#111"/><circle cx="158.7" cy="55.3" r=".7" fill="#fff"/>
         </g>`; } };
 
-  RIG.snowyowl = { w: 120, h: 92, fly: true, T: .9, ground: 90, stride: 0, lift: 0, bob: 1.6, pitch: 1.5, center: [60, 50], head: [78, 44], nod: 2, legs: [],
-    draw: n => { const line = '#6E7885';
-      const flecks = pts => pts.map(([x, y]) => `<path d="M${x} ${y} q2 -1.6 4 0" stroke="#3A3F48" stroke-width="1.3" fill="none" stroke-linecap="round"/>`).join('');
-      return `<defs>${grad(n + 'b', [[0, '#FFFFFF'], [1, '#DDE2E8']])}</defs>
-        <g data-p="body">
-          <g data-flap="34" data-k="2" data-o="58 40" data-ph=".06"><path d="M58 40 C48 18 62 4 84 6 C98 8 106 14 110 20 C98 20 88 24 82 30 C74 38 66 44 60 48Z" fill="#E3E7EC" stroke="${line}" stroke-width="1.3"/></g>
-          <path d="M32 52 L12 48 L16 58 L32 60Z" fill="url(#${n}b)" stroke="${line}" stroke-width="1.3" stroke-linejoin="round"/>
-          <ellipse cx="56" cy="54" rx="27" ry="18" fill="url(#${n}b)" stroke="${line}" stroke-width="1.4"/>
-          ${flecks([[44, 50], [54, 46], [62, 54], [48, 60], [38, 56], [58, 62]])}
-          <path d="M60 70 l-2 6 M64 70 l0 6 M68 70 l2 6" stroke="#4A4F58" stroke-width="1.6" stroke-linecap="round"/>
-          <g data-flap="36" data-k="2" data-o="60 40"><path d="M60 40 C50 14 66 0 90 3 C104 5 112 12 116 18 C102 18 92 22 86 28 C78 36 68 44 62 48Z" fill="url(#${n}b)" stroke="${line}" stroke-width="1.3"/>
-            ${flecks([[74, 14], [84, 12], [96, 12], [78, 22], [90, 20]])}</g>
-          <g data-p="head">
-            <circle cx="80" cy="38" r="16" fill="url(#${n}b)" stroke="${line}" stroke-width="1.4"/>
-            <circle cx="84" cy="37" r="9.5" fill="#FFFFFF"/>
-            <circle cx="86" cy="35" r="4.6" fill="#F5C518" stroke="#B8920E" stroke-width=".8"/><circle cx="86.5" cy="35" r="2.3" fill="#111"/><circle cx="87.4" cy="34" r=".8" fill="#fff"/>
-            <ellipse data-p="lid" cx="86" cy="35" rx="5.2" ry="5.2" fill="#F2F4F7" style="transform-origin:86px 29.8px;transform:scaleY(0)"/>
-            <path d="M92 40 L97 43 L91.5 45Z" fill="#3A3F48"/>
-            ${flecks([[72, 28], [78, 24]])}
-          </g>
-        </g>`; } };
-
   /* ---------- birds ---------- */
   const webFootR = (c, line) => `<path d="M-3 -1.5 L12 0 L9.5 3 L-3 3Z" fill="${c}" stroke="${line}" stroke-width="1" stroke-linejoin="round"/><path d="M-1 1 L10 1" stroke="${line}" stroke-width=".6" opacity=".6"/>`;
 
+  // One feather: a long rounded blade from its base (bx,by) pointing at angle deg.
+  const f1 = v => v.toFixed(1);
+  const feather = (bx, by, deg, len, w, fill, line, shaft) => {
+    const a = deg * Math.PI / 180, dx = Math.cos(a), dy = Math.sin(a), nx = -dy * w, ny = dx * w, ex = bx + dx * len, ey = by + dy * len;
+    return `<path d="M${f1(bx + nx)} ${f1(by + ny)} C${f1(bx + nx * 1.25 + dx * len * .5)} ${f1(by + ny * 1.25 + dy * len * .5)} ${f1(ex + nx * .9 - dx * w)} ${f1(ey + ny * .9 - dy * w)} ${f1(ex)} ${f1(ey)} C${f1(ex - nx * .7 - dx * w * .6)} ${f1(ey - ny * .7 - dy * w * .6)} ${f1(bx - nx * 1.1 + dx * len * .5)} ${f1(by - ny * 1.1 + dy * len * .5)} ${f1(bx - nx)} ${f1(by - ny)}Z" fill="${fill}" stroke="${line}" stroke-width=".8" stroke-linejoin="round"/>` +
+      (shaft ? `<path d="M${f1(bx)} ${f1(by)} L${f1(bx + dx * len * .82)} ${f1(by + dy * len * .82)}" stroke="${shaft}" stroke-width=".6" opacity=".75"/>` : '');
+  };
+  /* A feathered wing seen from the side, raised above the back from the shoulder (x,y), span s.
+     It beats by swinging up over the back and down under the belly (data-beat), and the hand
+     (the long flight feathers) folds back on the way up and spreads on the way down. */
+  function wing(o) {
+    const { x, y, s, cov, sec, pri, line, shaft = 'rgba(255,255,255,.45)', pl = 1, fan = 1, np = 7, ns = 6, k = 2, ph = 0, lo = -.7, extra = '', sweep = -14 } = o;
+    const Wx = x + .08 * s, Wy = y - .4 * s, Tx = x + .02 * s, Ty = y - .62 * s;
+    let secs = '', pris = '';
+    for (let i = ns - 1; i >= 0; i--) { const t = (i + .5) / ns; secs += feather(x + (Wx - x) * t, y + (Wy - y) * t, 172 + t * 14, s * (.6 - t * .1), s * .09, sec, line, shaft); }
+    for (let i = 0; i < np; i++) { const t = i / (np - 1); pris += feather(Wx + (Tx - Wx) * t, Wy + (Ty - Wy) * t, 200 + t * 48 * fan, s * (.42 + .14 * t) * pl, s * .07, pri, line, shaft); }
+    const P = (dx, dy) => `${f1(x + dx * s)} ${f1(y + dy * s)}`;
+    const coverts = `<path d="M${P(.06, .03)} C${P(.18, -.12)} ${P(.18, -.32)} ${P(.1, -.42)} C${P(.07, -.52)} ${P(.04, -.6)} ${P(-.02, -.62)} C${P(-.14, -.52)} ${P(-.3, -.36)} ${P(-.36, -.2)} C${P(-.38, -.1)} ${P(-.3, 0)} ${P(-.2, .04)}Z" fill="${cov}" stroke="${line}" stroke-width="1.1" stroke-linejoin="round"/>
+      <path d="M${P(-.26, -.08)} q${f1(s * .08)} ${f1(-s * .02)} ${f1(s * .12)} ${f1(-s * .12)} M${P(-.2, -.26)} q${f1(s * .07)} ${f1(-s * .02)} ${f1(s * .1)} ${f1(-s * .12)} M${P(-.1, -.42)} q${f1(s * .05)} ${f1(-s * .02)} ${f1(s * .08)} ${f1(-s * .1)}" stroke="${line}" stroke-width=".7" fill="none" opacity=".45"/>`;
+    return `<g data-beat="${lo}" data-k="${k}" data-ph="${ph}" data-o="${x} ${y}"><g transform="rotate(${sweep} ${x} ${y})">
+      <g data-flap="-16" data-k="${k}" data-ph="${ph + .25}" data-o="${f1(Wx)} ${f1(Wy)}">${pris}</g>${secs}${coverts}${extra}</g></g>`;
+  }
+  const flecks = (pts, c) => pts.map(([x, y]) => `<path d="M${x} ${y} q2 -1.6 4 0" stroke="${c}" stroke-width="1.2" fill="none" stroke-linecap="round"/>`).join('');
+
   RIG.bird = { w: 100, h: 66, fly: true, T: .55, ground: 64, bob: 1.2, pitch: 1.5, center: [48, 38], head: [64, 34], nod: 2, legs: [],
     draw: n => { const line = '#1F3A72';
-      return `<defs>${grad(n + 'b', [[0, '#6E9EE8'], [.55, '#3B6FD6'], [1, '#2A55A8']])}${grad(n + 'o', [[0, '#F2A066'], [1, '#C8662A']])}${grad(n + 'w', [[0, '#24478E'], [.5, '#3B6FD6'], [1, '#6E9EE8']])}</defs>
+      return `<defs>${grad(n + 'b', [[0, '#6E9EE8'], [.55, '#3B6FD6'], [1, '#2A55A8']])}${grad(n + 'o', [[0, '#F2A066'], [1, '#C8662A']])}${grad(n + 'c', [[0, '#8AB6F2'], [1, '#3B6FD6']])}</defs>
         <g data-p="body">
-          <g data-flap="38" data-k="2" data-o="46 32" data-ph=".05"><path d="M46 32 C38 13 50 3 68 4 C76 5 82 8 85 12 C76 13 68 17 62 23 C56 29 51 34 48 37Z" fill="#24478E" stroke="${line}" stroke-width="1.2"/></g>
+          ${wing({ x: 46, y: 31, s: 34, cov: '#2F5EB8', sec: '#24478E', pri: '#1E3C7A', line, ph: .03 })}
           <g data-p="tail" data-spring="6" data-o="30 38"><path d="M31 35 L6 30 L9 37 L5 44 L31 42Z" fill="#2A55A8" stroke="${line}" stroke-width="1.2" stroke-linejoin="round"/><path d="M9 37 L28 38" stroke="${line}" stroke-width=".8"/></g>
           <ellipse cx="48" cy="39" rx="22" ry="12.5" fill="url(#${n}b)" stroke="${line}" stroke-width="1.4"/>
           <path d="M58 30 C68 34 72 42 66 48 C58 52 46 52 36 48 C46 46 54 40 58 30Z" fill="url(#${n}o)"/>
           <path d="M39 49 C46 52 56 52 62 49" stroke="#F4F1EA" stroke-width="3" fill="none" stroke-linecap="round"/>
           <path d="M50 50.5 l-1.5 5 M54 50.5 l0 5" stroke="#3A3A44" stroke-width="1.4" stroke-linecap="round"/>
-          <g data-flap="40" data-k="2" data-o="48 32"><path d="M48 32 C40 11 53 0 72 2 C80 3 86 6 89 10 C80 11 71 15 65 21 C59 27 53 33 50 37Z" fill="url(#${n}w)" stroke="${line}" stroke-width="1.2"/>
-            <path d="M58 9 L78 5 M56 15 L76 11 M55 21 L69 17" stroke="${line}" stroke-width="1" stroke-linecap="round" opacity=".6"/></g>
+          ${wing({ x: 50, y: 32, s: 37, cov: `url(#${n}c)`, sec: '#3366C8', pri: '#2A55A8', line, shaft: '#A8C8F5' })}
           <g data-p="head">
             <circle cx="68" cy="30" r="10.5" fill="url(#${n}b)" stroke="${line}" stroke-width="1.4"/>
             <path d="M62 37 C66 41 72 41 76.5 35.5 C74 32 68 33 62 37Z" fill="url(#${n}o)"/>
@@ -428,16 +434,16 @@
 
   RIG.parrot = { w: 124, h: 72, fly: true, T: .7, ground: 70, bob: 1.4, pitch: 1.5, center: [58, 40], head: [76, 34], nod: 2, legs: [],
     draw: n => { const line = '#7A1212';
-      return `<defs>${grad(n + 'b', [[0, '#F2554A'], [.6, '#D8281E'], [1, '#A8160F']])}${grad(n + 'w', [[0, '#1E4FB8'], [.42, '#2A66D8'], [.55, '#3DBE4A'], [.68, '#FFD23F'], [.8, '#E8302E'], [1, '#C8201A']])}</defs>
+      return `<defs>${grad(n + 'b', [[0, '#F2554A'], [.6, '#D8281E'], [1, '#A8160F']])}
+          <linearGradient id="${n}c" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3DBE4A"/><stop offset=".35" stop-color="#FFD23F"/><stop offset=".7" stop-color="#E8302E"/></linearGradient></defs>
         <g data-p="body">
-          <g data-flap="34" data-k="2" data-o="56 34" data-ph=".05"><path d="M56 34 C46 12 62 0 86 3 C96 5 102 9 106 13 C94 14 82 20 74 28 C68 34 62 38 58 42Z" fill="#1A44A0" stroke="${line}" stroke-width="1.2"/></g>
+          ${wing({ x: 57, y: 31, s: 40, cov: '#B01E18', sec: '#1A44A0', pri: '#163A8A', line, ph: .03 })}
           <g data-p="tail" data-spring="5" data-o="36 40"><path d="M38 40 L4 56 C2 58 4 61 8 59 L40 46Z" fill="#1E5BD6" stroke="#123A8A" stroke-width="1.2"/><path d="M38 36 L2 47 C0 49 2 53 6 51 L38 43Z" fill="url(#${n}b)" stroke="${line}" stroke-width="1.2"/>
             <path d="M8 49 L34 41" stroke="#F2554A" stroke-width="1" opacity=".7"/></g>
           <ellipse cx="58" cy="40" rx="24" ry="12.5" fill="url(#${n}b)" stroke="${line}" stroke-width="1.4"/>
           <path d="M42 46 C50 50 62 50 72 45" stroke="#F87A6E" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".6"/>
           <path d="M62 52 l-2 5 M67 52 l0 5" stroke="#5A5A5A" stroke-width="1.6" stroke-linecap="round"/>
-          <g data-flap="36" data-k="2" data-o="58 34"><path d="M58 34 C48 10 64 -3 90 1 C100 3 106 7 110 11 C98 12 86 18 78 26 C72 32 66 37 61 42Z" fill="url(#${n}w)" stroke="${line}" stroke-width="1.2"/>
-            <path d="M68 8 L94 3 M66 14 L92 9 M66 20 L84 15" stroke="#123A8A" stroke-width="1" stroke-linecap="round" opacity=".6"/></g>
+          ${wing({ x: 60, y: 32, s: 43, cov: `url(#${n}c)`, sec: '#2A66D8', pri: '#1E4FB8', line: '#5A1010', shaft: '#9CC0F5' })}
           <g data-p="head">
             <circle cx="82" cy="30" r="11.5" fill="url(#${n}b)" stroke="${line}" stroke-width="1.4"/>
             <path d="M76 26 C80 22 86 22 89.5 25 C89 31 84 34 77 32Z" fill="#F7F2EC"/>
@@ -448,41 +454,50 @@
           </g>
         </g>`; } };
 
-  RIG.owl = { w: 120, h: 92, fly: true, T: .9, ground: 90, bob: 1.6, pitch: 1.5, center: [60, 50], head: [78, 44], nod: 2, legs: [],
-    draw: n => { const line = '#4A3420';
-      const flecks = (pts, c) => pts.map(([x, y]) => `<path d="M${x} ${y} q2 -1.6 4 0" stroke="${c}" stroke-width="1.3" fill="none" stroke-linecap="round"/>`).join('');
-      return `<defs>${grad(n + 'b', [[0, '#B08C66'], [1, '#7A5A3C']])}${grad(n + 'w', [[0, '#6A4F34'], [1, '#9C7A56']])}</defs>
+  const owlDraw = (n, c) => `<defs>${grad(n + 'b', [[0, c.b0], [1, c.b1]])}${grad(n + 'c', [[0, c.c0], [1, c.c1]])}</defs>
         <g data-p="body">
-          <g data-flap="34" data-k="2" data-o="58 40" data-ph=".06"><path d="M58 40 C48 18 62 4 84 6 C98 8 106 14 110 20 C98 20 88 24 82 30 C74 38 66 44 60 48Z" fill="#5E4530" stroke="${line}" stroke-width="1.3"/></g>
-          <path d="M32 52 L12 48 L16 58 L32 60Z" fill="#6A4F34" stroke="${line}" stroke-width="1.3" stroke-linejoin="round"/>
-          <ellipse cx="56" cy="54" rx="27" ry="18" fill="url(#${n}b)" stroke="${line}" stroke-width="1.4"/>
-          <path d="M44 66 C54 72 70 70 78 60" stroke="#E7D3B0" stroke-width="6" fill="none" stroke-linecap="round" opacity=".7"/>
-          ${flecks([[44, 50], [54, 46], [62, 54], [48, 60], [38, 56], [58, 62]], '#E7D3B0')}
+          ${wing({ x: 59, y: 41, s: 44, cov: c.fc, sec: c.fs, pri: c.fp, line: c.line, ph: .03, pl: .9, fan: .8 })}
+          <path d="M32 52 L12 48 L16 58 L32 60Z" fill="${c.tail}" stroke="${c.line}" stroke-width="1.3" stroke-linejoin="round"/>
+          <ellipse cx="56" cy="54" rx="27" ry="18" fill="url(#${n}b)" stroke="${c.line}" stroke-width="1.4"/>
+          ${c.belly}
+          ${flecks([[44, 50], [54, 46], [62, 54], [48, 60], [38, 56], [58, 62]], c.fleck)}
           <path d="M60 71 l-2 6 M64 71 l0 6 M68 71 l2 6" stroke="#4A3F30" stroke-width="1.6" stroke-linecap="round"/>
-          <g data-flap="36" data-k="2" data-o="60 40"><path d="M60 40 C50 14 66 0 90 3 C104 5 112 12 116 18 C102 18 92 22 86 28 C78 36 68 44 62 48Z" fill="url(#${n}w)" stroke="${line}" stroke-width="1.3"/>
-            ${flecks([[74, 14], [84, 12], [96, 12], [78, 22], [90, 20]], '#E7D3B0')}</g>
-          <g data-p="head">
-            <path d="M68 28 L63 12 L75 23Z M84 23 L88 8 L92 25Z" fill="#6A4F34" stroke="${line}" stroke-width="1.2" stroke-linejoin="round"/>
-            <circle cx="80" cy="38" r="16" fill="url(#${n}b)" stroke="${line}" stroke-width="1.4"/>
+          ${wing({ x: 62, y: 42, s: 47, cov: `url(#${n}c)`, sec: c.s, pri: c.p, line: c.line, shaft: c.shaft, pl: .9, fan: .8,
+            extra: flecks([[60, 30], [64, 22], [56, 36], [58, 26]], c.fleck) })}
+          <g data-p="head">${c.head}</g>
+        </g>`;
+
+  RIG.owl = { w: 120, h: 92, fly: true, T: .9, ground: 90, bob: 1.6, pitch: 1.5, center: [60, 50], head: [78, 44], nod: 2, legs: [],
+    draw: n => owlDraw(n, { line: '#4A3420', b0: '#B08C66', b1: '#7A5A3C', c0: '#B8946C', c1: '#8A6A48', fc: '#5E4530', fs: '#55402C', fp: '#4A3826', s: '#8A6A48', p: '#6E5236',
+      shaft: '#E7D3B0', fleck: '#E7D3B0', tail: '#6A4F34', belly: `<path d="M44 66 C54 72 70 70 78 60" stroke="#E7D3B0" stroke-width="6" fill="none" stroke-linecap="round" opacity=".7"/>`,
+      head: `<path d="M68 28 L63 12 L75 23Z M84 23 L88 8 L92 25Z" fill="#6A4F34" stroke="#4A3420" stroke-width="1.2" stroke-linejoin="round"/>
+            <circle cx="80" cy="38" r="16" fill="url(#${n}b)" stroke="#4A3420" stroke-width="1.4"/>
             <circle cx="84" cy="37" r="10" fill="#D9A066" stroke="#7A5A3C" stroke-width="1.2"/>
             <circle cx="86" cy="35" r="4.6" fill="#F5A818" stroke="#A86E08" stroke-width=".8"/><circle cx="86.5" cy="35" r="2.4" fill="#111"/><circle cx="87.4" cy="34" r=".8" fill="#fff"/>
             <ellipse data-p="lid" cx="86" cy="35" rx="5.2" ry="5.2" fill="#C88E56" style="transform-origin:86px 29.8px;transform:scaleY(0)"/>
             <path d="M92 40 L97 43 L91.5 45Z" fill="#3A2C20"/>
             <path d="M79 31 C83 29 88 29 92 31" stroke="#5E4530" stroke-width="1.4" fill="none" stroke-linecap="round"/>
-            ${flecks([[70, 30], [74, 44]], '#E7D3B0')}
-          </g>
-        </g>`; } };
+            ${flecks([[70, 30], [74, 44]], '#E7D3B0')}` }) };
+
+  RIG.snowyowl = { w: 120, h: 92, fly: true, T: .9, ground: 90, bob: 1.6, pitch: 1.5, center: [60, 50], head: [78, 44], nod: 2, legs: [],
+    draw: n => owlDraw(n, { line: '#6E7885', b0: '#FFFFFF', b1: '#DDE2E8', c0: '#FFFFFF', c1: '#E6EAEF', fc: '#D2D8DF', fs: '#D8DEE5', fp: '#CDD3DB', s: '#F2F4F7', p: '#E6EAEF',
+      shaft: '#B8C0CA', fleck: '#3A3F48', tail: '#E6EAEF', belly: '',
+      head: `<circle cx="80" cy="38" r="16" fill="url(#${n}b)" stroke="#6E7885" stroke-width="1.4"/>
+            <circle cx="84" cy="37" r="9.5" fill="#FFFFFF"/>
+            <circle cx="86" cy="35" r="4.6" fill="#F5C518" stroke="#B8920E" stroke-width=".8"/><circle cx="86.5" cy="35" r="2.3" fill="#111"/><circle cx="87.4" cy="34" r=".8" fill="#fff"/>
+            <ellipse data-p="lid" cx="86" cy="35" rx="5.2" ry="5.2" fill="#F2F4F7" style="transform-origin:86px 29.8px;transform:scaleY(0)"/>
+            <path d="M92 40 L97 43 L91.5 45Z" fill="#3A3F48"/>
+            ${flecks([[72, 28], [78, 24]], '#3A3F48')}` }) };
 
   RIG.eagle = { w: 160, h: 86, fly: true, T: 1.1, ground: 84, bob: 1.8, pitch: 1.2, center: [70, 46], head: [102, 44], nod: 1.5, legs: [],
     draw: n => { const line = '#24160A';
-      return `<defs>${grad(n + 'b', [[0, '#7A5232'], [.6, '#55361E'], [1, '#3A2414']])}${grad(n + 'w', [[0, '#2E1D10'], [.6, '#4E321C'], [1, '#6E4A2E']])}${grad(n + 'h', [[0, '#FFFFFF'], [1, '#DEDDD4']])}</defs>
+      return `<defs>${grad(n + 'b', [[0, '#7A5232'], [.6, '#55361E'], [1, '#3A2414']])}${grad(n + 'c', [[0, '#8A6040'], [1, '#55361E']])}${grad(n + 'h', [[0, '#FFFFFF'], [1, '#DEDDD4']])}</defs>
         <g data-p="body">
-          <g data-flap="24" data-o="66 40" data-ph=".05"><path d="M66 40 C54 16 72 -2 104 2 C118 4 128 8 134 12 L128 15 L132 18 L124 20 L127 24 L116 24 C108 26 98 32 90 38 C84 42 76 46 70 48Z" fill="#2A1A0E" stroke="${line}" stroke-width="1.2" stroke-linejoin="round"/></g>
+          ${wing({ x: 67, y: 39, s: 54, cov: '#3A2414', sec: '#2E1D10', pri: '#22150A', line, k: 1, lo: -.6, ph: .03, pl: 1.15, fan: .9, np: 6 })}
           <g data-p="tail" data-spring="4" data-o="34 47"><path d="M35 43 L6 36 C3 41 3 49 6 54 L35 51Z" fill="url(#${n}h)" stroke="#7A7A70" stroke-width="1.2"/><path d="M8 41 L30 45 M8 49 L30 49" stroke="#A8A8A0" stroke-width=".8"/></g>
           <path d="M30 46 C36 34 56 32 78 36 C94 39 102 44 102 50 C98 56 82 58 62 56 C46 55 34 52 30 46Z" fill="url(#${n}b)" stroke="${line}" stroke-width="1.5"/>
           <path d="M62 56 l-3 7 l4 -1 l1 4 l2 -6 M74 56 l-1 7 l4 -1 l2 3 l1 -6" stroke="#E8AE14" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-          <g data-flap="26" data-o="68 40"><path d="M68 40 C56 14 74 -4 108 0 C122 2 132 6 138 10 L132 13 L137 16 L129 18 L133 22 L122 22 C112 24 102 30 94 36 C88 40 80 46 74 48Z" fill="url(#${n}w)" stroke="${line}" stroke-width="1.3" stroke-linejoin="round"/>
-            <path d="M80 18 C90 12 100 10 112 10 M82 26 C92 20 104 17 116 17 M86 34 C94 28 104 24 112 23" stroke="#8A6444" stroke-width="1.2" fill="none" stroke-linecap="round" opacity=".7"/></g>
+          ${wing({ x: 71, y: 40, s: 58, cov: `url(#${n}c)`, sec: '#3E2A16', pri: '#2A1A0E', line, shaft: '#8A6444', k: 1, lo: -.6, pl: 1.15, fan: .9, np: 6 })}
           <g data-p="head">
             <path d="M94 44 C96 34 106 28 116 29 C125 30 130 36 128 42 C124 48 110 52 98 52Z" fill="url(#${n}h)" stroke="#6E6E66" stroke-width="1.3"/>
             <path d="M124 33 C132 32 138 36 137 43 C134 42 130 41 126 40Z" fill="#F2B81B" stroke="#A67A08" stroke-width="1"/>
@@ -496,12 +511,12 @@
   RIG.phoenix = { w: 170, h: 104, fly: true, T: .85, ground: 100, bob: 1.6, pitch: 1.5, center: [80, 52], head: [112, 46], nod: 2, legs: [],
     draw: n => { const line = '#7A1A0A';
       const plume = (d, amp, o) => `<g data-spring="${amp}" data-o="${o}"><path d="${d}" fill="url(#${n}t)" stroke="${line}" stroke-width="1.1" stroke-linejoin="round"/></g>`;
-      return `<defs>${grad(n + 'b', [[0, '#FF6A3A'], [.6, '#E8402A'], [1, '#B02A18']])}${grad(n + 'w', [[0, '#FFE15A'], [.3, '#FFB02E'], [.6, '#FF7A1F'], [1, '#E8402A']])}
+      return `<defs>${grad(n + 'b', [[0, '#FF6A3A'], [.6, '#E8402A'], [1, '#B02A18']])}${grad(n + 'w', [[0, '#FFE15A'], [.3, '#FFB02E'], [.6, '#FF7A1F'], [1, '#E8402A']])}${grad(n + 'c', [[0, '#FF8A3A'], [1, '#E8402A']])}
           <linearGradient id="${n}t" x1="1" y1="0" x2="0" y2="0"><stop offset="0" stop-color="#E8402A"/><stop offset=".55" stop-color="#FF8A1F"/><stop offset="1" stop-color="#FFE15A"/></linearGradient>
           <radialGradient id="${n}g" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FFB04A" stop-opacity=".45"/><stop offset="1" stop-color="#FF6A2A" stop-opacity="0"/></radialGradient></defs>
         <ellipse cx="86" cy="50" rx="78" ry="44" fill="url(#${n}g)"/>
         <g data-p="body">
-          <g data-flap="32" data-k="2" data-o="76 44" data-ph=".05"><path d="M76 44 C62 16 82 -2 116 2 L126 0 L122 6 L136 6 L130 12 L144 14 C132 18 120 22 114 26 C106 34 94 42 84 50Z" fill="#B02A18" stroke="${line}" stroke-width="1.2" stroke-linejoin="round"/></g>
+          ${wing({ x: 76, y: 43, s: 50, cov: '#B02A18', sec: '#C8501A', pri: '#D8781A', line, ph: .03, pl: 1.1 })}
           ${plume('M48 54 C30 54 16 64 6 80 C2 86 8 90 13 84 C22 72 34 64 48 60Z', 10, '46 56')}
           ${plume('M46 52 C28 46 14 50 2 60 C-2 64 2 68 7 65 C18 58 30 56 46 57Z', 7, '46 54')}
           ${plume('M50 58 C38 64 30 76 28 94 C28 100 34 100 35 94 C37 80 42 70 52 62Z', 13, '50 60')}
@@ -509,8 +524,7 @@
           <path d="M40 54 C46 42 66 40 86 44 C102 47 110 52 110 58 C106 64 90 66 70 64 C54 63 42 60 40 54Z" fill="url(#${n}b)" stroke="${line}" stroke-width="1.5"/>
           <path d="M54 62 C68 66 88 66 104 60" stroke="#FFD23F" stroke-width="3.6" fill="none" stroke-linecap="round" opacity=".85"/>
           <path d="M74 64 l-2 6 M80 64 l0 6" stroke="#8A2A10" stroke-width="1.8" stroke-linecap="round"/>
-          <g data-flap="34" data-k="2" data-o="78 44"><path d="M78 44 C64 16 84 -4 120 2 L130 0 L126 6 L140 6 L134 12 L148 14 C136 18 124 22 118 26 C110 34 98 42 88 50Z" fill="url(#${n}w)" stroke="${line}" stroke-width="1.3" stroke-linejoin="round"/>
-            <path d="M88 20 C100 12 114 8 128 8 M90 30 C102 22 116 18 130 16 M94 38 C104 32 114 28 122 26" stroke="#FFF3B0" stroke-width="1.2" fill="none" stroke-linecap="round" opacity=".6"/></g>
+          ${wing({ x: 80, y: 44, s: 54, cov: `url(#${n}c)`, sec: '#FF8A1F', pri: '#FFC23A', line, shaft: '#FFF3B0', pl: 1.1 })}
           <g data-p="head">
             <g data-spring="9" data-o="116 34"><path d="M114 36 L104 18 L116 28 L112 10 L122 28 L130 14 L127 34Z" fill="url(#${n}w)" stroke="${line}" stroke-width="1.1" stroke-linejoin="round"/></g>
             <path d="M104 48 C106 38 116 34 124 36 C132 38 136 44 134 50 C128 54 116 56 106 54Z" fill="url(#${n}b)" stroke="${line}" stroke-width="1.4"/>
