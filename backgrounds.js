@@ -720,7 +720,7 @@
         every(10, 18, () => pass(flock(Math.round(rnd(2, 4)), '#F8FAFC'), across(rnd(90, H() * .35), 100, Math.random() < .5, rnd(-50, 50)), rnd(10, 14) * 1000), [3, 6]);
         every(9, 15, () => { const w = 40; pass(crab(w), across(fy - w * .6, w, Math.random() < .5), rnd(7, 10) * 1000); }, [4, 8]);
         every(12, 20, () => { const h = 40, x = rnd(30, W() - 220), ltr = Math.random() < .5, x0 = ltr ? x : x + 180, x1 = ltr ? x + 180 : x;
-          pass(`<div style="transform:scaleX(${ltr ? 1 : -1})">${petSVG('dolphin', h)}</div>`, [{ transform: `translate(${x0}px,${sea + 30}px) rotate(${ltr ? -35 : 35}deg)`, opacity: 0 }, { opacity: 1, offset: .1 },
+          pass(`<div class="walking" style="transform:scaleX(${ltr ? 1 : -1})">${petSVG('dolphin', h)}</div>`, [{ transform: `translate(${x0}px,${sea + 30}px) rotate(${ltr ? -35 : 35}deg)`, opacity: 0 }, { opacity: 1, offset: .1 },
             { transform: `translate(${(x0 + x1) / 2}px,${sea - 90}px) rotate(0)`, offset: .5 }, { opacity: 1, offset: .9 }, { transform: `translate(${x1}px,${sea + 30}px) rotate(${ltr ? 35 : -35}deg)`, opacity: 0 }], 1800, 'fx', '', 'ease-in-out'); }, [6, 10]);
         every(13, 22, () => { const s = 44, x0 = -s - 30, x1 = W() + 30, hops = 4, N = 32, frames = [];
           for (let k = 0; k <= N; k++) { const tt = k / N, ph = tt * hops % 1, x = x0 + (x1 - x0) * tt; frames.push({ transform: `translate(${x}px,${fy - s - Math.sin(ph * Math.PI) * 70 * (1 - tt * .5)}px) rotate(${(x - x0) / (Math.PI * s) * 360}deg)` }); }

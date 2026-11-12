@@ -165,6 +165,7 @@ body.watch{overflow:hidden}
 .watchbtn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-top:14px}
 .pet{position:absolute;left:0;top:0;will-change:transform}
 .pet .petsvg{display:block;overflow:visible;filter:drop-shadow(0 2px 2px rgba(0,0,0,.18))}
+.pet .rigsvg{display:block}
 .pet .shadow{position:absolute;left:18%;right:18%;bottom:-3px;height:7px;border-radius:50%;background:rgba(0,0,0,.2);filter:blur(2px)}
 .pet.flyer .shadow{display:none}
 .petsvg .leg,.petsvg .shin,.petsvg .torso,.petsvg .head,.petsvg .tail,.petsvg .wing,.petsvg .ear,
@@ -395,6 +396,7 @@ body.darkbg .bmhead h3,body.darkbg .bmhead span{color:#fff}
 <input type="file" id="importIn" accept="application/json,.json" hidden>
 
 <script src="animals.js"></script>
+<script src="rig.js"></script>
 <script src="backgrounds.js"></script>
 <script src="bookmarks.js"></script>
 <script>
@@ -729,6 +731,17 @@ const ANIMALS = [  // drawn and animated in animals.js
   { id: 'mammoth',     e: '🦣', n: 'Woolly Mammoth', cost: 7000, move: 'walk', speed: 16, size: 92 },
   { id: 'unicorn',     e: '🦄', n: 'Unicorn',      cost: 7500, move: 'walk', speed: 75,  size: 72 },
   { id: 'phoenix',     e: '🔥', n: 'Phoenix',      cost: 8000, move: 'fly',  speed: 70,  size: 56 },
+  { id: 'turkey',      e: '🦃', n: 'Turkey',       cost: 3100, move: 'walk', speed: 32,  size: 58 },
+  { id: 'guineapig',   e: '🐹', n: 'Guinea Pig',   cost: 3150, move: 'walk', speed: 34,  size: 32 },
+  { id: 'hedgehog',    e: '🦔', n: 'Hedgehog',     cost: 3250, move: 'walk', speed: 30,  size: 30 },
+  { id: 'lamb',        e: '🐑', n: 'Lamb',         cost: 3450, move: 'walk', speed: 40,  size: 48 },
+  { id: 'seal',        e: '🦭', n: 'Seal',         cost: 3700, move: 'walk', speed: 16,  size: 40 },
+  { id: 'snowyowl',    e: '🦉', n: 'Snowy Owl',    cost: 4100, move: 'fly',  speed: 50,  size: 44 },
+  { id: 'reindeer',    e: '🦌', n: 'Reindeer',     cost: 4500, move: 'walk', speed: 60,  size: 86 },
+  { id: 'dolphin',     e: '🐬', n: 'Dolphin',      cost: 5100, move: 'swim', speed: 80,  size: 44 },
+  { id: 'greatwhite',  e: '🦈', n: 'Great White Shark', cost: 5900, move: 'swim', speed: 70, size: 50 },
+  { id: 'orca',        e: '🐋', n: 'Killer Whale', cost: 6800, move: 'swim', speed: 60,  size: 54 },
+  { id: 'spermwhale',  e: '🐳', n: 'Sperm Whale',  cost: 8500, move: 'swim', speed: 36,  size: 62 },
 ].map(a => ({ ...a, kind: 'animal' })).sort((a, b) => a.cost - b.cost);
 const animalImg = (a, h) => petSVG(a.id, h);
 // Whole-app backgrounds: drawn and animated in backgrounds.js
@@ -1204,29 +1217,30 @@ function startWatch() {
   history.pushState({ watch: 1 }, '');
   const tap = $('#watchTap'); tap.classList.remove('faded');
   clearTimeout(watchT); watchT = setTimeout(() => tap.classList.add('faded'), 2500);
-  pets.forEach(o => { if (o.fly) o.base = petSkyY(); else { o.wait = 0; petTarget(o); } });
+  pets.forEach(o => { if (o.fly) o.base = petSkyY(o); else { o.wait = 0; petTarget(o); } });
   if (!pets.length) toast('No animals are out yet. Tap some in Unlocks first!');
   RRBG.reflow();
 }
 function endWatch() {
   if (!document.body.classList.contains('watch')) return;
   document.body.classList.remove('watch');
-  pets.forEach(o => { if (!o.fly) { const A = petArea(); o.y = Math.min(Math.max(o.y, A.top), A.bot - o.h); petTarget(o); } else o.base = petSkyY(); });
+  pets.forEach(o => { if (!o.fly) { const A = petArea(); o.y = Math.min(Math.max(o.y, A.top), A.bot - o.h); petTarget(o); } else o.base = petSkyY(o); });
   RRBG.reflow();
 }
 $('#watchTap').addEventListener('click', () => { if (history.state && history.state.watch) history.back(); else endWatch(); });
 addEventListener('popstate', endWatch);
 function petTarget(o) { const A = petArea(); o.tx = Math.random() * Math.max(10, A.W - o.w); o.ty = A.top + Math.random() * Math.max(10, A.bot - A.top - o.h); }
-function petSkyY() { const A = petArea(); return A.top + Math.random() * Math.max(20, (A.bot - A.top) * .45); }
+// fliers stay in the upper part of the screen; swimmers can glide anywhere
+function petSkyY(o) { const A = petArea(); return A.top + Math.random() * Math.max(20, o && o.swim ? A.bot - A.top - o.h : (A.bot - A.top) * .45); }
 function makePet(a) {
   const h = a.size, art = PETART[a.id], el = document.createElement('div');
-  el.className = `pet ${art.fly ? 'flyer walking' : ''}`;
+  el.className = `pet ${art.fly || art.swim ? 'flyer walking' : ''}`;
   el.innerHTML = `<div class="shadow"></div><div class="flip">${petSVG(a.id, h)}</div>`;
   petBox.appendChild(el);
   const A = petArea(), w = h * art.w / art.h;
-  const o = { a, el, h, w, flip: el.children[1], fly: !!art.fly, wait: Math.random() * 2,
+  const o = { a, el, h, w, flip: el.children[1], fly: !!(art.fly || art.swim), swim: !!art.swim, wait: Math.random() * 2,
     face: 1, ph: Math.random() * 6, vx: (Math.random() < .5 ? -1 : 1) * a.speed * .7, x: Math.random() * Math.max(10, A.W - w), y: 0 };
-  o.y = o.base = o.fly ? petSkyY() : A.top + Math.random() * Math.max(10, A.bot - A.top - h);
+  o.y = o.base = o.fly ? petSkyY(o) : A.top + Math.random() * Math.max(10, A.bot - A.top - h);
   petTarget(o);
   return o;
 }
@@ -1243,8 +1257,8 @@ function petFrame(t) {
   for (const o of pets) {
     if (o.fly) {
       o.x += o.vx * dt;
-      if (o.x > A.W + 40) { o.x = -o.w - 30; o.base = petSkyY(); }
-      if (o.x < -o.w - 40) { o.x = A.W + 30; o.base = petSkyY(); }
+      if (o.x > A.W + 40) { o.x = -o.w - 30; o.base = petSkyY(o); }
+      if (o.x < -o.w - 40) { o.x = A.W + 30; o.base = petSkyY(o); }
       const bf = o.a.id === 'butterfly';
       o.y = o.base + Math.sin(t / (bf ? 300 : 650) + o.ph) * (bf ? 18 : 10);
       o.face = o.vx > 0 ? 1 : -1;
@@ -1908,7 +1922,7 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) naviga
 // ---------- staying up to date ----------
 // Phones often resume the app from memory instead of reloading it, so check for a newer
 // version whenever the app opens or comes back on screen, and reload into it.
-const APP_VERSION = 'rr-shell-v27';  // must match SHELL in sw.js
+const APP_VERSION = 'rr-shell-v28';  // must match SHELL in sw.js
 async function checkForUpdate() {
   if (!location.protocol.startsWith('http')) return;
   try {
