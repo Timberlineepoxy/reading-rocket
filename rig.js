@@ -67,9 +67,11 @@
     // body: dips twice a step cycle while walking, breathes when standing
     const bob = W * S.bob * Math.cos(4 * Math.PI * p) + (1 - W) * .7 * Math.sin(tt * 2.3);
     const pitch = W * (S.pitch || 0) * Math.sin(2 * Math.PI * p);
+    // hoppers leave the ground together: the whole animal rises while the feet are swinging
+    const st0 = S.stance || .62, hopY = S.hop && p >= st0 ? W * S.hop * Math.sin(Math.PI * (p - st0) / (1 - st0)) : 0;
     // cartoon bodies squash a little as they land each step and stretch as they rise
     const sq = S.squash ? W * S.squash * Math.cos(4 * Math.PI * p) + (1 - W) * S.squash * .35 * Math.sin(tt * 2.3) : 0, cx = S.center[0], gy = S.ground;
-    if (r.body) r.body.setAttribute('transform', `translate(0 ${bob.toFixed(2)}) rotate(${pitch.toFixed(2)} ${cx} ${S.center[1]})` +
+    if (r.body) r.body.setAttribute('transform', `translate(0 ${(bob - hopY).toFixed(2)}) rotate(${pitch.toFixed(2)} ${cx} ${S.center[1]})` +
       (sq ? ` translate(${cx} ${gy}) scale(${(1 + sq).toFixed(3)} ${(1 - sq).toFixed(3)}) translate(${-cx} ${-gy})` : ''));
     // head: nods in step, or looks around now and then while standing
     if (r.head) {
@@ -102,12 +104,12 @@
     }
     // legs: each foot is planted for most of the cycle, then lifts and swings forward
     for (const g of r.legs) {
-      const L = g.L, hx = L.hip[0], hy = L.hip[1] + bob, x0 = hx + (L.reach || 0);
+      const L = g.L, hx = L.hip[0], hy = L.hip[1] + bob - hopY, x0 = hx + (L.reach || 0);
       const qq = (p + L.phase) % 1, st = S.stance || .62;
       let fx, fy, rot = 0;
       if (qq < st) { const s = qq / st; fx = x0 + W * S.stride * (.5 - s); fy = S.ground; }
       else { const s = (qq - st) / (1 - st), e = ease(s); fx = x0 + W * S.stride * (-.5 + e); fy = S.ground - W * S.lift * Math.sin(Math.PI * s); rot = W * (L.curl || 30) * Math.sin(Math.PI * s); }
-      fy -= L.footH || 0;
+      fy -= (L.footH || 0) + hopY;
       const [jx, jy] = knee(hx, hy, fx, fy, L.len[0], L.len[1], L.back !== false);
       const d1 = `M${hx.toFixed(1)} ${hy.toFixed(1)}L${jx.toFixed(1)} ${jy.toFixed(1)}`, d2 = `M${jx.toFixed(1)} ${jy.toFixed(1)}L${fx.toFixed(1)} ${fy.toFixed(1)}`;
       g.o1.setAttribute('d', d1); g.f1.setAttribute('d', d1); g.o2.setAttribute('d', d2); g.f2.setAttribute('d', d2);
@@ -673,6 +675,283 @@
           </g>
         </g>
         <g data-l="near"></g>`; } };
+
+  /* ---------- farm, pets and garden animals ---------- */
+  const smallPaw = (c, line) => `<ellipse cx="1.6" cy="-1" rx="3.4" ry="1.9" fill="${c}" stroke="${line}" stroke-width="1"/>`;
+  const woolPuffs = (n, puffs, line) => puffs.map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r + 1.6}" fill="${line}"/>`).join('') + puffs.map(([x, y, r]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="url(#${n}w)"/>`).join('');
+
+  { const line = '#5A4430';
+  RIG.bunny = { w: 130, h: 92, T: .55, ground: 86, stride: 18, lift: 4, hop: 12, stance: .5, bob: .6, nod: 2, pitch: 4, center: [60, 62], head: [88, 50], wag: 5,
+    legs: [
+      { far: true, hip: [46, 66], len: [10, 11], w: [8, 6], reach: -2, phase: 0, curl: 20, muscle: [12, 11, 0], fill: '#8C7258', line, foot: paw('#8C7258', line, 13) },
+      { far: true, hip: [80, 68], len: [8.5, 9], w: [6, 5], reach: 2, phase: .1, curl: 30, fill: '#8C7258', line, foot: tinyPaw('#B8A088', line) },
+      { hip: [40, 66], len: [10, 11], w: [9, 7], reach: -2, phase: .02, curl: 20, muscle: [14, 13, 0], fill: '#A68A6D', line, foot: paw('#C8B096', line, 13) },
+      { hip: [86, 68], len: [8.5, 9], w: [6.5, 5.5], reach: 2, phase: .12, curl: 30, fill: '#A68A6D', line, foot: tinyPaw('#D8C4AC', line) }],
+    draw: n => `<defs><radialGradient id="${n}b" cx=".45" cy=".3" r=".8"><stop offset="0" stop-color="#C8AC8C"/><stop offset=".6" stop-color="#A68A6D"/><stop offset="1" stop-color="#7E6448"/></radialGradient></defs>
+        <ellipse cx="62" cy="87" rx="32" ry="4" fill="#000" opacity=".13"/>
+        <g data-l="far"></g>
+        <g data-p="body">
+          <g data-p="tail" data-spring="14" data-o="28 58"><circle cx="26" cy="56" r="8.2" fill="${line}"/><circle cx="26" cy="56" r="6.8" fill="#FBF7F0"/></g>
+          <path d="M26 62 C24 44 40 34 60 36 C78 38 90 46 90 58 C90 72 76 78 58 78 C40 78 28 74 26 62Z" fill="url(#${n}b)" stroke="${line}" stroke-width="1.6"/>
+          <path d="M40 74 C54 80 74 80 86 72 C80 78 66 80 54 79 C46 78 42 76 40 74Z" fill="#E8DCCB"/>
+          <g data-p="head">
+            <g data-spring="8" data-o="88 38"><path d="M86 38 C80 26 78 12 82 6 C86 4 90 12 92 24 C93 30 92 36 90 40Z" fill="#8C7258" stroke="${line}" stroke-width="1.4"/></g>
+            <ellipse cx="96" cy="50" rx="15" ry="12.5" fill="url(#${n}b)" stroke="${line}" stroke-width="1.5"/>
+            <ellipse cx="102" cy="56" rx="8" ry="5" fill="#E8DCCB" opacity=".75"/>
+            <g data-spring="10" data-o="95 40"><path d="M92 40 C88 26 88 10 94 4 C99 2 102 12 102 26 C102 32 100 38 97 42Z" fill="url(#${n}b)" stroke="${line}" stroke-width="1.4"/>
+              <path d="M94.5 36 C92.5 26 92.5 14 95.5 8 C98 10 99 20 98 32Z" fill="#E8B4B0"/></g>
+            <path d="M110.5 47 l-3 -1.6 h5Z" fill="#D88A90"/>
+            <path d="M109 48.5 C108.5 51.5 106 52.5 104 51" stroke="${line}" stroke-width="1" fill="none" stroke-linecap="round"/>
+            <path d="M104 53 l12 -2 M104 54.5 l12 1.5" stroke="#6A5440" stroke-width=".6"/>
+            ${eye(101, 45, 2.8, '#B09070')}
+          </g>
+        </g>
+        <g data-l="near"></g>` }; }
+
+  { const line = '#6A3A14';
+  RIG.cat = { w: 150, h: 104, T: .56, ground: 98, stride: 22, lift: 8, bob: 1.2, nod: 1.6, pitch: .6, center: [78, 62], head: [116, 52], wag: 3,
+    legs: [
+      { far: true, hip: [56, 68], len: [15, 16], w: [9, 7], reach: -2, phase: .5, muscle: [9, 12, 3], fill: '#C47A34', line, foot: paw('#C47A34', line, 8) },
+      { far: true, hip: [104, 68], len: [15, 16], w: [8.5, 7], reach: 2, phase: .75, fill: '#C47A34', line, foot: paw('#C47A34', line, 8) },
+      { hip: [50, 68], len: [15, 16], w: [10, 7.5], reach: -2, phase: 0, muscle: [11, 13, 3], fill: 'url(#CTL)', line, foot: paw('#F2C890', line, 8) },
+      { hip: [110, 68], len: [15, 16], w: [9, 7.5], reach: 2, phase: .25, fill: 'url(#CTL)', line, foot: paw('#F2C890', line, 8) }],
+    draw: n => `<defs>${ugrad('CTL', 64, 98, '#E8A458', '#C47A34')}${grad(n + 'b', [[0, '#F2B468'], [.55, '#E39A4A'], [1, '#B86E2C']])}
+          <radialGradient id="${n}h" cx=".45" cy=".35" r=".8"><stop offset="0" stop-color="#F6C27E"/><stop offset="1" stop-color="#D88A3E"/></radialGradient></defs>
+        <ellipse cx="80" cy="99" rx="46" ry="4.5" fill="#000" opacity=".13"/>
+        <g data-l="far"></g>
+        <g data-p="body">
+          <g data-p="tail" data-spring="12" data-o="44 56"><path d="M46 58 C32 56 22 46 20 32 C19 22 24 16 30 16 C34 17 33 21 30 24 C27 32 30 44 46 52Z" fill="url(#${n}b)" stroke="${line}" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M23 30 l6 1 M22 38 l7 0 M26 46 l7 -2" stroke="#A85E22" stroke-width="2" stroke-linecap="round"/></g>
+          <path d="M42 60 C44 46 66 42 88 44 C106 45 116 48 120 56 C124 66 118 76 104 78 C88 80 66 80 52 78 C42 76 40 68 42 60Z" fill="url(#${n}b)" stroke="${line}" stroke-width="1.6"/>
+          <path d="M56 76 C72 80 94 80 108 76" stroke="#F8DDB4" stroke-width="4" fill="none" stroke-linecap="round" opacity=".8"/>
+          <path d="M60 46 C62 52 62 56 60 60 M72 44 C74 50 74 56 72 61 M84 44 C86 50 86 56 84 62 M96 45 C98 51 98 56 96 62" stroke="#B0642A" stroke-width="2.6" fill="none" stroke-linecap="round" opacity=".7"/>
+          <g data-p="head">
+            <path d="M110 38 L112 18 L123 31Z" fill="#C47A34" stroke="${line}" stroke-width="1.3" stroke-linejoin="round"/>
+            <path d="M108 44 C108 32 120 26 132 28 C144 30 150 38 150 46 C150 56 140 62 128 62 C116 62 108 54 108 44Z" fill="url(#${n}h)" stroke="${line}" stroke-width="1.5"/>
+            <g data-spring="6" data-o="132 31"><path d="M124 32 L132 13 L140 32Z" fill="url(#${n}h)" stroke="${line}" stroke-width="1.3" stroke-linejoin="round"/><path d="M128 30 L132 20 L136 30Z" fill="#F2A8A0"/></g>
+            <path d="M136 48 C140 46 148 46 150 50 C150 56 144 60 138 58 C134 56 134 50 136 48Z" fill="#FBE8CC"/>
+            <path d="M146.5 46 l3.6 0 l-1.8 2.4Z" fill="#E07A80"/>
+            <path d="M148.3 48.6 C148 51 146 52 144 51" stroke="${line}" stroke-width="1" fill="none" stroke-linecap="round"/>
+            <path d="M120 31 l2 5 M126 29.5 l1 6 M132 29.5 l0 5" stroke="#B0642A" stroke-width="1.8" stroke-linecap="round"/>
+            <ellipse cx="136" cy="41" rx="3.6" ry="3.9" fill="#9CC43A" stroke="#3A4A10" stroke-width=".8"/><ellipse cx="136.6" cy="41" rx="1" ry="3.2" fill="#111"/><circle cx="137.6" cy="39.4" r=".9" fill="#fff"/>
+            <ellipse data-p="lid" cx="136" cy="41" rx="4.4" ry="4.6" fill="#E39A4A" style="transform-origin:136px 36.4px;transform:scaleY(0)"/>
+            <path d="M140 52 l14 -3 M140 54 l14 1 M140 56 l13 4" stroke="#FFF" stroke-width=".7" opacity=".9"/>
+          </g>
+        </g>
+        <g data-l="near"></g>` }; }
+
+  { const line = '#5A4E44';
+  RIG.mouse = { w: 110, h: 60, T: .3, ground: 56, stride: 10, lift: 3, bob: .8, nod: 2, center: [50, 38], head: [72, 36], wag: 4,
+    legs: [
+      { far: true, hip: [36, 49], len: [3.5, 4], w: [3.6, 3], phase: .5, curl: 20, fill: '#9A8C80', line, foot: smallPaw('#E0A8AE', line) },
+      { far: true, hip: [64, 49], len: [3.5, 4], w: [3.6, 3], phase: .75, curl: 20, fill: '#9A8C80', line, foot: smallPaw('#E0A8AE', line) },
+      { hip: [42, 50], len: [3.5, 4], w: [4, 3.2], phase: 0, curl: 20, fill: '#B8AA9C', line, foot: smallPaw('#F0B8BE', line) },
+      { hip: [70, 50], len: [3.5, 4], w: [4, 3.2], phase: .25, curl: 20, fill: '#B8AA9C', line, foot: smallPaw('#F0B8BE', line) }],
+    draw: n => `<defs>${grad(n + 'b', [[0, '#CABFB3'], [1, '#8E8276']])}</defs>
+        <ellipse cx="52" cy="57" rx="28" ry="3" fill="#000" opacity=".13"/>
+        <g data-l="far"></g>
+        <g data-p="body">
+          <g data-p="tail" data-spring="10" data-o="20 42"><path d="M20 42 C8 44 2 36 6 26 C8 22 4 18 0 20" stroke="#D8949E" stroke-width="2.2" fill="none" stroke-linecap="round"/></g>
+          <path d="M18 42 C16 28 32 20 50 22 C66 24 76 32 78 40 C78 50 66 52 48 52 C30 52 20 50 18 42Z" fill="url(#${n}b)" stroke="${line}" stroke-width="1.4"/>
+          <path d="M28 50 C40 53 58 53 70 49" stroke="#EDE4DA" stroke-width="3" fill="none" stroke-linecap="round" opacity=".8"/>
+          <g data-p="head">
+            <circle cx="70" cy="22" r="7" fill="#8E8276" stroke="${line}" stroke-width="1.2"/>
+            <path d="M66 32 C68 24 80 24 90 32 C95 36 98 39 96 42 C92 44 82 46 74 46 C68 44 64 38 66 32Z" fill="url(#${n}b)" stroke="${line}" stroke-width="1.4"/>
+            <g data-spring="6" data-o="76 28"><circle cx="78" cy="20" r="8.5" fill="url(#${n}b)" stroke="${line}" stroke-width="1.2"/><circle cx="78.5" cy="20.5" r="5.6" fill="#F0B8BE"/></g>
+            <circle cx="96.5" cy="40.5" r="2" fill="#E07A88"/>
+            <path d="M92 42 l12 -3 M92 43.5 l12 1 M91 45 l11 4" stroke="#6A5E54" stroke-width=".6"/>
+            ${eye(84, 34, 2.3, '#B8AA9C')}
+          </g>
+        </g>
+        <g data-l="near"></g>` }; }
+
+  { const line = '#7A4E24';
+  RIG.hamster = { w: 100, h: 66, T: .28, ground: 62, stride: 8, lift: 3, bob: .9, nod: 2, center: [48, 40], head: [72, 38], wag: 4,
+    legs: [
+      { far: true, hip: [32, 55], len: [3.5, 4], w: [4.4, 3.6], phase: .5, curl: 20, fill: '#E0B890', line, foot: smallPaw('#E8B4B2', line) },
+      { far: true, hip: [62, 55], len: [3.5, 4], w: [4.4, 3.6], phase: .75, curl: 20, fill: '#E0B890', line, foot: smallPaw('#E8B4B2', line) },
+      { hip: [38, 56], len: [3.5, 4], w: [4.8, 4], phase: 0, curl: 20, fill: '#F0D4B4', line, foot: smallPaw('#F2C2C0', line) },
+      { hip: [68, 56], len: [3.5, 4], w: [4.8, 4], phase: .25, curl: 20, fill: '#F0D4B4', line, foot: smallPaw('#F2C2C0', line) }],
+    draw: n => `<defs><radialGradient id="${n}b" cx=".45" cy=".3" r=".8"><stop offset="0" stop-color="#F8C27A"/><stop offset=".6" stop-color="#E09A48"/><stop offset="1" stop-color="#B8742E"/></radialGradient></defs>
+        <ellipse cx="50" cy="63" rx="32" ry="3" fill="#000" opacity=".13"/>
+        <g data-l="far"></g>
+        <g data-p="body">
+          <path d="M14 42 C12 24 32 16 52 18 C72 20 86 30 86 44 C86 54 70 58 48 58 C28 58 16 52 14 42Z" fill="url(#${n}b)" stroke="${line}" stroke-width="1.5"/>
+          <path d="M26 50 C38 58 62 58 80 50 C74 58 60 59 48 59 C36 59 28 56 26 50Z" fill="#FFF4E6"/>
+          <g data-p="head">
+            <circle cx="62" cy="20" r="5" fill="#C8823A" stroke="${line}" stroke-width="1.1"/>
+            <g data-spring="5" data-o="70 22"><circle cx="70" cy="19" r="6.5" fill="#E09A48" stroke="${line}" stroke-width="1.2"/><circle cx="70.3" cy="19.4" r="4" fill="#F2B8B4"/></g>
+            <ellipse cx="76" cy="44" rx="10" ry="8" fill="#FFF4E6" opacity=".95"/>
+            <path d="M80 30 C84 30 87.5 34 88 38" stroke="#FFF4E6" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <ellipse cx="87.5" cy="38.5" rx="1.9" ry="1.5" fill="#E07A88"/>
+            <path d="M84 41 l11 -2 M84 42.5 l11 1.5" stroke="#8A6A4A" stroke-width=".55"/>
+            ${eye(78, 32, 2.6, '#E09A48')}
+          </g>
+        </g>
+        <g data-l="near"></g>` }; }
+
+  { const line = '#9A5A64';
+  RIG.pig = { w: 150, h: 100, T: .6, ground: 94, stride: 18, lift: 7, bob: 1.4, nod: 2, pitch: .6, center: [74, 58], head: [110, 54], wag: 8,
+    legs: [
+      { far: true, hip: [54, 70], len: [11, 12], w: [10, 8], reach: -1, phase: .5, fill: '#D8909A', line, foot: hoof('#8A5A5E') },
+      { far: true, hip: [100, 70], len: [11, 12], w: [10, 8], reach: 1, phase: .75, fill: '#D8909A', line, foot: hoof('#8A5A5E') },
+      { hip: [48, 72], len: [11, 12], w: [11, 8.5], reach: -1, phase: 0, fill: 'url(#PGL)', line, foot: hoof('#7A4A4E') },
+      { hip: [106, 72], len: [11, 12], w: [11, 8.5], reach: 1, phase: .25, fill: 'url(#PGL)', line, foot: hoof('#7A4A4E') }],
+    draw: n => `<defs>${ugrad('PGL', 66, 94, '#F8BCC4', '#E39AA6')}${grad(n + 'b', [[0, '#FFD2D8'], [.55, '#F6AEB8'], [1, '#D88A96']])}</defs>
+        <ellipse cx="78" cy="95" rx="44" ry="4.5" fill="#000" opacity=".13"/>
+        <g data-l="far"></g>
+        <g data-p="body">
+          <g data-p="tail" data-spring="14" data-o="32 52"><path d="M32 52 c-6 -1 -9 -7 -5 -10 c4 -3 7 2 4 4 c-2 1 -4 -1 -3 -2" stroke="${line}" stroke-width="1.8" fill="none" stroke-linecap="round"/></g>
+          <path d="M30 58 C30 42 52 34 78 36 C100 37 116 44 118 58 C120 74 104 82 78 82 C54 82 30 76 30 58Z" fill="url(#${n}b)" stroke="${line}" stroke-width="1.6"/>
+          <ellipse cx="66" cy="45" rx="22" ry="5.5" fill="#FFE6EA" opacity=".55"/>
+          <g data-p="head">
+            <path d="M112 40 L107 27 L121 35Z" fill="#D88A96" stroke="${line}" stroke-width="1.2" stroke-linejoin="round"/>
+            <path d="M104 46 C108 36 122 34 132 40 C138 44 140 52 138 60 C134 66 120 68 112 64 C104 60 102 52 104 46Z" fill="url(#${n}b)" stroke="${line}" stroke-width="1.5"/>
+            <ellipse cx="139" cy="54" rx="5" ry="7.5" fill="#F49AA8" stroke="${line}" stroke-width="1.3"/>
+            <ellipse cx="139.5" cy="51" rx="1.2" ry="1.8" fill="${line}"/><ellipse cx="139.5" cy="57" rx="1.2" ry="1.8" fill="${line}"/>
+            <path d="M133 62 C130.5 64 127.5 64 125.5 62" stroke="${line}" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+            <g data-spring="8" data-o="122 38"><path d="M118 40 L124 24 L134 40 C130 44 122 44 118 40Z" fill="url(#${n}b)" stroke="${line}" stroke-width="1.3" stroke-linejoin="round"/></g>
+            ${eye(127, 47, 2.3, '#F6AEB8')}
+          </g>
+        </g>
+        <g data-l="near"></g>` }; }
+
+  { const line = '#24501C';
+    const ff = c => `<path d="M-3 -1 L11 -4 L9 -.5 L13 1 L8 3 L-3 2Z" fill="${c}" stroke="${line}" stroke-width="1" stroke-linejoin="round"/>`;
+  RIG.frog = { w: 104, h: 72, T: .6, ground: 66, stride: 16, lift: 3, hop: 14, stance: .5, bob: .5, nod: 1, pitch: 5, center: [50, 50], head: [70, 44], wag: 3,
+    legs: [
+      { far: true, hip: [36, 52], len: [10, 11], w: [9, 6], back: false, phase: 0, curl: 15, muscle: [10, 8, 0], fill: '#3E7E2E', line, foot: ff('#3E7E2E') },
+      { far: true, hip: [66, 56], len: [5, 5.5], w: [5, 4], phase: .1, curl: 20, fill: '#3E7E2E', line, foot: ff('#3E7E2E') },
+      { hip: [30, 54], len: [11, 12], w: [10, 7], back: false, phase: .02, curl: 15, muscle: [12, 9, 0], fill: '#5AAE3A', line, foot: ff('#6ABE4A') },
+      { hip: [72, 58], len: [5, 5.5], w: [5.5, 4.5], phase: .12, curl: 20, fill: '#5AAE3A', line, foot: ff('#6ABE4A') }],
+    draw: n => `<defs><radialGradient id="${n}b" cx=".5" cy=".3" r=".8"><stop offset="0" stop-color="#A2DA62"/><stop offset=".6" stop-color="#5AAE3A"/><stop offset="1" stop-color="#3A7E28"/></radialGradient></defs>
+        <ellipse cx="52" cy="67" rx="32" ry="3.5" fill="#000" opacity=".13"/>
+        <g data-l="far"></g>
+        <g data-p="body">
+          <path d="M18 54 C16 40 30 30 50 30 C66 30 80 36 86 46 C88 54 80 60 64 60 C46 60 22 62 18 54Z" fill="url(#${n}b)" stroke="${line}" stroke-width="1.5"/>
+          <path d="M30 58 C46 62 70 61 84 52 C82 58 72 62 60 62 C46 62 34 61 30 58Z" fill="#EEF0C0"/>
+          <g fill="#2E6E22" opacity=".55"><ellipse cx="34" cy="42" rx="4" ry="3"/><ellipse cx="46" cy="36" rx="3" ry="2.4"/><ellipse cx="52" cy="46" rx="3.6" ry="2.6"/><ellipse cx="28" cy="52" rx="2.6" ry="2"/></g>
+          <g data-p="head">
+            <circle cx="71" cy="32" r="8.5" fill="url(#${n}b)" stroke="${line}" stroke-width="1.4"/>
+            <circle cx="72" cy="31" r="5.8" fill="#F2D23A" stroke="#7A6A10" stroke-width=".8"/><ellipse cx="72.6" cy="31" rx="3.8" ry="2.5" fill="#111"/><circle cx="74" cy="29.6" r="1.1" fill="#fff"/>
+            <ellipse data-p="lid" cx="72" cy="31" rx="6.4" ry="6.4" fill="#5AAE3A" style="transform-origin:72px 24.6px;transform:scaleY(0)"/>
+            <path d="M86.5 46 C80 48.5 72 48.5 63 46" stroke="${line}" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+            <circle cx="85" cy="40" r=".9" fill="${line}"/>
+          </g>
+        </g>
+        <g data-l="near"></g>` }; }
+
+  { const line = '#3A4A22';
+  RIG.turtle = { w: 120, h: 70, T: 1.3, ground: 64, stride: 8, lift: 3, bob: .6, nod: 3, center: [56, 44], head: [92, 48], wag: 3,
+    legs: [
+      { far: true, hip: [40, 52], len: [5, 6], w: [10, 8], phase: .5, curl: 15, fill: '#6E8A4A', line, foot: tinyPaw('#6E8A4A', line) },
+      { far: true, hip: [78, 52], len: [5, 6], w: [10, 8], phase: .75, curl: 15, fill: '#6E8A4A', line, foot: tinyPaw('#6E8A4A', line) },
+      { hip: [34, 54], len: [5, 6], w: [11, 9], phase: 0, curl: 15, fill: '#8AA85A', line, foot: tinyPaw('#9AB86A', line) },
+      { hip: [84, 54], len: [5, 6], w: [11, 9], phase: .25, curl: 15, fill: '#8AA85A', line, foot: tinyPaw('#9AB86A', line) }],
+    draw: n => `<defs><radialGradient id="${n}s" cx=".45" cy=".25" r=".85"><stop offset="0" stop-color="#B8985A"/><stop offset=".6" stop-color="#7E6230"/><stop offset="1" stop-color="#5A4220"/></radialGradient>${grad(n + 'k', [[0, '#A2C070'], [1, '#7A9848']])}</defs>
+        <ellipse cx="58" cy="65" rx="42" ry="3.5" fill="#000" opacity=".13"/>
+        <g data-l="far"></g>
+        <g data-p="body">
+          <path d="M20 50 L7 55 L20 57Z" fill="url(#${n}k)" stroke="${line}" stroke-width="1.1" stroke-linejoin="round"/>
+          <g data-p="head">
+            <path d="M84 48 C92 40 102 36 110 38 C117 40 119 47 114 51 C108 55 98 55 86 54Z" fill="url(#${n}k)" stroke="${line}" stroke-width="1.4"/>
+            <path d="M118 47.5 C114 49.5 110 49.5 106 49" stroke="${line}" stroke-width="1" fill="none" stroke-linecap="round"/>
+            <g fill="#5E7A3A" opacity=".6"><circle cx="98" cy="42" r="1.6"/><circle cx="94" cy="47" r="1.3"/><circle cx="102" cy="48" r="1.2"/></g>
+            ${eye(109, 43, 2, '#8AA85A')}
+          </g>
+          <path d="M18 52 C18 28 38 14 58 14 C80 14 98 28 98 52Z" fill="url(#${n}s)" stroke="${line}" stroke-width="1.6"/>
+          <path d="M46 22 L70 22 L77 36 L68 48 L48 48 L39 36Z" fill="#A8884A" opacity=".55" stroke="#4A3A1A" stroke-width="1.2" stroke-linejoin="round"/>
+          <path d="M39 36 L22 40 M46 22 L36 17 M70 22 L80 17 M77 36 L94 40 M48 48 L44 52 M68 48 L72 52 M58 14 L58 22" stroke="#4A3A1A" stroke-width="1.2" stroke-linecap="round"/>
+          <path d="M50 26 C56 24 62 24 66 26" stroke="#E6D29A" stroke-width="1.6" fill="none" stroke-linecap="round" opacity=".6"/>
+          <path d="M14 50 L102 50 C102 55 98 57 92 57 L22 57 C16 57 14 54 14 50Z" fill="#C8A860" stroke="${line}" stroke-width="1.4"/>
+          <path d="M28 50 v7 M42 50 v7 M56 50 v7 M70 50 v7 M84 50 v7" stroke="#6A5228" stroke-width="1" opacity=".55"/>
+        </g>
+        <g data-l="near"></g>` }; }
+
+  { const line = '#3A2414';
+  RIG.horse = { w: 210, h: 146, T: .7, ground: 140, stride: 34, lift: 12, bob: 1.6, nod: 2.4, pitch: .7, center: [100, 78], head: [158, 40], wag: 4,
+    legs: [
+      { far: true, hip: [76, 84], len: [28, 29], w: [12, 7], reach: -2, phase: .5, muscle: [12, 17, 5], fill: '#7A4A28', line, foot: hoof('#2A201A') },
+      { far: true, hip: [132, 84], len: [28, 29], w: [11, 7], reach: 2, phase: .75, fill: '#7A4A28', line, foot: hoof('#2A201A') },
+      { hip: [68, 86], len: [28, 29], w: [13, 7.5], reach: -2, phase: 0, muscle: [14, 19, 5], fill: 'url(#HSL)', line, foot: hoof('#1E1610') },
+      { hip: [140, 86], len: [28, 29], w: [12, 7.5], reach: 2, phase: .25, fill: 'url(#HSL)', line, foot: hoof('#1E1610') }],
+    draw: n => `<defs>${ugrad('HSL', 80, 140, '#A8683A', '#6A3E20')}${grad(n + 'b', [[0, '#C88A54'], [.55, '#A8683A'], [1, '#7A4A28']])}
+          <radialGradient id="${n}h" cx=".4" cy=".35" r=".85"><stop offset="0" stop-color="#C88A54"/><stop offset="1" stop-color="#8A5430"/></radialGradient></defs>
+        <ellipse cx="104" cy="141" rx="64" ry="5" fill="#000" opacity=".13"/>
+        <g data-l="far"></g>
+        <g data-p="body">
+          <g data-p="tail" data-spring="10" data-o="60 76"><path d="M62 72 C50 74 44 88 44 104 C44 116 48 124 52 128 C50 116 52 104 56 96 C56 108 58 116 62 120 C62 104 62 90 68 80Z" fill="#2A1E16" stroke="#120C08" stroke-width="1.2" stroke-linejoin="round"/></g>
+          <path d="M60 80 C62 62 86 58 112 60 C134 61 146 64 150 76 C154 90 144 100 128 102 C108 104 86 104 72 102 C60 100 56 90 60 80Z" fill="url(#${n}b)" stroke="${line}" stroke-width="1.6"/>
+          <ellipse cx="84" cy="70" rx="16" ry="7" fill="#E8B080" opacity=".3"/>
+          <path d="M136 70 C138 52 146 36 156 28 L174 38 C166 48 160 64 156 88Z" fill="url(#${n}b)" stroke="${line}" stroke-width="1.6" stroke-linejoin="round"/>
+          <g data-spring="4" data-o="150 30"><path d="M152 26 C144 36 138 52 136 72 C131 60 133 44 141 32 C145 26 150 22 156 22Z" fill="#2A1E16" stroke="#120C08" stroke-width="1.1"/></g>
+          <g data-p="head">
+            <g data-spring="8" data-o="162 22"><path d="M158 24 L161 9 L167 22Z" fill="url(#${n}h)" stroke="${line}" stroke-width="1.3" stroke-linejoin="round"/></g>
+            <path d="M152 28 C154 18 166 14 174 18 L196 42 C201 48 198 56 190 56 C184 56 178 52 172 48 C164 44 154 38 152 28Z" fill="url(#${n}h)" stroke="${line}" stroke-width="1.6" stroke-linejoin="round"/>
+            <path d="M174 22 L192 44" stroke="#F4EEE4" stroke-width="3.4" stroke-linecap="round" opacity=".9"/>
+            <ellipse cx="194" cy="49" rx="1.6" ry="2.2" fill="${line}"/>
+            <path d="M190 55 C186 55 183 54 181 52" stroke="${line}" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+            <path d="M157 22 C163 19 168 21 171 26 C165 26 160 26 157 22Z" fill="#2A1E16"/>
+            ${eye(168, 30, 2.6, '#9A5A30')}
+          </g>
+        </g>
+        <g data-l="near"></g>` }; }
+
+  { const line = '#2A2420';
+  RIG.cow = { w: 200, h: 140, T: .8, ground: 134, stride: 24, lift: 9, bob: 1.4, nod: 2, pitch: .5, center: [96, 74], head: [150, 62], wag: 4,
+    legs: [
+      { far: true, hip: [70, 88], len: [22, 23], w: [13, 9], reach: -1, phase: .5, muscle: [12, 15, 4], fill: '#D2CEC6', line, foot: hoof('#2A2420') },
+      { far: true, hip: [126, 88], len: [22, 23], w: [12, 9], reach: 1, phase: .75, fill: '#D2CEC6', line, foot: hoof('#2A2420') },
+      { hip: [62, 90], len: [22, 23], w: [14, 10], reach: -1, phase: 0, muscle: [14, 17, 4], fill: '#F4F2EC', line, foot: hoof('#1E1A18') },
+      { hip: [134, 90], len: [22, 23], w: [13, 10], reach: 1, phase: .25, fill: '#F4F2EC', line, foot: hoof('#1E1A18') }],
+    draw: n => { const P = 'M50 72 C52 56 76 52 104 54 C128 55 142 58 148 70 C154 84 146 96 130 98 C110 100 86 100 70 98 C56 96 48 86 50 72Z';
+      return `<defs>${grad(n + 'b', [[0, '#FFFFFF'], [1, '#DCD8D0']])}<clipPath id="${n}c"><path d="${P}"/></clipPath></defs>
+        <ellipse cx="100" cy="135" rx="62" ry="5" fill="#000" opacity=".13"/>
+        <g data-l="far"></g>
+        <g data-p="body">
+          <g data-p="tail" data-spring="8" data-o="52 66"><path d="M53 66 C45 72 43 90 45 106" stroke="${line}" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M41 104 C42 115 49 115 49 104 C47 100 43 100 41 104Z" fill="#1E1A18"/></g>
+          <path d="${P}" fill="url(#${n}b)" stroke="${line}" stroke-width="1.6"/>
+          <g clip-path="url(#${n}c)" fill="#1E1A18"><ellipse cx="72" cy="64" rx="16" ry="12"/><ellipse cx="106" cy="57" rx="14" ry="8"/><ellipse cx="98" cy="90" rx="17" ry="10"/><ellipse cx="134" cy="74" rx="10" ry="14"/><ellipse cx="56" cy="90" rx="9" ry="8"/></g>
+          <path d="M84 97 C86 108 100 108 102 97Z" fill="#F4AEB8" stroke="${line}" stroke-width="1.2"/><path d="M88 105 v4 M93 106 v4 M98 105 v4" stroke="#D88A96" stroke-width="2" stroke-linecap="round"/>
+          <path d="M134 66 C138 56 146 50 152 48 L162 64 C157 72 151 80 146 90Z" fill="url(#${n}b)" stroke="${line}" stroke-width="1.5" stroke-linejoin="round"/>
+          <g data-p="head">
+            <path d="M151 47 C147 39 149 33 155 31 M163 46 C165 38 171 34 176 34" stroke="#6A5A3A" stroke-width="4.6" fill="none" stroke-linecap="round"/>
+            <path d="M151 47 C147 39 149 33 155 31 M163 46 C165 38 171 34 176 34" stroke="#F0E6CC" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <path d="M148 52 L135 49 L146 59Z" fill="#1E1A18"/>
+            <path d="M146 50 C148 42 160 40 168 44 C176 48 182 60 184 70 C186 78 182 84 174 84 C166 84 158 78 154 70 C150 64 146 58 146 50Z" fill="url(#${n}b)" stroke="${line}" stroke-width="1.5"/>
+            <path d="M148 48 C152 42 162 42 166 46 C167 52 165 58 160 62 C154 58 150 54 148 48Z" fill="#1E1A18"/>
+            <path d="M168 70 C174 66 182 68 185 74 C186 80 182 85 175 85 C170 85 166 80 168 70Z" fill="#F4AEB8" stroke="${line}" stroke-width="1.3"/>
+            <ellipse cx="177" cy="76" rx="1.5" ry="2" fill="#8A4A54"/><ellipse cx="183" cy="75" rx="1.3" ry="1.8" fill="#8A4A54"/>
+            <g data-spring="8" data-o="166 50"><path d="M166 50 L181 46 C183 50 179 55 168 56Z" fill="url(#${n}b)" stroke="${line}" stroke-width="1.3" stroke-linejoin="round"/><path d="M169 51 L178 48.5 C178 51 175 53 170 53.5Z" fill="#F4AEB8"/></g>
+            <circle cx="169" cy="57" r="3.2" fill="#3A3430"/>${eye(169, 57, 2.4, '#F4F2EC')}
+          </g>
+        </g>
+        <g data-l="near"></g>`; } }; }
+
+  { const line = '#7A6E62';
+  RIG.sheep = { w: 160, h: 116, T: .66, ground: 110, stride: 20, lift: 8, bob: 1.4, nod: 2, pitch: .5, center: [78, 66], head: [118, 58], wag: 6,
+    legs: [
+      { far: true, hip: [62, 84], len: [12, 13], w: [7, 6], reach: -1, phase: .5, fill: '#221C18', line: '#120E0C', foot: hoof('#120E0C') },
+      { far: true, hip: [100, 84], len: [12, 13], w: [7, 6], reach: 1, phase: .75, fill: '#221C18', line: '#120E0C', foot: hoof('#120E0C') },
+      { hip: [54, 86], len: [12, 13], w: [7.5, 6.5], reach: -1, phase: 0, fill: '#3A3430', line: '#120E0C', foot: hoof('#120E0C') },
+      { hip: [108, 86], len: [12, 13], w: [7.5, 6.5], reach: 1, phase: .25, fill: '#3A3430', line: '#120E0C', foot: hoof('#120E0C') }],
+    draw: n => `<defs><radialGradient id="${n}w" cx=".4" cy=".3" r=".8"><stop offset="0" stop-color="#FFFDF6"/><stop offset="1" stop-color="#E2D9C8"/></radialGradient>
+          <radialGradient id="${n}f" cx=".5" cy=".35" r=".8"><stop offset="0" stop-color="#4A423C"/><stop offset="1" stop-color="#221C18"/></radialGradient></defs>
+        <ellipse cx="82" cy="111" rx="50" ry="4.5" fill="#000" opacity=".13"/>
+        <g data-l="far"></g>
+        <g data-p="body">
+          <g data-p="tail" data-spring="14" data-o="34 66"><circle cx="31" cy="68" r="8.6" fill="${line}"/><circle cx="31" cy="68" r="7" fill="url(#${n}w)"/></g>
+          ${woolPuffs(n, [[44, 64, 15], [58, 52, 16], [76, 48, 17], [94, 50, 17], [110, 58, 15], [112, 76, 14], [96, 84, 16], [76, 86, 17], [56, 84, 16], [42, 76, 13], [78, 66, 20]], line)}
+          <g data-p="head">
+            <path d="M118 50 L105 45 L114 56Z" fill="#221C18"/>
+            <path d="M112 56 C112 44 124 40 134 46 C144 52 150 64 148 72 C146 80 136 82 128 78 C120 74 112 66 112 56Z" fill="url(#${n}f)" stroke="#120E0C" stroke-width="1.5"/>
+            <circle cx="118" cy="46" r="8.6" fill="${line}"/><circle cx="127" cy="42" r="7.6" fill="${line}"/><circle cx="118" cy="46" r="7" fill="url(#${n}w)"/><circle cx="127" cy="42" r="6" fill="url(#${n}w)"/>
+            <g data-spring="8" data-o="124 52"><path d="M124 51 L109 55 C109 60 116 61 126 57Z" fill="url(#${n}f)" stroke="#120E0C" stroke-width="1.3" stroke-linejoin="round"/></g>
+            <path d="M146 70 C145 73 142 74 140 73 M147.5 66 l-.5 2" stroke="#8A8078" stroke-width="1" fill="none" stroke-linecap="round"/>
+            <circle cx="134" cy="56" r="3" fill="#5A524C"/>${eye(134, 56, 2.1, '#2E2824')}
+          </g>
+        </g>
+        <g data-l="near"></g>` }; }
 
   window.RIG = RIG;
   // Rig animals take over from the older drawings with the same name, everywhere the app draws a pet.
