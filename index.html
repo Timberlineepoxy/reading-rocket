@@ -734,6 +734,15 @@ const animalImg = (a, h) => petSVG(a.id, h);
 // Whole-app backgrounds: drawn and animated in backgrounds.js
 const BACKGROUNDS = RRBG.list.map(x => ({ ...x, kind: 'bg' }));
 const UNLOCKS = [...ANIMALS, ...BACKGROUNDS];
+// Thanksgiving extras are priced from the stars he had the first time he saw them,
+// so they can be won within about a week, before Thanksgiving.
+S.dyn ||= {};
+for (const [id, add] of [['harvest', 180], ['turkey', 100]]) {
+  const u = UNLOCKS.find(x => x.id === id); if (!u) continue;
+  if (!S.dyn[id]) { S.dyn[id] = starsEarned() + add; save(); }
+  u.cost = S.dyn[id];
+}
+BACKGROUNDS.sort((a, b) => a.cost - b.cost); ANIMALS.sort((a, b) => a.cost - b.cost);
 function checkUnlocks() {
   S.unlocked ||= {};
   const have = starsEarned();
@@ -1899,7 +1908,7 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) naviga
 // ---------- staying up to date ----------
 // Phones often resume the app from memory instead of reloading it, so check for a newer
 // version whenever the app opens or comes back on screen, and reload into it.
-const APP_VERSION = 'rr-shell-v26';  // must match SHELL in sw.js
+const APP_VERSION = 'rr-shell-v27';  // must match SHELL in sw.js
 async function checkForUpdate() {
   if (!location.protocol.startsWith('http')) return;
   try {

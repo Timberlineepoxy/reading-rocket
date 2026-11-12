@@ -222,6 +222,87 @@
     <path d="M0 52 C90 38 170 46 250 56 C320 64 360 48 400 50 L400 80 L0 80Z" fill="#DFA05C"/>
     <g fill="#B97A3E" opacity=".55"><ellipse cx="60" cy="60" rx="10" ry="4"/><ellipse cx="300" cy="66" rx="14" ry="5"/><ellipse cx="180" cy="44" rx="6" ry="2.5"/></g></svg>`;
 
+  /* ---- harvest, northern lights, city at midnight, beach, campfire, flag ---- */
+  const hayBale = w => `<svg viewBox="0 0 60 40" width="${w}" height="${w * .67}"><rect x="2" y="6" width="56" height="32" rx="7" fill="#E9B949" stroke="#C99A33" stroke-width="2"/>
+    <path d="M2 17 H58 M2 28 H58" stroke="#B9852A" stroke-width="2.4"/><path d="M8 10 l3 -6 M18 9 l2 -7 M30 9 l3 -6 M42 9 l2 -6 M52 10 l3 -5" stroke="#F2CF6B" stroke-width="2" stroke-linecap="round"/></svg>`;
+  const cornStalk = h => `<svg viewBox="0 0 30 100" width="${h * .3}" height="${h}"><path d="M15 100 V8" stroke="#B8923A" stroke-width="3"/>
+    <path d="M15 30 C6 26 2 18 1 10 C8 16 12 22 15 26Z M15 52 C24 48 28 40 29 32 C22 38 18 44 15 48Z M15 74 C6 70 2 62 1 54 C8 60 12 66 15 70Z" fill="#D9B45A"/>
+    <path d="M17 42 C23 38 25 30 23 23 C18 27 16 34 17 42Z" fill="#F2C744"/><path d="M15 8 l-3 -7 M15 8 l3 -7 M15 8 v-8" stroke="#C9A04A" stroke-width="1.6"/></svg>`;
+  const scarecrow = h => `<svg viewBox="0 0 60 100" width="${h * .6}" height="${h}"><path d="M30 100 V20 M6 40 H54" stroke="#7A5230" stroke-width="4"/>
+    <path d="M14 36 L46 36 L44 66 L16 66Z" fill="#C2410C" stroke="#7C2D12" stroke-width="1.5"/><path d="M22 36 V66 M30 36 V66 M38 36 V66" stroke="#9A3412" stroke-width="1.2" opacity=".6"/>
+    <path d="M8 36 L16 36 L14 46 L6 44Z M52 36 L44 36 L46 46 L54 44Z" fill="#2563EB"/>
+    <path d="M6 44 l-3 4 M8 45 l-1 5 M54 44 l3 4 M52 45 l1 5 M24 66 l-2 6 M30 66 v7 M36 66 l2 6" stroke="#E9B949" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="30" cy="24" r="10" fill="#F2D29B"/><circle cx="26.5" cy="23" r="1.4" fill="#222"/><circle cx="33.5" cy="23" r="1.4" fill="#222"/><path d="M25 28 C28 31 32 31 35 28" stroke="#222" stroke-width="1.4" fill="none"/>
+    <path d="M12 15 C20 12 40 12 48 15 C46 18 14 18 12 15Z" fill="#8B5A2B"/><path d="M21 15 C21 4 39 4 39 15Z" fill="#A0693A"/><path d="M21 12 H39" stroke="#C2410C" stroke-width="2"/></svg>`;
+  const pumpkin = w => `<svg viewBox="0 0 60 50" width="${w}" height="${w * .83}"><path d="M30 12 C28 6 30 2 34 1" stroke="#4E7D3A" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <ellipse cx="18" cy="31" rx="14" ry="17" fill="#E06A16"/><ellipse cx="42" cy="31" rx="14" ry="17" fill="#E06A16"/><ellipse cx="30" cy="31" rx="13" ry="18" fill="#F2862A"/>
+    <path d="M30 13 C26 22 26 40 30 49 M18 14 C12 22 12 40 18 48 M42 14 C48 22 48 40 42 48" stroke="#B9530E" stroke-width="1.6" fill="none"/>
+    <path d="M24 20 C24 26 25 32 27 36" stroke="#FFB067" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".7"/><path d="M35 8 C39 5 44 7 44 10 C40 11 37 10 35 8Z" fill="#5FA34E"/></svg>`;
+  const fields = () => `<svg viewBox="0 0 400 140" preserveAspectRatio="none" style="width:100%;height:100%;display:block">
+    <path d="M0 60 C80 30 160 40 240 56 C310 70 360 44 400 50 V140 H0Z" fill="#D9A441"/>
+    <path d="M0 96 C90 76 180 84 260 98 C330 110 370 92 400 94 V140 H0Z" fill="#B7791F"/>
+    <path d="M20 70 C80 52 150 58 220 70 M10 84 C90 68 170 74 250 84 M40 118 C120 102 200 108 300 120" stroke="#F2C76B" stroke-width="2" fill="none" opacity=".6"/></svg>`;
+  const peaks = () => `<svg viewBox="0 0 400 150" preserveAspectRatio="none" style="width:100%;height:100%;display:block">
+    <path d="M0 150 V90 L50 40 L90 80 L140 20 L200 90 L250 50 L300 100 L350 30 L400 80 V150Z" fill="#1E3A5F"/>
+    <path d="M50 40 L62 52 L56 54 L48 48 L40 54Z M140 20 L156 40 L146 38 L138 44 L128 36Z M250 50 L262 62 L252 60 L244 62Z M350 30 L364 46 L354 44 L346 48 L338 42Z" fill="#E8F1FA"/>
+    <path d="M0 150 V118 L60 100 L120 120 L190 96 L260 122 L330 104 L400 118 V150Z" fill="#0F2440"/></svg>`;
+  const skyline = () => { let x = 0, out = '', i = 0;
+    while (x < 400) { const w = 22 + (i * 13) % 26, h = 40 + (i * 29) % 70; out += `<rect x="${x}" y="${150 - h}" width="${w}" height="${h}" fill="#140C2E"/>`;
+      for (let wy = 150 - h + 6; wy < 146; wy += 9) for (let wx = x + 4; wx < x + w - 4; wx += 7) if ((wx * 7 + wy * 3 + i) % 5 < 2)
+        out += `<rect ${(wx + wy) % 4 ? '' : `class="bgx-win" style="animation-delay:-${(wx % 9) * .7}s"`} x="${wx}" y="${wy}" width="3" height="4" fill="#FFD66B"/>`;
+      x += w + 2; i++; }
+    return `<svg viewBox="0 0 400 150" preserveAspectRatio="xMidYMax slice" style="width:100%;height:100%;display:block">${out}</svg>`; };
+  const clockTower = h => `<svg viewBox="0 0 60 160" width="${h * .375}" height="${h}"><rect x="12" y="40" width="36" height="120" fill="#1B1240"/><path d="M8 42 L30 4 L52 42Z" fill="#1B1240"/>
+    <circle cx="30" cy="62" r="15" fill="#FFF3C4" stroke="#FFD66B" stroke-width="2.4"/>
+    ${[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map(a => `<path d="M30 49 V51.6" stroke="#2A1B5A" stroke-width="1.4" transform="rotate(${a} 30 62)"/>`).join('')}
+    <path d="M30 62 V50 M30 62 V53" stroke="#2A1B5A" stroke-width="2.6" stroke-linecap="round"/><circle cx="30" cy="62" r="2" fill="#2A1B5A"/>
+    <rect x="22" y="90" width="5" height="8" fill="#FFD66B"/><rect x="33" y="90" width="5" height="8" fill="#FFD66B"/><rect x="22" y="112" width="5" height="8" fill="#FFD66B"/><rect x="33" y="112" width="5" height="8" fill="#FFD66B"/></svg>`;
+  const tent = w => `<svg viewBox="0 0 100 70" width="${w}" height="${w * .7}"><path d="M4 68 L50 6 L96 68Z" fill="#F97316"/><path d="M50 6 L96 68 H70Z" fill="#C2410C"/>
+    <path d="M50 6 L38 68 H62Z" fill="#FFD27A"/><path d="M50 6 L44 68 H56Z" fill="#FFF0B8"/><path d="M50 6 V0" stroke="#5B3A1A" stroke-width="2.4"/><path d="M2 68 H98" stroke="#3B2414" stroke-width="2"/></svg>`;
+  const campfire = w => `<svg viewBox="0 0 120 112" width="${w}" height="${w * 112 / 120}" style="overflow:visible">
+    <g class="bgx-fire" style="transform-origin:60px 94px">
+      <path d="M60 4 C70 28 92 40 90 66 C88 86 76 96 60 96 C44 96 32 86 30 66 C28 46 44 36 50 18 C54 32 58 36 62 36 C58 26 57 14 60 4Z" fill="#FF6A1A"/>
+      <path d="M60 30 C66 46 80 54 78 72 C76 86 68 94 60 94 C52 94 44 86 43 74 C42 62 50 56 54 46 C56 54 58 56 61 56 C59 48 58 40 60 30Z" fill="#FFB020"/>
+      <path d="M60 56 C64 64 70 70 69 80 C68 88 64 92 60 92 C56 92 52 88 52 82 C52 76 56 72 58 66 C59 70 60 70 61 70 C60 66 60 60 60 56Z" fill="#FFF07A"/></g>
+    <path d="M16 100 L104 88" stroke="#6B3E1F" stroke-width="12" stroke-linecap="round"/><path d="M16 88 L104 102" stroke="#7A4A26" stroke-width="12" stroke-linecap="round"/>
+    <circle cx="16" cy="100" r="5" fill="#C99A6B"/><circle cx="104" cy="102" r="5" fill="#C99A6B"/>
+    ${[[6, 106], [24, 108], [44, 110], [78, 110], [98, 108], [114, 106]].map(([x, y]) => `<ellipse cx="${x}" cy="${y}" rx="9" ry="5.5" fill="#6B7280"/>`).join('')}</svg>`;
+  const forest = c => `<svg viewBox="0 0 400 120" preserveAspectRatio="none" style="width:100%;height:100%;display:block">${Array.from({ length: 22 }, (_, i) => {
+    const x = i * 19 - 6, h = 60 + ((i * 37) % 50); return `<path d="M${x} 120 L${x + 12} ${120 - h} L${x + 24} 120Z" fill="${c}"/>`; }).join('')}<rect y="108" width="400" height="12" fill="${c}"/></svg>`;
+  const beachUmbrella = w => `<svg viewBox="0 0 100 92" width="${w}" height="${w * .92}"><path d="M52 18 L44 92" stroke="#8B5A2B" stroke-width="3"/>
+    <path d="M2 36 C12 8 80 -4 98 24Z" fill="#EF4444"/><path d="M2 36 C14 18 30 10 46 6 L54 22Z M66 6 C80 8 92 14 98 24 L62 22Z" fill="#fff"/></svg>`;
+  const sandcastle = w => `<svg viewBox="0 0 80 62" width="${w}" height="${w * .775}"><g fill="#E8C27A"><rect x="8" y="32" width="64" height="30"/><rect x="4" y="20" width="18" height="42"/><rect x="58" y="20" width="18" height="42"/><rect x="30" y="12" width="20" height="50"/>
+    <path d="M4 20 v-5 h4 v5 h3 v-5 h4 v5 h3 v-5 h4 v5Z M58 20 v-5 h4 v5 h3 v-5 h4 v5 h3 v-5 h4 v5Z M30 12 v-5 h4 v5 h4 v-5 h4 v5 h4 v-5 h4 v5Z"/></g>
+    <path d="M36 62 v-12 a4 4 0 0 1 8 0 v12Z" fill="#B9853F"/><path d="M40 12 V2" stroke="#6B4A2B" stroke-width="1.4"/><path d="M40 2 L50 5 L40 8Z" fill="#EF4444"/></svg>`;
+  const crab = w => `<svg viewBox="0 0 60 38" width="${w}" height="${w * .63}"><g stroke="#C2410C" stroke-width="2.6" stroke-linecap="round" fill="none">
+    <path class="bgx-scut" d="M18 26 L8 34 M22 28 L14 36"/><path class="bgx-scut bgx-scut2" d="M42 26 L52 34 M38 28 L46 36"/><path d="M16 20 C10 16 6 10 8 6 M44 20 C50 16 54 10 52 6"/></g>
+    <path d="M3 8 C3 1 13 1 13 8 C11 5 6 5 3 8Z M47 8 C47 1 57 1 57 8 C55 5 50 5 47 8Z" fill="#EA580C"/>
+    <ellipse cx="30" cy="24" rx="16" ry="10" fill="#F97316"/><path d="M24 14 V9 M36 14 V9" stroke="#C2410C" stroke-width="2"/>
+    <circle cx="24" cy="8" r="2.8" fill="#fff"/><circle cx="36" cy="8" r="2.8" fill="#fff"/><circle cx="24" cy="8" r="1.4" fill="#111"/><circle cx="36" cy="8" r="1.4" fill="#111"/>
+    <path d="M25 26 C28 28 32 28 35 26" stroke="#9A3412" stroke-width="1.4" fill="none"/></svg>`;
+  const beachBall = s => `<svg viewBox="-20 -20 40 40" width="${s}" height="${s}">${['#EF4444', '#fff', '#3B82F6', '#fff', '#FACC15', '#fff'].map((c, i) =>
+    `<path d="M0 0 L0 -18 A18 18 0 0 1 15.59 -9Z" fill="${c}" transform="rotate(${i * 60})"/>`).join('')}<circle r="4" fill="#fff"/><circle r="18" fill="none" stroke="#00000022"/></svg>`;
+  const star5 = (s, c) => `<svg viewBox="-12 -12 24 24" width="${s}" height="${s}"><path d="M0 -11 L3.2 -3.6 L11 -3.4 L4.9 1.6 L7 9.3 L0 4.8 L-7 9.3 L-4.9 1.6 L-11 -3.4 L-3.2 -3.6Z" fill="${c}" stroke="#00000026" stroke-width=".8"/></svg>`;
+  // The flag is cut into thin strips that each bob a moment after the last, so it ripples like it is in the wind.
+  const flag = w => { const n = 14, sw = 190 / n;
+    const stars = Array.from({ length: 30 }, (_, i) => `<circle cx="${6.5 + (i % 6) * 12 + (Math.floor(i / 6) % 2) * 6}" cy="${5.5 + Math.floor(i / 6) * 10.5}" r="2" fill="#fff"/>`).join('');
+    const inner = `<rect width="190" height="100" fill="#B22234"/>${[1, 3, 5, 7, 9, 11].map(i => `<rect y="${(i * 100 / 13).toFixed(2)}" width="190" height="${(100 / 13).toFixed(2)}" fill="#fff"/>`).join('')}<rect width="76" height="${(700 / 13).toFixed(2)}" fill="#3C3B6E"/>${stars}`;
+    return `<svg viewBox="-2 -14 196 128" width="${w}" height="${Math.round(w * 128 / 196)}" style="overflow:visible"><defs>${Array.from({ length: n }, (_, k) => `<clipPath id="rrfl${k}"><rect x="${(k * sw - .3).toFixed(2)}" y="-20" width="${(sw + .6).toFixed(2)}" height="140"/></clipPath>`).join('')}</defs>
+      ${Array.from({ length: n }, (_, k) => `<g clip-path="url(#rrfl${k})"><g class="bgx-flagwave" style="--fa:${(1 + k * .6).toFixed(1)}px;animation-delay:-${(k * .11).toFixed(2)}s">${inner}<rect x="${(k * sw).toFixed(2)}" width="${sw.toFixed(2)}" height="100" fill="${k % 2 ? '#000' : '#fff'}" opacity=".07"/></g></g>`).join('')}</svg>`; };
+  const flagPole = (w, poleH) => `<div style="position:relative;width:${w + 10}px;height:${poleH}px"><div style="position:absolute;left:0;top:0;width:6px;height:${poleH}px;border-radius:3px;background:linear-gradient(90deg,#E2E6EC,#8A93A0)"></div>
+    <div style="position:absolute;left:-3px;top:-9px;width:12px;height:12px;border-radius:50%;background:#FFD23F"></div><div style="position:absolute;left:6px;top:4px">${flag(w)}</div></div>`;
+  const miniFlag = `<svg viewBox="0 0 30 20" width="30" height="20"><rect width="30" height="20" fill="#B22234"/>${[1, 3, 5].map(i => `<rect y="${i * 20 / 7}" width="30" height="${20 / 7}" fill="#fff"/>`).join('')}<rect width="13" height="${60 / 7}" fill="#3C3B6E"/></svg>`;
+  const poppy = h => `<svg viewBox="0 0 40 100" width="${h * .4}" height="${h}"><path d="M20 100 C20 80 22 60 20 34" stroke="#3E7C3A" stroke-width="2.4" fill="none"/><path d="M20 72 C12 68 8 62 8 56 C14 60 18 64 20 68Z" fill="#4E9A48"/>
+    <g transform="translate(20 24)">${[0, 72, 144, 216, 288].map(a => `<ellipse rx="9" ry="11" cy="-8" fill="#D62828" transform="rotate(${a})"/>`).join('')}<circle r="5" fill="#1F1F1F"/><circle r="2" fill="#444"/></g></svg>`;
+  const jets = w => `<svg viewBox="0 0 300 80" width="${w}" height="${w * .27}"><defs><linearGradient id="rrtrail" gradientUnits="userSpaceOnUse" x1="0" x2="190"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity=".95"/></linearGradient></defs>
+    ${[[200, 30], [160, 12], [160, 50]].map(([x, y]) => `<path d="M${x - 150} ${y + 4} H${x - 4}" stroke="url(#rrtrail)" stroke-width="4" stroke-linecap="round"/>
+    <g transform="translate(${x} ${y})"><path d="M0 4 L30 2 C36 2 40 4 40 4 C40 4 36 6 30 6Z" fill="#5B6676"/><path d="M14 4 L4 -10 L10 -10 L22 3Z M14 4 L4 18 L10 18 L22 5Z" fill="#475263"/>
+      <path d="M0 4 L-4 -4 L2 -4 L6 3Z" fill="#475263"/><path d="M28 3 C30 2 33 2 35 3.5" stroke="#9FD3FF" stroke-width="1.6"/></g>`).join('')}</svg>`;
+  const ribbonBanner = (text, w) => `<svg viewBox="0 0 320 60" width="${w}" height="${w * 60 / 320}"><path d="M22 14 L4 14 L14 32 L4 50 L38 50Z" fill="#7F1D1D"/><path d="M298 14 L316 14 L306 32 L316 50 L282 50Z" fill="#7F1D1D"/>
+    <path d="M26 6 H294 V44 H26Z" fill="#B91C1C"/><path d="M26 9 H294" stroke="#FCA5A5" stroke-width="2"/><text x="160" y="32" text-anchor="middle" font-family="Fredoka,Arial,sans-serif" font-weight="700" font-size="21" fill="#fff" letter-spacing="1">${text}</text></svg>`;
+  const burstIcon = `<svg viewBox="-15 -15 30 30" width="30" height="30">${[0, 45, 90, 135, 180, 225, 270, 315].map((a, i) => `<path d="M0 -4 V-13" stroke="${['#FFD23F', '#FF5C8A', '#5CF2C2', '#7CC4FF'][i % 4]}" stroke-width="2.6" stroke-linecap="round" transform="rotate(${a})"/>`).join('')}</svg>`;
+  const auroraIcon = '<svg viewBox="0 0 30 30" width="30" height="30"><path d="M2 18 C8 4 16 14 22 5 C24 3 27 3 28 5" stroke="#34D399" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M2 26 C8 14 16 22 28 12" stroke="#A78BFA" stroke-width="3" fill="none" stroke-linecap="round"/></svg>';
+
   /* ======================= engine ======================= */
   let fxEl, bgEl, anims = [], timers = [], current = '';
   function box(html, layer, css = '') {
@@ -330,6 +411,21 @@
   const twinkles = (n, maxTop, c, layer = 'bg') => Array.from({ length: n }, (_, i) =>
     `<span class="bgx-tw" style="left:${(i * 37 + 7) % 100}%;top:${(i * 53 + 11) % maxTop}%;width:${2 + (i % 3)}px;height:${2 + (i % 3)}px;background:${c};animation-delay:-${(i % 7) * .45}s"></span>`).join('');
   const full = 'inset:0;width:100%;height:100%';
+
+  // Fireworks: a rocket trail shoots up from the floor, then bursts into sparks that drift down.
+  function burst(x, y, colors, n = 20) {
+    const r = rnd(70, 120);
+    for (let i = 0; i < n; i++) { const a = i / n * Math.PI * 2 + rnd(-.1, .1), d = r * rnd(.75, 1), c = pick(colors);
+      pass(`<span class="bgx-spark" style="background:${c};box-shadow:0 0 8px 2px ${c}"></span>`,
+        [{ transform: `translate(${x}px,${y}px) scale(1.2)`, opacity: 1 }, { transform: `translate(${x + Math.cos(a) * d}px,${y + Math.sin(a) * d}px) scale(1)`, opacity: 1, offset: .6 },
+          { transform: `translate(${x + Math.cos(a) * d * 1.1}px,${y + Math.sin(a) * d * 1.1 + 40}px) scale(.3)`, opacity: 0 }], rnd(1300, 1900), 'fx', '', 'cubic-bezier(.15,.75,.35,1)'); }
+    pass('<span class="bgx-boom"></span>', [{ transform: `translate(${x - 60}px,${y - 60}px) scale(.2)`, opacity: .9 }, { transform: `translate(${x - 60}px,${y - 60}px) scale(1.4)`, opacity: 0 }], 600, 'fx');
+  }
+  function firework(colors) {
+    const x = rnd(W() * .12, W() * .88), y = rnd(H() * .1, H() * .38), x0 = x + rnd(-40, 40);
+    pass('<span class="bgx-trail"></span>', [{ transform: `translate(${x0}px,${floorY()}px)`, opacity: 1 }, { transform: `translate(${x}px,${y}px)`, opacity: .6 }],
+      rnd(800, 1100), 'fx', '', 'cubic-bezier(.3,.6,.4,1)', () => burst(x, y, colors));
+  }
 
   /* ======================= the backgrounds ======================= */
   const HDR = {
@@ -592,6 +688,124 @@
         every(16, 28, () => { const h = 64; pass(`<div class="walking">${petSVG('roadrunner', h)}</div>`, across(fy - h + 2, h * 1.33, Math.random() < .5), rnd(2.2, 3) * 1000); }, [10, 16]);
         every(18, 30, () => { const w = rnd(70, 100); pass(hawk(w), wavy(rnd(110, H() * .35), w, Math.random() < .5, rnd(20, 40), 1), rnd(14, 20) * 1000); }, [4, 9]);
       } },
+
+    { id: 'harvest', e: '🦃', n: 'Thanksgiving Harvest', cost: 3150, hdr: 'linear-gradient(135deg,#7C2D12,#B45309 55%,#D97706)', tc: '#B45309', base: '#F6D7A7',
+      sky: 'linear-gradient(#FF9F5A,#FFC98A 36%,#FFE3B8 62%,#F4D29A)', thumb: pumpkin(30), build() {
+        const fy = floorY(), up = H() - fy;
+        box('<div class="bgx-sunset" style="width:150px;height:150px"></div>', 'bg', `left:auto;right:10%;top:auto;bottom:${up + 70}px`);
+        box(fields(), 'bg', `top:auto;bottom:${up - 4}px;width:100%;height:${Math.min(150, H() * .18)}px`);
+        box(`<div style="position:absolute;left:2%;bottom:${up}px;display:flex;align-items:flex-end">${cornStalk(110)}${cornStalk(130)}${cornStalk(100)}</div>
+          <div style="position:absolute;left:26%;bottom:${up}px">${scarecrow(104)}</div>
+          <div style="position:absolute;right:4%;bottom:${up}px">${hayBale(84)}</div><div style="position:absolute;right:9%;bottom:${up + 52}px">${pumpkin(48)}</div>
+          <div style="position:absolute;right:30%;bottom:${up}px">${pumpkin(56)}</div>
+          <div style="position:absolute;left:47%;bottom:${up}px">${pumpkin(38)}</div>`, 'bg', full);
+        stream(12, () => { const s = rnd(26, 46); return { html: maple(s), ...drop(s, rnd(10, 16) * 1000, rnd(30, 60), rnd(-300, 300), .55) }; });
+        every(9, 16, () => { if (!PETART.turkey) return; const h = 56, ltr = Math.random() < .5, n = Math.random() < .35 ? 2 : 1;
+          for (let k = 0; k < n; k++) timers.push(setTimeout(() => pass(`<div class="walking">${petSVG('turkey', h)}</div>`, across(fy - h + 2, h * 1.1, ltr), rnd(11, 15) * 1000), k * 900)); }, [1, 4]);
+        every(12, 20, () => pass(flock(Math.round(rnd(5, 8)), '#3b2a1a'), across(rnd(90, H() * .35), 170, Math.random() < .5, rnd(-40, 40)), rnd(12, 17) * 1000), [3, 7]);
+      } },
+
+    { id: 'beach', e: '🏖️', n: 'Sunny Beach', cost: 3300, hdr: 'linear-gradient(135deg,#0369A1,#0EA5E9 55%,#F59E0B)', tc: '#0284C7', base: '#F9E3B4',
+      sky: 'linear-gradient(#1E90E8,#62BDF6 38%,#B8E6FF 60%)', thumb: beachBall(26), build() {
+        const fy = floorY(), up = H() - fy, sea = fy - 150;
+        box('<div class="bgx-sun"></div>', 'bg', `left:auto;right:12%;top:${Math.max(100, H() * .12)}px`);
+        stream(3, () => { const w = rnd(110, 180); return { html: cloud(w, .95), dur: rnd(40, 60) * 1000, frames: across(rnd(70, H() * .3), w, true) }; }, 'bg');
+        box(`<div class="bgx-sea" style="top:${sea}px;height:${H() - sea}px"><div class="bgx-crest"></div><div class="bgx-crest" style="top:30px;opacity:.5;animation-duration:5s"></div></div>
+          <svg viewBox="0 0 400 80" preserveAspectRatio="none" style="position:absolute;left:0;bottom:${up - 4}px;width:100%;height:84px"><path d="M0 26 C60 12 120 30 200 20 C280 10 340 28 400 18 V80 H0Z" fill="#F7DFA6"/><path d="M0 30 C60 16 120 34 200 24 C280 14 340 32 400 22" stroke="#fff" stroke-width="3" fill="none" class="bgx-surf"/></svg>
+          <img src="decor/palm.webp" alt="" class="bgx-sway" style="position:absolute;left:1%;bottom:${up + 10}px;height:${Math.min(170, H() * .22)}px">
+          <div style="position:absolute;right:6%;bottom:${up + 8}px">${beachUmbrella(96)}</div>
+          <div style="position:absolute;left:38%;bottom:${up + 6}px">${sandcastle(70)}</div>
+          <img src="decor/shell.webp" alt="" style="position:absolute;left:62%;bottom:${up + 6}px;height:22px">`, 'bg', full);
+        every(14, 24, () => { const w = rnd(46, 60); pass(`<div class="bgx-bob">${boat(w)}</div>`, across(sea - w * .55, w, Math.random() < .5), rnd(22, 30) * 1000, 'bg'); }, [2, 6]);
+        every(10, 18, () => pass(flock(Math.round(rnd(2, 4)), '#F8FAFC'), across(rnd(90, H() * .35), 100, Math.random() < .5, rnd(-50, 50)), rnd(10, 14) * 1000), [3, 6]);
+        every(9, 15, () => { const w = 40; pass(crab(w), across(fy - w * .6, w, Math.random() < .5), rnd(7, 10) * 1000); }, [4, 8]);
+        every(12, 20, () => { const h = 40, x = rnd(30, W() - 220), ltr = Math.random() < .5, x0 = ltr ? x : x + 180, x1 = ltr ? x + 180 : x;
+          pass(`<div style="transform:scaleX(${ltr ? 1 : -1})">${petSVG('dolphin', h)}</div>`, [{ transform: `translate(${x0}px,${sea + 30}px) rotate(${ltr ? -35 : 35}deg)`, opacity: 0 }, { opacity: 1, offset: .1 },
+            { transform: `translate(${(x0 + x1) / 2}px,${sea - 90}px) rotate(0)`, offset: .5 }, { opacity: 1, offset: .9 }, { transform: `translate(${x1}px,${sea + 30}px) rotate(${ltr ? 35 : -35}deg)`, opacity: 0 }], 1800, 'fx', '', 'ease-in-out'); }, [6, 10]);
+        every(13, 22, () => { const s = 44, x0 = -s - 30, x1 = W() + 30, hops = 4, N = 32, frames = [];
+          for (let k = 0; k <= N; k++) { const tt = k / N, ph = tt * hops % 1, x = x0 + (x1 - x0) * tt; frames.push({ transform: `translate(${x}px,${fy - s - Math.sin(ph * Math.PI) * 70 * (1 - tt * .5)}px) rotate(${(x - x0) / (Math.PI * s) * 360}deg)` }); }
+          pass(beachBall(s), frames, rnd(5, 7) * 1000); }, [8, 12]);
+      } },
+
+    { id: 'campfire', e: '🏕️', n: 'Campfire Night', cost: 3600, dark: true, hdr: 'linear-gradient(135deg,#1C1917,#7C2D12 55%,#F97316)', tc: '#7C2D12', base: '#0B1736',
+      sky: 'linear-gradient(#030712,#0B1736 55%,#1C2A4A 85%,#2B2F3A)', thumb: campfire(28), build() {
+        const fy = floorY(), up = H() - fy, cx = W() * .56;
+        box(twinkles(60, 60, '#fff'), 'bg', full);
+        box('<div class="bgx-moon"></div>', 'bg', `left:8%;top:${Math.max(96, H() * .12)}px`);
+        box(forest('#0A1220'), 'bg', `top:auto;bottom:${up + 30}px;width:100%;height:120px`);
+        box(`<div style="position:absolute;left:0;right:0;bottom:0;height:${up + 34}px;background:linear-gradient(#1A1410,#0E0B08)"></div>
+          <div style="position:absolute;left:5%;bottom:${up + 6}px">${tent(Math.min(130, W() * .32))}</div>
+          <div class="bgx-fireglow" style="left:${cx - 130}px;bottom:${up - 90}px"></div>
+          <div style="position:absolute;left:${cx - 55}px;bottom:${up}px">${campfire(110)}</div>`, 'bg', full);
+        stream(14, () => { const x = cx + rnd(-20, 20), y = fy - rnd(40, 70), s = rnd(3, 5);
+          return { html: `<span class="bgx-ember" style="width:${s}px;height:${s}px"></span>`, dur: rnd(1.6, 3) * 1000, ease: 'ease-out',
+            frames: [{ transform: `translate(${x}px,${y}px)`, opacity: 1 }, { transform: `translate(${x + rnd(-40, 40)}px,${y - rnd(120, 260)}px)`, opacity: 0 }] }; });
+        stream(10, () => { const x = rnd(0, W()), y = rnd(H() * .35, fy - 40);
+          return { html: '<span class="bgx-fly"></span>', dur: rnd(5, 9) * 1000, ease: 'ease-in-out',
+            frames: [{ transform: `translate(${x}px,${y}px)`, opacity: 0 }, { transform: `translate(${x + rnd(-50, 50)}px,${y + rnd(-50, 50)}px)`, opacity: 1, offset: .4 }, { transform: `translate(${x + rnd(-90, 90)}px,${y + rnd(-90, 90)}px)`, opacity: 0 }] }; });
+        every(5, 10, () => { const x = rnd(W() * .3, W() * 1.1), y = rnd(60, H() * .3), len = rnd(100, 180);
+          pass(`<span class="bgx-shoot" style="width:${len}px"></span>`, [{ transform: `translate(${x}px,${y}px) rotate(150deg)`, opacity: 0 }, { opacity: 1, offset: .15 }, { transform: `translate(${x - 380}px,${y + 220}px) rotate(150deg)`, opacity: 0 }], 1300); }, [2, 4]);
+        every(18, 30, () => { const w = 44; pass(`<div class="walking">${petSVG('owl', w)}</div>`, wavy(rnd(110, H() * .4), w * 1.3, Math.random() < .5, rnd(15, 30), 1.5), rnd(10, 14) * 1000); }, [6, 10]);
+      } },
+
+    { id: 'veterans', e: '🎖️', n: 'Veterans Day', cost: 3900, hdr: 'linear-gradient(135deg,#1E3A8A,#334155 55%,#B91C1C)', tc: '#1E3A8A', base: '#DCE8F5',
+      sky: 'linear-gradient(#6FA6DF,#A9CDEF 45%,#E6F0FA)', thumb: poppy(30), build() {
+        const fy = floorY(), up = H() - fy, fw = Math.min(190, W() * .46);
+        stream(3, () => { const w = rnd(110, 180); return { html: cloud(w, .9), dur: rnd(45, 65) * 1000, frames: across(rnd(70, H() * .32), w, true) }; }, 'bg');
+        box(`<div style="position:absolute;left:50%;transform:translateX(-50%);top:${Math.max(96, H() * .13)}px">${ribbonBanner('THANK YOU, VETERANS', Math.min(330, W() * .86))}</div>`, 'bg', full);
+        box(`<svg viewBox="0 0 400 60" preserveAspectRatio="none" style="position:absolute;left:0;bottom:${up - 4}px;width:100%;height:64px"><path d="M0 20 C80 6 160 16 240 22 C320 28 360 12 400 16 V60 H0Z" fill="#6DAF5E"/><path d="M0 34 C90 24 180 30 260 38 C330 44 370 32 400 34 V60 H0Z" fill="#4E9A48"/></svg>
+          <div style="position:absolute;left:8%;bottom:${up + 20}px">${flagPole(fw, Math.min(260, H() * .34))}</div>
+          ${Array.from({ length: 9 }, (_, i) => `<div class="bgx-sway" style="position:absolute;left:${i * 11 + 1}%;bottom:${up + (i % 2) * 6}px;animation-delay:-${i * .5}s">${poppy(46 + (i % 3) * 10)}</div>`).join('')}`, 'bg', full);
+        stream(8, () => { const s = rnd(12, 18); return { html: petal(s, pick(['#D62828', '#B91C1C', '#E63946'])), ...drop(s, rnd(10, 16) * 1000, rnd(30, 60), rnd(-200, 200), .5) }; });
+        stream(8, () => { const x = rnd(0, W()), y = rnd(80, H() * .6), s = rnd(10, 18);
+          return { html: star4(s, '#FFD23F'), dur: rnd(2.5, 4.5) * 1000, frames: [{ transform: `translate(${x}px,${y}px) scale(0)`, opacity: 0 }, { transform: `translate(${x}px,${y}px) scale(1) rotate(45deg)`, opacity: 1, offset: .5 }, { transform: `translate(${x}px,${y}px) scale(0)`, opacity: 0 }] }; });
+        every(16, 26, () => { const w = Math.min(300, W() * .8); pass(jets(w), across(rnd(80, H() * .3), w, true, rnd(-30, 10)), rnd(6, 8) * 1000); }, [3, 6]);
+        every(20, 32, () => { const w = 70; pass(`<div class="walking">${petSVG('eagle', w * .55)}</div>`, wavy(rnd(120, H() * .4), w, Math.random() < .5, 20, 1), rnd(11, 15) * 1000); }, [10, 16]);
+      } },
+
+    { id: 'aurora', e: '🌌', n: 'Northern Lights', cost: 4200, dark: true, hdr: 'linear-gradient(135deg,#022C22,#0F766E 50%,#6D28D9)', tc: '#0F766E', base: '#0B1638',
+      sky: 'linear-gradient(#020617,#0B1638 45%,#12305A 80%,#1D4A6E)', thumb: auroraIcon, build() {
+        const fy = floorY(), up = H() - fy;
+        box(twinkles(80, 70, '#fff'), 'bg', full);
+        box([['#34D399', 6, -10, 0], ['#22D3EE', 14, 6, 30], ['#4ADE80', 22, -4, -20], ['#A78BFA', 4, 12, 40], ['#F472B6', 30, -14, -40]].map(([c, top, rot, dx], i) =>
+          `<div style="position:absolute;left:${dx - 30}%;width:160%;top:${top}%;height:28%;transform:rotate(${rot}deg)"><div class="bgx-rib" style="--c:${c};animation-delay:-${(i * 2.3).toFixed(1)}s;animation-duration:${8 + i * 2}s"></div></div>`).join(''), 'bg', full);
+        box(peaks(), 'bg', `top:auto;bottom:${up + 24}px;width:100%;height:${Math.min(170, H() * .22)}px`);
+        box(`<div style="position:absolute;left:0;right:0;bottom:0;height:${up + 30}px;background:linear-gradient(#E8F1FA,#C9DCEE)"></div>
+          <div style="position:absolute;left:3%;bottom:${up + 16}px">${pine(110)}</div><div style="position:absolute;left:17%;bottom:${up + 12}px">${pine(80)}</div>
+          <div style="position:absolute;right:4%;bottom:${up + 14}px">${pine(124)}</div><div style="position:absolute;right:20%;bottom:${up + 10}px">${pine(70)}</div>`, 'bg', full);
+        stream(16, i => { const s = i % 5 === 0 ? rnd(18, 28) : rnd(6, 14); return { html: i % 3 ? flake(s, rnd(.75, 1)) : `<span class="bgx-dot" style="width:${s / 2}px;height:${s / 2}px"></span>`,
+          ...drop(s, rnd(9, 16) * 1000, rnd(20, 50), rnd(-200, 200), .45), pile: snowPile(s) }; });
+        every(5, 10, () => { const x = rnd(W() * .3, W() * 1.1), y = rnd(60, H() * .3), len = rnd(120, 200);
+          pass(`<span class="bgx-shoot" style="width:${len}px"></span>`, [{ transform: `translate(${x}px,${y}px) rotate(150deg)`, opacity: 0 }, { opacity: 1, offset: .15 }, { transform: `translate(${x - 400}px,${y + 230}px) rotate(150deg)`, opacity: 0 }], 1300); }, [2, 4]);
+        every(15, 24, () => { const w = 48; pass(`<div class="walking">${petSVG(PETART.snowyowl ? 'snowyowl' : 'owl', w)}</div>`, wavy(rnd(110, H() * .4), w * 1.3, Math.random() < .5, rnd(15, 30), 1.5), rnd(10, 14) * 1000); }, [4, 8]);
+        every(20, 32, () => { const h = 52; pass(`<div class="walking">${petSVG('polarbear', h)}</div>`, across(fy - h + 2, h * 1.6, Math.random() < .5), rnd(16, 22) * 1000); }, [8, 14]);
+      } },
+
+    { id: 'newyear', e: '🎆', n: 'New Year’s Midnight', cost: 4600, dark: true, hdr: 'linear-gradient(135deg,#0F0A2E,#4C1D95 55%,#C026D3)', tc: '#4C1D95', base: '#120B33',
+      sky: 'linear-gradient(#05030F,#120B33 50%,#2A1650 85%,#3B1E5E)', thumb: burstIcon, build() {
+        const fy = floorY(), up = H() - fy, sh = Math.min(170, H() * .22);
+        box(twinkles(60, 55, '#fff'), 'bg', full);
+        box(skyline(), 'bg', `top:auto;bottom:${up}px;width:100%;height:${sh}px`);
+        box(`<div style="position:absolute;left:50%;transform:translateX(-50%);bottom:${up}px">${clockTower(sh * 1.3)}</div>`, 'bg', full);
+        const NY = ['#FFD23F', '#FF5C8A', '#5CF2C2', '#7CC4FF', '#C77DFF', '#FFFFFF', '#FF9A3C'];
+        every(1.4, 2.8, () => firework(NY), [.3, 1]);
+        stream(18, () => { const s = rnd(9, 15), c = pick(NY); return { html: `<span class="bgx-conf" style="background:${c};width:${s}px;height:${(s * .45).toFixed(1)}px"></span>`,
+          ...drop(s, rnd(7, 12) * 1000, rnd(30, 60), rnd(-500, 500), .3) }; });
+        every(16, 26, () => { const w = rnd(34, 46), x = rnd(20, W() - 60); pass(balloon(w, pick(['#FFD23F', '#C0C7D2', '#C77DFF']), '#ffffff55'),
+          [{ transform: `translate(${x}px,${H() + 30}px)` }, { transform: `translate(${x + rnd(-60, 60)}px,${-w * 2}px)` }], rnd(14, 20) * 1000); }, [4, 8]);
+      } },
+
+    { id: 'july4', e: '🎇', n: '4th of July', cost: 5200, dark: true, hdr: 'linear-gradient(135deg,#B91C1C,#7F1D1D 40%,#1E3A8A)', tc: '#1E3A8A', base: '#1B2A5E',
+      sky: 'linear-gradient(#0A1430,#1B2A5E 55%,#3A3F7A 80%,#5B4B8A)', thumb: miniFlag, build() {
+        const fy = floorY(), up = H() - fy, fw = Math.min(170, W() * .42);
+        box(twinkles(50, 55, '#fff'), 'bg', full);
+        box(forest('#0B1024'), 'bg', `top:auto;bottom:${up}px;width:100%;height:90px`);
+        box(`<div style="position:absolute;left:6%;bottom:${up + 10}px">${flagPole(fw, Math.min(240, H() * .32))}</div>`, 'bg', full);
+        const USA = ['#EF4444', '#FFFFFF', '#3B82F6', '#F87171', '#93C5FD'];
+        every(1.2, 2.4, () => firework(USA), [.3, 1]);
+        stream(12, () => { const s = rnd(16, 26); return { html: star5(s, pick(['#EF4444', '#FFFFFF', '#3B82F6'])), ...drop(s, rnd(9, 14) * 1000, rnd(20, 50), rnd(-260, 260), .5) }; });
+        every(18, 28, () => { const w = 80; pass(`<div class="walking">${petSVG('eagle', w * .55)}</div>`, wavy(rnd(110, H() * .4), w, Math.random() < .5, 20, 1), rnd(10, 14) * 1000); }, [6, 10]);
+      } },
   ];
   BG.sort((a, b) => a.cost - b.cost);  // the grid shows them in unlock order
 
@@ -608,6 +822,30 @@
   @keyframes bgxGlide{from{transform:rotate(-7deg)}to{transform:rotate(7deg)}}
   .bgx-sand{display:block;border-radius:50%;background:#C98B45}
   .bgx-dust{border-radius:50%;background:radial-gradient(ellipse,rgba(222,170,110,.75),rgba(222,170,110,.35) 45%,rgba(222,170,110,0) 70%)}
+  .bgx-rib{position:absolute;inset:0;opacity:.5;background:radial-gradient(ellipse 50% 50% at 50% 55%,var(--c) 0%,transparent 72%);
+    -webkit-mask:repeating-linear-gradient(90deg,#000 0 3px,rgba(0,0,0,.72) 3px 7px);mask:repeating-linear-gradient(90deg,#000 0 3px,rgba(0,0,0,.72) 3px 7px);animation:bgxRib 10s ease-in-out infinite alternate}
+  @keyframes bgxRib{from{transform:translateX(-6%) skewY(-6deg) scaleY(.85)}to{transform:translateX(6%) skewY(5deg) scaleY(1.2)}}
+  .bgx-win{animation:bgxWin 6s steps(1) infinite}
+  @keyframes bgxWin{0%,70%{opacity:1}75%,100%{opacity:.12}}
+  .bgx-spark{display:block;width:5px;height:5px;border-radius:50%}
+  .bgx-trail{display:block;width:3px;height:16px;border-radius:3px;background:linear-gradient(#fff,rgba(255,200,120,0))}
+  .bgx-boom{display:block;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.5),rgba(255,255,255,0) 60%)}
+  .bgx-conf{display:block;border-radius:2px}
+  .bgx-fire{animation:bgxFire .45s ease-in-out infinite alternate}
+  @keyframes bgxFire{0%{transform:scale(1,1) skewX(0)}50%{transform:scale(.94,1.07) skewX(3deg)}100%{transform:scale(1.04,.95) skewX(-3deg)}}
+  .bgx-fireglow{position:absolute;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(255,150,60,.55),rgba(255,110,40,0) 68%);animation:bgxGlow2 1.4s ease-in-out infinite alternate}
+  @keyframes bgxGlow2{to{opacity:.65;transform:scale(.93)}}
+  .bgx-ember{display:block;border-radius:50%;background:#FFB020;box-shadow:0 0 6px 2px rgba(255,140,40,.8)}
+  .bgx-sea{position:absolute;left:0;right:0;background:linear-gradient(#1FA2E0,#0E7CC2 60%,#0B6AA8)}
+  .bgx-crest{position:absolute;left:0;right:0;top:-6px;height:14px;background:radial-gradient(circle at 10px -3px,transparent 11px,#E6F7FF 12px) repeat-x;background-size:20px 14px;animation:bgxCrest 3s linear infinite}
+  @keyframes bgxCrest{to{background-position:40px 0}}
+  .bgx-surf{animation:bgxSurf 3.2s ease-in-out infinite alternate}
+  @keyframes bgxSurf{to{transform:translateY(-6px)}}
+  .bgx-scut{transform-box:fill-box;transform-origin:50% 0;animation:bgxScut .16s linear infinite alternate}
+  .bgx-scut2{animation-direction:alternate-reverse}
+  @keyframes bgxScut{from{transform:rotate(-14deg)}to{transform:rotate(14deg)}}
+  .bgx-flagwave{animation:bgxFlag 1.3s ease-in-out infinite alternate}
+  @keyframes bgxFlag{from{transform:translateY(calc(var(--fa) * -1))}to{transform:translateY(var(--fa))}}
   .bgx-tail{animation:bgxWag .5s ease-in-out infinite alternate}
   @keyframes bgxWag{from{transform:rotate(-12deg)}to{transform:rotate(12deg)}}
   .bgx-pulse{animation:bgxPulse 1.4s ease-in-out infinite}
