@@ -704,7 +704,7 @@ const ANIMALS = [  // drawn and animated in animals.js
   { id: 'highland',  e: '🐂', n: 'Highland Cow', cost: 2600, move: 'walk', speed: 22, size: 66 },
   { id: 'tiger',     e: '🐅', n: 'Tiger',     cost: 2700, move: 'walk',   speed: 50, size: 58 },
   { id: 'polarbear', e: '🐻‍❄️', n: 'Polar Bear', cost: 2900, move: 'walk',  speed: 28, size: 62 },
-  { id: 'penguin',   e: '🐧', n: 'Penguin',   cost: 3100, move: 'waddle', speed: 22, size: 54 },
+  { id: 'penguin',   e: '🐧', n: 'Penguin',   cost: 4500, move: 'waddle', speed: 22, size: 54 },
   { id: 'panda',     e: '🐼', n: 'Panda',     cost: 3300, move: 'walk',   speed: 18, size: 62 },
   { id: 'zebra',     e: '🦓', n: 'Zebra',     cost: 3500, move: 'walk',   speed: 70, size: 72 },
   { id: 'sauropod',  e: '🦕', n: 'Long-Neck Dino', cost: 4000, move: 'walk', speed: 16, size: 92 },
@@ -737,7 +737,7 @@ const ANIMALS = [  // drawn and animated in animals.js
   { id: 'lamb',        e: '🐑', n: 'Lamb',         cost: 3450, move: 'walk', speed: 40,  size: 48 },
   { id: 'seal',        e: '🦭', n: 'Seal',         cost: 3700, move: 'walk', speed: 16,  size: 40 },
   { id: 'snowyowl',    e: '🦉', n: 'Snowy Owl',    cost: 4100, move: 'fly',  speed: 50,  size: 44 },
-  { id: 'reindeer',    e: '🦌', n: 'Reindeer',     cost: 4500, move: 'walk', speed: 60,  size: 86 },
+  { id: 'reindeer',    e: '🦌', n: 'Reindeer',     cost: 3100, move: 'walk', speed: 60,  size: 86 },
   { id: 'dolphin',     e: '🐬', n: 'Dolphin',      cost: 5100, move: 'swim', speed: 80,  size: 44 },
   { id: 'greatwhite',  e: '🦈', n: 'Great White Shark', cost: 5900, move: 'swim', speed: 70, size: 50 },
   { id: 'orca',        e: '🐋', n: 'Killer Whale', cost: 6800, move: 'swim', speed: 60,  size: 54 },
@@ -1922,7 +1922,7 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) naviga
 // ---------- staying up to date ----------
 // Phones often resume the app from memory instead of reloading it, so check for a newer
 // version whenever the app opens or comes back on screen, and reload into it.
-const APP_VERSION = 'rr-shell-v31';  // must match SHELL in sw.js
+const APP_VERSION = 'rr-shell-v32';  // must match SHELL in sw.js
 async function checkForUpdate() {
   if (!location.protocol.startsWith('http')) return;
   try {
