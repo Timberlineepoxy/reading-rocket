@@ -427,6 +427,62 @@
       rnd(800, 1100), 'fx', '', 'cubic-bezier(.3,.6,.4,1)', () => burst(x, y, colors));
   }
 
+  /* ======================= the land =======================
+     Scenes with ground fill the bottom half of the screen. Things on the land are placed by depth:
+     t = 0 is far away at the horizon (small), t = 1 is right at the front (full size). */
+  const HZ = () => Math.round(H() * .5);
+  const dY = t => HZ() + 14 + t * (floorY() - HZ() - 14);
+  const dS = t => .42 + .58 * t;
+  const zOf = t => 10 + Math.round(t * 100);
+  function ground(top, bottom, edge, extra = '') {
+    box(`<svg viewBox="0 0 400 44" preserveAspectRatio="none" style="position:absolute;left:0;top:-22px;width:100%;height:44px;display:block"><path d="M0 24 C60 12 130 28 200 20 C270 12 340 26 400 18 V44 H0Z" fill="${edge}"/></svg>${extra}`,
+      'bg', `top:${HZ()}px;bottom:0;right:0;background:linear-gradient(${edge},${top} 14%,${bottom});z-index:1`);
+  }
+  // Something standing on the land at x (0 to 1 across the screen) and depth t.
+  const put = (html, x, t, layer = 'bg', css = '') => box(`<div style="position:absolute;left:0;top:0;transform:translate(-50%,-100%) scale(${dS(t).toFixed(3)});transform-origin:50% 100%;${css}">${html}</div>`,
+    layer, `left:${(x * 100).toFixed(1)}%;top:${dY(t).toFixed(0)}px;z-index:${zOf(t)}`);
+  // n things spread evenly across the screen at random depths.
+  const spread = (n, fn, t0 = 0, t1 = 1) => { for (let i = 0; i < n; i++) fn((i + rnd(.15, .85)) / n, rnd(t0, t1), i); };
+  // An animal walks across the land at a random depth: smaller and slower-looking when far away.
+  function roam(id, h, secs, o = {}) {
+    if (!window.PETART || !PETART[id] || !window.petSVG) return;
+    const t = o.t ?? rnd(.04, 1), s = dS(t), hh = Math.max(14, Math.round(h * s)), ww = hh * PETART[id].w / PETART[id].h;
+    const feet = window.RIG && RIG[id] ? RIG[id].ground / RIG[id].h : .97;
+    pass(`<div class="walking"${o.filter ? ` style="filter:${o.filter}"` : ''}>${petSVG(id, hh)}</div>`, across(dY(t) - hh * feet, ww, Math.random() < .5),
+      secs * 1000 * rnd(.85, 1.15) / (.55 + .45 * s), 'bg', `z-index:${zOf(t)}`);
+  }
+  // Same for a drawing that is not one of the pets (crabs, astronauts...): hr = its height compared with its width.
+  function roamArt(make, w, hr, secs, o = {}) {
+    const t = o.t ?? rnd(.04, 1), ww = w * dS(t);
+    pass(`<div${o.cls ? ` class="${o.cls}"` : ''}>${make(ww)}</div>`, across(dY(t) - ww * hr, ww, Math.random() < .5), secs * 1000 / (.55 + .45 * dS(t)), 'bg', `z-index:${zOf(t)}`);
+  }
+  // A steady stream of animals from a list of [id, height, seconds to cross, options].
+  const herd = (list, lo, hi, first = [.3, 2.5]) => every(lo, hi, () => { const [id, h, secs, o] = pick(list); roam(id, h, secs, o); }, first);
+
+  /* ---- scenery for the land ---- */
+  const tuft = c => `<svg viewBox="0 0 30 16" width="30" height="16"><path d="M2 16 C4 8 6 4 8 2 C8 8 9 12 10 16 M10 16 C12 6 15 2 18 0 C17 8 17 12 18 16 M18 16 C20 8 24 4 28 4 C25 9 24 13 24 16" fill="none" stroke="${c}" stroke-width="2.2" stroke-linecap="round"/></svg>`;
+  const bush = (w, a, b) => `<svg viewBox="0 0 80 46" width="${w}" height="${w * .575}"><g fill="${b}"><circle cx="20" cy="30" r="16"/><circle cx="60" cy="30" r="16"/></g><g fill="${a}"><circle cx="40" cy="22" r="20"/><circle cx="24" cy="30" r="13"/><circle cx="56" cy="30" r="14"/></g>
+    <path d="M30 14 C34 10 40 9 44 10" stroke="#fff" stroke-width="2.4" opacity=".3" fill="none" stroke-linecap="round"/><rect x="6" y="40" width="68" height="6" rx="3" fill="${b}"/></svg>`;
+  const rock = (w, a = '#9AA0A8', b = '#6E747C') => `<svg viewBox="0 0 60 34" width="${w}" height="${w * .57}"><path d="M3 34 C1 22 10 10 24 8 C36 4 52 10 56 22 C58 28 58 32 57 34Z" fill="${a}"/><path d="M30 34 C40 30 50 24 56 22 C58 28 58 32 57 34Z" fill="${b}"/>
+    <path d="M14 18 C20 12 28 10 36 11" stroke="#fff" stroke-width="2.4" opacity=".3" fill="none" stroke-linecap="round"/></svg>`;
+  const leafTree = (h, a, b, trunk = '#7A4E2C') => `<svg viewBox="0 0 80 110" width="${h * .73}" height="${h}"><path d="M36 110 L38 60 L42 60 L44 110Z M40 74 L26 56 M40 70 L54 52" stroke="${trunk}" stroke-width="5" fill="${trunk}" stroke-linecap="round"/>
+    <g fill="${b}"><circle cx="22" cy="48" r="18"/><circle cx="58" cy="46" r="19"/><circle cx="40" cy="58" r="18"/></g><g fill="${a}"><circle cx="40" cy="28" r="24"/><circle cx="22" cy="40" r="15"/><circle cx="58" cy="38" r="15"/></g>
+    <path d="M26 20 C32 12 42 10 50 13" stroke="#fff" stroke-width="3" opacity=".25" fill="none" stroke-linecap="round"/></svg>`;
+  const fern = (h, c) => `<svg viewBox="0 0 60 50" width="${h * 1.2}" height="${h}">${[-60, -35, -12, 12, 35, 60].map(a => `<path d="M30 50 C30 30 30 18 30 6" transform="rotate(${a} 30 50)" stroke="${c}" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-dasharray="1 0"/>
+    <path d="M30 40 l-6 -3 M30 40 l6 -3 M30 30 l-6 -3 M30 30 l6 -3 M30 20 l-5 -3 M30 20 l5 -3" transform="rotate(${a} 30 50)" stroke="${c}" stroke-width="2.2" stroke-linecap="round"/>`).join('')}</svg>`;
+  const coral = (h, c) => `<svg viewBox="0 0 50 60" width="${h * .83}" height="${h}"><path d="M25 60 V30 M25 42 C16 38 12 30 12 18 M25 36 C34 32 38 24 38 12 M12 26 C6 24 4 18 4 12 M38 20 C44 18 46 12 46 6 M25 30 C25 22 27 14 30 8" stroke="${c}" stroke-width="6" fill="none" stroke-linecap="round"/></svg>`;
+  const starfish = (s, c) => `<svg viewBox="-12 -12 24 24" width="${s}" height="${s}"><path d="M0 -11 C1.6 -4 2 -3.6 10.5 -3.4 C4 0.6 3.6 1.6 6.5 9 C1 4.6 -1 4.6 -6.5 9 C-3.6 1.6 -4 0.6 -10.5 -3.4 C-2 -3.6 -1.6 -4 0 -11Z" fill="${c}"/>
+    <g fill="#fff" opacity=".55"><circle cx="0" cy="-5" r=".9"/><circle cx="4" cy="-1" r=".9"/><circle cx="-4" cy="-1" r=".9"/><circle cx="2.4" cy="4" r=".9"/><circle cx="-2.4" cy="4" r=".9"/></g></svg>`;
+  const crater = w => `<svg viewBox="0 0 60 20" width="${w}" height="${w / 3}"><ellipse cx="30" cy="12" rx="28" ry="8" fill="#7C8296"/><ellipse cx="30" cy="11" rx="22" ry="5.5" fill="#5E6478"/><path d="M8 12 C14 6 46 6 52 12" stroke="#B9BFD0" stroke-width="2" fill="none"/></svg>`;
+  const lamp = h => `<svg viewBox="0 0 30 120" width="${h / 4}" height="${h}"><rect x="13" y="20" width="4" height="100" fill="#1F1A33"/><rect x="8" y="114" width="14" height="6" rx="2" fill="#1F1A33"/>
+    <path d="M7 20 L23 20 L20 6 L10 6Z" fill="#2A2347"/><circle cx="15" cy="14" r="5" fill="#FFE9A0"/><circle cx="15" cy="14" r="14" fill="#FFE9A0" opacity=".25"/></svg>`;
+  const chest = w => `<svg viewBox="0 0 60 44" width="${w}" height="${w * .73}"><rect x="4" y="20" width="52" height="22" rx="3" fill="#8B5A2B"/><path d="M4 22 C4 6 56 6 56 22Z" fill="#A0693A"/>
+    <path d="M4 22 H56 M18 20 V42 M42 20 V42" stroke="#E2B13C" stroke-width="3"/><rect x="26" y="20" width="8" height="9" rx="1.5" fill="#E2B13C"/>
+    <g fill="#FFD23F"><circle cx="16" cy="12" r="4"/><circle cx="26" cy="9" r="4"/><circle cx="36" cy="10" r="4"/><circle cx="45" cy="13" r="4"/></g><path d="M30 6 l2 -4 l2 4" fill="#E83E8C"/></svg>`;
+  const flowerDot = (s, c) => `<svg viewBox="-10 -10 20 30" width="${s}" height="${s * 1.5}"><path d="M0 4 V20" stroke="#3E8C3A" stroke-width="2"/>${[0, 72, 144, 216, 288].map(a => `<ellipse cy="-4.5" rx="3.6" ry="5" fill="${c}" transform="rotate(${a})"/>`).join('')}<circle r="3" fill="#FFD23F"/></svg>`;
+  const iceberg = w => `<svg viewBox="0 0 80 40" width="${w}" height="${w / 2}"><path d="M2 40 L16 14 L28 22 L40 2 L56 20 L66 12 L78 40Z" fill="#F4FAFF"/><path d="M40 2 L56 20 L66 12 L78 40 L44 40Z" fill="#CFE2F4"/></svg>`;
+  const img = (src, h, cls = '') => `<img ${cls ? `class="${cls}" ` : ''}src="decor/${src}.webp" alt="" style="height:${h}px;display:block">`;
+
   /* ======================= the backgrounds ======================= */
   const HDR = {
     purple: 'linear-gradient(135deg,#6C4BF4,#8B5CF6 60%,#A855F7)', blue: 'linear-gradient(135deg,#075985,#0284C7 55%,#0EA5E9)',
@@ -450,131 +506,188 @@
           [{ transform: `translate(${x}px,${H() + 40}px)` }, { transform: `translate(${x + rnd(-80, 80)}px,${H() * .45}px)` }, { transform: `translate(${x + rnd(-120, 120)}px,${-w * 2}px)` }], rnd(20, 26) * 1000); }, [10, 20]);
       } },
 
-    { id: 'meadow', e: '🌼', n: 'Flower Field', cost: 200, hdr: HDR.green, tc: '#15803D', base: '#9FDB8A', sky: 'linear-gradient(#8ED1FF,#C9ECFF 35%,#A6E08F 62%,#5DBB4F)',
+    { id: 'meadow', e: '🌼', n: 'Flower Field', cost: 200, land: true, hdr: HDR.green, tc: '#15803D', base: '#9FDB8A', sky: 'linear-gradient(#7CC8FF,#B9E4FF 38%,#E4F6FF 50%)',
       thumb: petal(16, '#FF8FB8'), build() {
-        box(['blossom', 'tulip', 'sunflower', 'tulip', 'blossom', 'sunflower', 'tulip', 'blossom', 'sunflower'].map((f, i) =>
-          `<img class="bgx-sway" src="decor/${f}.webp" alt="" style="position:absolute;bottom:${4 + (i % 3) * 9}px;left:${i * 11.5}%;height:${44 + (i % 3) * 10}px;animation-delay:-${i * .5}s">`).join(''), 'bg', 'inset:0;width:100%;height:100%');
-        stream(26, () => { const s = rnd(16, 30); return { html: petal(s, pick(['#FF4F9A', '#FF8FB8', '#FFFFFF', '#F472B6', '#C084FC', '#FDE047', '#FB7185'])), ...drop(s, rnd(9, 16) * 1000, rnd(30, 80), rnd(-540, 540), .55) }; });
+        box(cloud(150, .9), 'bg', `left:6%;top:${H() * .14}px`); box(cloud(110, .8), 'bg', `left:auto;right:6%;top:${H() * .25}px`);
+        box(`<svg viewBox="0 0 400 60" preserveAspectRatio="none" style="width:100%;height:100%;display:block"><path d="M0 60 V34 C50 10 110 14 160 30 C210 44 260 6 320 12 C360 16 384 26 400 30 V60Z" fill="#8CCB76"/></svg>`, 'bg', `top:${HZ() - 66}px;width:100%;height:84px`);
+        ground('#86CE6C', '#4E9E3C', '#9ADB80');
+        spread(5, (x, t) => put(leafTree(150, '#5DB64A', '#3F9636'), x, t * .22));
+        spread(4, (x, t) => put(bush(90, '#5DB64A', '#3F8F33'), x, .1 + t * .5));
+        spread(14, (x, t) => put(tuft('#3F8F33'), x, t));
+        spread(22, (x, t, i) => put(img(['blossom', 'tulip', 'sunflower'][i % 3], 56, 'bgx-sway'), x, t));
+        stream(20, () => { const s = rnd(16, 30); return { html: petal(s, pick(['#FF4F9A', '#FF8FB8', '#FFFFFF', '#F472B6', '#C084FC', '#FDE047', '#FB7185'])), ...drop(s, rnd(9, 16) * 1000, rnd(30, 80), rnd(-540, 540), .55) }; });
         every(9, 16, () => { const w = rnd(30, 44); pass(petSVG('butterfly', w), across(rnd(120, H() * .7), w, Math.random() < .5, rnd(-120, 120)), rnd(9, 14) * 1000); }, [2, 5]);
+        herd([['bunny', 60, 9], ['lamb', 64, 14], ['sheep', 76, 16], ['cow', 96, 20], ['horse', 108, 12], ['chicken', 56, 14], ['deer', 104, 11], ['goat', 76, 13]], 4, 8);
       } },
 
-    { id: 'sunset', e: '🌅', n: 'Sunset', cost: 350, dark: true, hdr: HDR.sunset, tc: '#9D174D', base: '#C2416B', sky: 'linear-gradient(#2E1065,#7E22CE 30%,#DB2777 62%,#FB923C 88%,#FDBA74)',
+    { id: 'sunset', e: '🌅', n: 'Sunset', cost: 350, land: true, dark: true, hdr: HDR.sunset, tc: '#9D174D', base: '#C2416B', sky: 'linear-gradient(#2E1065,#7E22CE 22%,#DB2777 38%,#FB923C 48%,#FDBA74 54%)',
       thumb: '<svg viewBox="0 0 30 30" width="30" height="30"><circle cx="15" cy="18" r="11" fill="#FFB347"/></svg>', build() {
-        box(twinkles(26, 30, '#FFF6D5'), 'bg', 'inset:0;width:100%;height:100%');
-        box('<div class="bgx-sunset"></div>', 'bg', 'left:50%;top:auto;bottom:70px;transform:translateX(-50%)');
-        box(`<svg viewBox="0 0 400 120" preserveAspectRatio="none" style="width:100%;height:150px;display:block"><path d="M0 70 C60 30 120 40 180 64 C240 88 300 30 400 50 L400 120 L0 120Z" fill="#5B1E54"/>
-          <path d="M0 96 C80 70 150 80 220 98 C290 114 340 80 400 88 L400 120 L0 120Z" fill="#2E0F33"/></svg>`, 'bg', 'top:auto;bottom:0;width:100%');
-        every(12, 22, () => pass(flock(Math.round(rnd(3, 7)), '#1a0b24'), across(rnd(110, H() * .55), 150, Math.random() < .5, rnd(-50, 50)), rnd(14, 20) * 1000));
+        box(twinkles(26, 25, '#FFF6D5'), 'bg', 'inset:0;width:100%;height:100%');
+        box('<div class="bgx-sunset"></div>', 'bg', `left:50%;top:${HZ() - 120}px;transform:translateX(-50%)`);
+        box(`<svg viewBox="0 0 400 60" preserveAspectRatio="none" style="width:100%;height:100%;display:block"><path d="M0 60 V30 C60 4 120 10 180 28 C240 46 300 0 400 18 V60Z" fill="#6E2460"/></svg>`, 'bg', `top:${HZ() - 60}px;width:100%;height:80px`);
+        ground('#4A1846', '#1E0A24', '#5B1E54');
+        spread(7, (x, t) => put(pine(140, false), x, t * .4, 'bg', 'filter:brightness(.18) saturate(0)'));
+        spread(10, (x, t) => put(tuft('#2E0F33'), x, t));
+        every(12, 22, () => pass(flock(Math.round(rnd(3, 7)), '#1a0b24'), across(rnd(110, H() * .4), 150, Math.random() < .5, rnd(-50, 50)), rnd(14, 20) * 1000));
         every(30, 50, () => { const w = rnd(40, 60), x = rnd(30, W() - 80); pass(balloon(w, '#2a0d2e', '#3d1442'),
           [{ transform: `translate(${x}px,${H() + 30}px)` }, { transform: `translate(${x + rnd(-60, 60)}px,${-w * 2}px)` }], rnd(24, 30) * 1000); }, [8, 16]);
+        const shade = { filter: 'brightness(.22) saturate(.4)' };
+        herd([['horse', 108, 13, shade], ['deer', 104, 11, shade], ['wolf', 80, 12, shade], ['moose', 120, 16, shade], ['fox', 62, 10, shade], ['giraffe', 170, 18, shade]], 5, 9);
       } },
 
-    { id: 'ocean', e: '🦈', n: 'Under the Sea', cost: 500, dark: true, hdr: HDR.sea, tc: '#075985', base: '#0B4F8A', sky: 'linear-gradient(#1A7FC0,#0B4F8A 40%,#063661 80%,#052A4D)',
+    { id: 'ocean', e: '🦈', n: 'Under the Sea', cost: 500, land: true, dark: true, hdr: HDR.sea, tc: '#075985', base: '#0B4F8A', sky: 'linear-gradient(#1A7FC0,#0B4F8A 30%,#063661 50%)',
       thumb: fish(30, FISH[0]), build() {
         box(Array.from({ length: 6 }, (_, i) => `<span class="bgx-ray" style="left:${i * 18 - 6}%;animation-delay:-${i * 1.3}s"></span>`).join(''), 'bg', 'inset:0;width:100%;height:100%');
-        box(`<div style="position:absolute;left:0;right:0;bottom:0;height:46px;background:linear-gradient(#D9B97A,#C29A5B)"></div>` +
-          Array.from({ length: 9 }, (_, i) => `<div class="bgx-sway" style="position:absolute;bottom:26px;left:${i * 11.6 + (i % 2) * 3}%;animation-delay:-${i * .7}s">${seaweed(90 + (i % 3) * 40, i % 2 ? '#1F9D55' : '#2BBF6A')}</div>`).join(''),
-          'bg', 'inset:0;width:100%;height:100%');
+        ground('#C9A866', '#8E6E40', '#D4B678');
+        spread(5, (x, t) => put(rock(90, '#7C8A8E', '#5A666A'), x, t * .7));
+        spread(12, (x, t, i) => put(`<div class="bgx-sway" style="animation-delay:-${i * .6}s">${seaweed(120 + (i % 3) * 50, i % 2 ? '#1F9D55' : '#2BBF6A')}</div>`, x, t));
+        spread(8, (x, t, i) => put(coral(70 + (i % 3) * 16, pick(['#FF6F91', '#FF9A5A', '#C77DFF', '#FFD23F'])), x, t));
+        spread(8, (x, t) => put(starfish(28, pick(['#FF7A45', '#FF4F9A', '#FFC93C'])), x, .3 + t * .7));
+        spread(4, (x, t) => put(img('shell', 26), x, .4 + t * .6));
         stream(16, () => { const s = rnd(7, 26); return { html: `<span class="bgx-bub" style="width:${s}px;height:${s}px"></span>`, ...fall(rnd(0, W()), s, rnd(7, 13) * 1000, rnd(8, 24), 0, true) }; });
-        every(6, 11, () => { const f = pick(FISH), n = Math.round(rnd(1, 6)), w = rnd(34, 54), ltr = Math.random() < .5, y = rnd(110, H() - 170);
+        every(5, 9, () => { const f = pick(FISH), n = Math.round(rnd(1, 6)), w = rnd(34, 54), ltr = Math.random() < .5, y = rnd(110, H() - 170);
           const school = Array.from({ length: n }, (_, k) => `<div style="position:absolute;left:${(k % 3) * w * .9}px;top:${Math.floor(k / 3) * w * .6 + (k % 2) * 8}px">${fish(w, f)}</div>`).join('');
           pass(`<div style="position:relative;width:${w * 3}px;height:${w * 1.4}px">${school}</div>`, across(y, w * 3, ltr, rnd(-40, 40)), rnd(9, 15) * 1000); }, [1, 3]);
-        every(22, 38, () => { const w = Math.min(W() * .95, rnd(320, 520)); pass(shark(w), across(rnd(120, H() - w * .4 - 120), w, Math.random() < .5, rnd(-40, 40)), rnd(10, 14) * 1000); }, [6, 12]);
+        every(14, 24, () => { const id = pick(['dolphin', 'greatwhite', 'orca', 'spermwhale', 'dolphin']), h = { dolphin: 60, greatwhite: 70, orca: 80, spermwhale: 90 }[id], y = rnd(100, HZ() - 40);
+          if (PETART[id]) pass(`<div class="walking">${petSVG(id, h)}</div>`, across(y, h * PETART[id].w / PETART[id].h, Math.random() < .5, rnd(-40, 40)), rnd(12, 18) * 1000, 'bg', 'z-index:5'); }, [3, 7]);
         every(14, 24, () => { const w = rnd(26, 40), x = rnd(20, W() - 60); pass(jelly(w, pick(['#FF8BD8', '#B794FF', '#7FE3FF'])),
           [{ transform: `translate(${x}px,${H() + 40}px)` }, { transform: `translate(${x + rnd(-40, 40)}px,${H() * .5}px)` }, { transform: `translate(${x + rnd(-60, 60)}px,${-w * 2}px)` }], rnd(18, 26) * 1000); }, [3, 8]);
+        every(6, 11, () => roamArt(crab, 46, .63, 9), [1, 4]);
+        every(16, 26, () => roam('seal', 60, 18), [6, 12]);
       } },
 
-    { id: 'autumn', e: '🍁', n: 'Autumn Leaves', cost: 700, hdr: HDR.amber, tc: '#C2410C', base: '#FFE7C4', sky: 'linear-gradient(#FFF3DF,#FFE2B8 55%,#F8C98E)',
+    { id: 'autumn', e: '🍁', n: 'Autumn Leaves', cost: 700, land: true, hdr: HDR.amber, tc: '#C2410C', base: '#FFE7C4', sky: 'linear-gradient(#9FD0F0,#FFE9C8 40%,#FFD9A8 50%)',
       thumb: maple(26), build() {
-        box(`<img src="decor/pumpkin.webp" alt="" style="position:absolute;right:6%;bottom:14px;height:58px"><img src="decor/pumpkin.webp" alt="" style="position:absolute;right:20%;bottom:10px;height:40px">
-          <img src="decor/chestnut.webp" alt="" style="position:absolute;left:8%;bottom:14px;height:34px">`, 'bg', 'inset:0;width:100%;height:100%');
+        ground('#E2A055', '#A65E26', '#EAB36A');
+        spread(6, (x, t, i) => put(leafTree(170, pick(['#F2862A', '#E85D2A', '#F5B533', '#D9481F']), pick(['#C2551A', '#B8401A', '#D98B1F'])), x, t * .3));
+        spread(4, (x, t) => put(bush(84, '#D97A2A', '#A8501A'), x, .2 + t * .5));
+        spread(12, (x, t) => put(tuft('#9A6A2A'), x, t));
+        spread(6, (x, t, i) => put(i % 3 ? pumpkin(54) : img('chestnut', 34), x, .3 + t * .7));
+        spread(3, (x, t) => put(hayBale(80), x, .2 + t * .6));
+        spread(3, (x, t) => put(img('mushroom', 34), x, .4 + t * .6));
         stream(12, () => { const s = rnd(28, 52); return { html: maple(s), ...drop(s, rnd(11, 18) * 1000, rnd(30, 60), rnd(-300, 300), .55) }; });
         every(14, 24, () => { for (let k = 0; k < 7; k++) { const s = rnd(26, 46), y = rnd(80, H() - 120);
           pass(maple(s), [{ transform: `translate(${-s - 20}px,${y}px) rotate(0)` }, { transform: `translate(${W() * .5}px,${y + rnd(-90, 90)}px) rotate(${rnd(200, 400)}deg)` },
             { transform: `translate(${W() + 40}px,${y + rnd(-60, 160)}px) rotate(${rnd(500, 800)}deg)` }], rnd(3.2, 5) * 1000 + k * 160); } }, [6, 10]);
+        herd([['fox', 62, 10], ['squirrel', 50, 7], ['chipmunk', 40, 7], ['deer', 104, 11], ['raccoon', 52, 10], ['hedgehog', 34, 12], ['moose', 124, 16], ['grizzly', 84, 16]], 4, 8);
       } },
 
-    { id: 'snow', e: '❄️', n: 'Snow Day', cost: 900, dark: true, hdr: HDR.ice, tc: '#1E3A8A', base: '#2C4A7A', sky: 'linear-gradient(#0F1E45,#1E3A6B 40%,#3B5B92 80%,#5876A8)',
+    { id: 'snow', e: '❄️', n: 'Snow Day', cost: 900, land: true, dark: true, hdr: HDR.ice, tc: '#1E3A8A', base: '#2C4A7A', sky: 'linear-gradient(#0F1E45,#1E3A6B 30%,#3B5B92 46%,#5876A8 52%)',
       thumb: flake(26), build() {
         box('<div class="bgx-aurora"></div>', 'bg', 'inset:0;width:100%;height:100%');
-        box(`<svg viewBox="0 0 400 90" preserveAspectRatio="none" style="position:absolute;left:0;bottom:0;width:100%;height:110px"><path d="M0 40 C80 10 160 20 230 40 C300 60 350 30 400 36 L400 90 L0 90Z" fill="#E8F0FB"/><path d="M0 64 C90 46 170 56 250 70 C320 82 360 62 400 66 L400 90 L0 90Z" fill="#FFFFFF"/></svg>
-          <div style="position:absolute;left:4%;bottom:52px">${pine(110)}</div><div style="position:absolute;left:19%;bottom:44px">${pine(80)}</div>
-          <div style="position:absolute;right:5%;bottom:50px">${pine(120)}</div><img src="decor/snowman.webp" alt="" style="position:absolute;right:28%;bottom:26px;height:70px">`, 'bg', 'inset:0;width:100%;height:100%');
+        box(peaks(), 'bg', `top:${HZ() - Math.min(150, H() * .18) + 16}px;width:100%;height:${Math.min(150, H() * .18)}px`);
+        ground('#EEF4FC', '#C8D8EC', '#F6FAFF');
+        spread(9, (x, t) => put(pine(150), x, t * .7));
+        spread(2, (x, t) => put(img('snowman', 90), x, .45 + t * .5));
+        spread(6, (x, t) => put(`<span class="bgx-mound" style="width:70px;height:26px"></span>`, x, t));
         stream(30, i => { const s = i % 5 === 0 ? rnd(26, 40) : rnd(6, 18); return { html: i % 3 ? flake(s, rnd(.75, 1)) : `<span class="bgx-dot" style="width:${s / 2}px;height:${s / 2}px"></span>`,
           ...drop(s, rnd(8, 16) * 1000, rnd(20, 50), rnd(-200, 200), .45), pile: snowPile(s) }; });
         every(10, 18, () => { const s = rnd(170, 300), x = rnd(-60, W() - s * .6);
           pass(flake(s, .55), [{ transform: `translate(${x}px,${-s}px) rotate(0)` }, { transform: `translate(${x + rnd(-60, 60)}px,${H() + s * .2}px) rotate(${rnd(60, 140)}deg)` }], rnd(7, 10) * 1000, 'fx', 'filter:blur(1.5px)'); }, [3, 6]);
+        herd([['penguin', 64, 16], ['reindeer', 110, 12], ['wolf', 80, 11], ['polarbear', 80, 16], ['mammoth', 130, 20], ['fox', 62, 10]], 4, 8);
+        every(16, 26, () => { const w = 48; pass(`<div class="walking">${petSVG('snowyowl', w)}</div>`, wavy(rnd(110, H() * .35), w * 1.3, Math.random() < .5, rnd(15, 30), 1.5), rnd(10, 14) * 1000); }, [5, 9]);
       } },
 
-    { id: 'candy', e: '🍬', n: 'Candy Land', cost: 1200, hdr: HDR.candy, tc: '#DB2777', base: '#FFB3DE', sky: 'linear-gradient(#FF9AD5,#FFB8E2 45%,#D6A8FF)',
+    { id: 'candy', e: '🍬', n: 'Candy Land', cost: 1200, land: true, hdr: HDR.candy, tc: '#DB2777', base: '#FFB3DE', sky: 'linear-gradient(#FF9AD5,#FFB8E2 30%,#E6C2FF 50%)',
       thumb: gumdrop(24, '#E8304A', '#B91C3B'), build() {
-        box(`<div style="position:absolute;left:3%;bottom:0">${lolly(60, '#FF4FA0', '#fff')}</div><div style="position:absolute;right:4%;bottom:0">${lolly(74, '#7C3AED', '#FFE03B')}</div>
-          <div style="position:absolute;left:30%;bottom:0">${lolly(44, '#10B981', '#fff')}</div>`, 'bg', 'inset:0;width:100%;height:100%');
+        box(cloud(140, .85), 'bg', `left:5%;top:${H() * .15}px`); box(cloud(100, .75), 'bg', `left:auto;right:8%;top:${H() * .27}px`);
+        ground('#FFD3EC', '#F59BCB', '#FFE4F3', `<svg viewBox="0 0 400 30" preserveAspectRatio="none" style="position:absolute;left:0;top:0;width:100%;height:30px">${Array.from({ length: 16 }, (_, i) => `<path d="M${i * 25} 0 h25 v6 c0 8 -4 14 -6 14 c-3 0 -4 -6 -6 -10 c-2 4 -4 6 -7 6 c-3 0 -6 -6 -6 -10Z" fill="${['#FF4FA0', '#7C3AED', '#22C55E', '#FACC15'][i % 4]}" opacity=".55"/>`).join('')}</svg>`);
         const GD = [['#E8304A', '#B91C3B'], ['#22C55E', '#15803D'], ['#FACC15', '#CA8A04'], ['#A855F7', '#7E22CE'], ['#FB923C', '#C2410C'], ['#38BDF8', '#0369A1']];
+        spread(6, (x, t, i) => put(lolly(70 + (i % 3) * 14, pick(['#FF4FA0', '#7C3AED', '#10B981', '#38BDF8']), pick(['#fff', '#FFE03B'])), x, t * .5));
+        spread(5, (x, t) => put(cane(80), x, t * .8));
+        spread(10, (x, t) => put(gumdrop(40, ...pick(GD)), x, .2 + t * .8));
+        spread(4, (x, t, i) => put(img(['cupcake', 'donut', 'candy', 'lollipop'][i % 4], 48), x, .3 + t * .7));
         const candies = [() => { const g = pick(GD), s = rnd(32, 50); return [gumdrop(s, ...g), s]; }, () => { const s = rnd(52, 74); return [wrapped(s, pick(['#E8304A', '#3B82F6', '#22C55E', '#FACC15', '#A855F7'])), s]; },
-          () => { const s = rnd(34, 48); return [mint(s), s]; }, () => { const s = rnd(30, 42); return [bean(s, pick(['#E8304A', '#FACC15', '#22C55E', '#FB923C', '#A855F7', '#111'])), s]; },
-          () => { const s = rnd(24, 34); return [lolly(s, pick(['#FF4FA0', '#38BDF8', '#FACC15']), '#fff'), s * 2]; }];
-        stream(18, () => { const [html, s] = pick(candies)(); return { html, ...drop(s, rnd(8, 14) * 1000, rnd(20, 50), rnd(-420, 420), .6) }; });
+          () => { const s = rnd(34, 48); return [mint(s), s]; }, () => { const s = rnd(30, 42); return [bean(s, pick(['#E8304A', '#FACC15', '#22C55E', '#FB923C', '#A855F7', '#111'])), s]; }];
+        stream(14, () => { const [html, s] = pick(candies)(); return { html, ...drop(s, rnd(8, 14) * 1000, rnd(20, 50), rnd(-420, 420), .6) }; });
+        herd([['unicorn', 104, 12], ['bunny', 60, 9], ['guineapig', 38, 11], ['hamster', 34, 9], ['lamb', 64, 13], ['cat', 66, 10], ['pig', 66, 14]], 4, 8);
       } },
 
-    { id: 'jungle', e: '🌴', n: 'Jungle', cost: 1600, dark: true, hdr: HDR.jungle, tc: '#14532D', base: '#14532D', sky: 'linear-gradient(#1B7A43,#14532D 50%,#0B3D23)',
+    { id: 'jungle', e: '🌴', n: 'Jungle', cost: 1600, land: true, dark: true, hdr: HDR.jungle, tc: '#14532D', base: '#14532D', sky: 'linear-gradient(#2E9A58,#1B7A43 30%,#14632F 50%)',
       thumb: parrot(32), build() {
-        box(Array.from({ length: 7 }, (_, i) => `<div class="bgx-swing" style="position:absolute;top:-10px;left:${i * 15 + 2}%;animation-delay:-${i * .8}s">${vine(140 + (i % 3) * 70)}</div>`).join('') +
-          `<div style="position:absolute;left:-14px;bottom:0">${bigLeaf(170)}</div><div style="position:absolute;right:-14px;bottom:0">${bigLeaf(190, true)}</div>
-          <div style="position:absolute;left:12%;bottom:-10px">${bigLeaf(120)}</div><div style="position:absolute;right:14%;bottom:-10px">${bigLeaf(130, true)}</div>`, 'bg', 'inset:0;width:100%;height:100%');
+        box(Array.from({ length: 7 }, (_, i) => `<div class="bgx-swing" style="position:absolute;top:-10px;left:${i * 15 + 2}%;animation-delay:-${i * .8}s">${vine(140 + (i % 3) * 70)}</div>`).join(''), 'bg', 'inset:0;width:100%;height:100%');
+        box(forest('#0F4A26'), 'bg', `top:${HZ() - 100}px;width:100%;height:116px`);
+        ground('#2F7D3A', '#123F20', '#3A8A44');
+        spread(6, (x, t) => put(img('palm', 200, 'bgx-sway'), x, t * .35));
+        spread(8, (x, t, i) => put(bigLeaf(130, i % 2), x, t));
+        spread(8, (x, t) => put(fern(54, '#4CAF50'), x, t));
+        spread(6, (x, t) => put(img('hibiscus', 34), x, .3 + t * .7));
         stream(14, () => { const x = rnd(0, W()), y = rnd(80, H() - 80);
           return { html: '<span class="bgx-fly"></span>', dur: rnd(5, 9) * 1000, ease: 'ease-in-out',
             frames: [{ transform: `translate(${x}px,${y}px)`, opacity: 0 }, { transform: `translate(${x + rnd(-50, 50)}px,${y + rnd(-50, 50)}px)`, opacity: 1, offset: .4 },
               { transform: `translate(${x + rnd(-90, 90)}px,${y + rnd(-90, 90)}px)`, opacity: 0 }] }; });
-        every(14, 24, () => { const w = rnd(70, 100); pass(parrot(w), across(rnd(100, H() * .55), w, Math.random() < .5, rnd(-80, 80)), rnd(7, 10) * 1000); }, [2, 6]);
+        every(14, 24, () => { const w = rnd(70, 100); pass(parrot(w), across(rnd(100, H() * .45), w, Math.random() < .5, rnd(-80, 80)), rnd(7, 10) * 1000); }, [2, 6]);
         every(16, 26, () => { const w = rnd(30, 40); pass(petSVG('butterfly', w), across(rnd(150, H() - 150), w, Math.random() < .5, rnd(-100, 100)), rnd(10, 14) * 1000); }, [8, 12]);
+        herd([['monkey', 62, 9], ['tiger', 80, 12], ['gorilla', 96, 16], ['frog', 36, 8], ['crocodile', 40, 18], ['elephant', 140, 20], ['hippo', 80, 18], ['raptor', 80, 8]], 4, 8);
       } },
 
-    { id: 'space', e: '🪐', n: 'Outer Space', cost: 2000, dark: true, hdr: HDR.space, tc: '#1E1B4B', base: '#0B0730', sky: 'radial-gradient(ellipse at 70% 20%,#3B1D7A 0%,#140A3D 45%,#05021A 100%)',
+    { id: 'space', e: '🪐', n: 'Outer Space', cost: 2000, land: true, dark: true, hdr: HDR.space, tc: '#1E1B4B', base: '#0B0730', sky: 'radial-gradient(ellipse at 70% 20%,#3B1D7A 0%,#140A3D 30%,#05021A 55%)',
       thumb: planet(34, '#F59E0B', '#B45309', '#FDE68A'), build() {
-        box(twinkles(70, 100, '#fff'), 'bg', 'inset:0;width:100%;height:100%');
-        box(`<div class="bgx-float" style="position:absolute;right:6%;top:18%">${planet(130, '#F59E0B', '#B45309', '#FDE68A')}</div>
-          <div class="bgx-float" style="position:absolute;left:5%;top:58%;animation-delay:-4s">${planet(70, '#EF4444', '#991B1B')}</div>
-          <div class="bgx-float" style="position:absolute;left:58%;top:76%;animation-delay:-7s">${planet(50, '#38BDF8', '#0369A1')}</div>`, 'bg', 'inset:0;width:100%;height:100%');
-        every(3, 7, () => { const x = rnd(W() * .2, W() * 1.1), y = rnd(60, H() * .55), len = rnd(120, 220);
+        box(twinkles(70, 50, '#fff'), 'bg', 'inset:0;width:100%;height:100%');
+        box(`<div class="bgx-float" style="position:absolute;right:6%;top:14%">${planet(130, '#F59E0B', '#B45309', '#FDE68A')}</div>
+          <div class="bgx-float" style="position:absolute;left:5%;top:30%;animation-delay:-4s">${planet(70, '#EF4444', '#991B1B')}</div>
+          <div class="bgx-float" style="position:absolute;left:44%;top:8%;animation-delay:-7s">${planet(50, '#38BDF8', '#0369A1')}</div>`, 'bg', 'inset:0;width:100%;height:100%');
+        ground('#8A90A6', '#4A4F62', '#A4AABE');
+        spread(10, (x, t) => put(crater(rnd(60, 110)), x, t));
+        spread(6, (x, t) => put(rock(60, '#9AA0B4', '#6E7488'), x, t));
+        spread(2, (x, t) => put(`<div style="position:relative"><div style="position:absolute;left:28px;bottom:58px">${star4(18, '#FFE27A')}</div>${rocket(110).replace('viewBox="0 0 120 50"', 'viewBox="0 0 120 50" style="transform:rotate(-90deg);transform-origin:50% 50%"')}</div>`, x, t * .4));
+        every(3, 7, () => { const x = rnd(W() * .2, W() * 1.1), y = rnd(60, H() * .4), len = rnd(120, 220);
           pass(`<span class="bgx-shoot" style="width:${len}px"></span>`, [{ transform: `translate(${x}px,${y}px) rotate(150deg)`, opacity: 0 }, { opacity: 1, offset: .15 },
             { transform: `translate(${x - 420}px,${y + 240}px) rotate(150deg)`, opacity: 0 }], 1300); }, [1, 3]);
-        every(18, 30, () => { const w = rnd(100, 150); pass(rocket(w), across(rnd(100, H() - 160), w, Math.random() < .5, rnd(-160, 160)), rnd(7, 10) * 1000); }, [4, 8]);
-        every(26, 40, () => { const w = rnd(90, 130); pass(ufo(w), across(rnd(90, H() * .5), w, Math.random() < .5, rnd(-40, 40)), rnd(14, 20) * 1000); }, [12, 18]);
-        every(30, 50, () => { const w = rnd(60, 80), ltr = Math.random() < .5, y = rnd(140, H() - 200), x0 = ltr ? -w : W() + w, x1 = ltr ? W() + w : -w;
-          pass(astro(w), [{ transform: `translate(${x0}px,${y}px) rotate(0)` }, { transform: `translate(${x1}px,${y + rnd(-80, 80)}px) rotate(${ltr ? 300 : -300}deg)` }], rnd(22, 30) * 1000); }, [16, 24]);
+        every(18, 30, () => { const w = rnd(100, 150); pass(rocket(w), across(rnd(100, HZ() - 80), w, Math.random() < .5, rnd(-100, 60)), rnd(7, 10) * 1000); }, [4, 8]);
+        every(26, 40, () => { const w = rnd(90, 130); pass(ufo(w), across(rnd(90, H() * .35), w, Math.random() < .5, rnd(-40, 40)), rnd(14, 20) * 1000); }, [12, 18]);
+        every(8, 14, () => roamArt(astro, 64, 1.14, 16, { cls: 'bgx-hop' }), [1, 4]);
       } },
 
-    { id: 'rainbow', e: '🌈', n: 'Rainbow', cost: 2500, hdr: HDR.rainbow, tc: '#8B5CF6', base: '#FFD6E8', sky: 'linear-gradient(120deg,#FF9A9E,#FECF8A,#FFF59D,#A8F0C6,#9AD7FF,#C7A6FF,#FF9A9E)',
+    { id: 'rainbow', e: '🌈', n: 'Rainbow', cost: 2500, land: true, hdr: HDR.rainbow, tc: '#8B5CF6', base: '#FFD6E8', sky: 'linear-gradient(120deg,#FF9A9E,#FECF8A,#FFF59D,#A8F0C6,#9AD7FF,#C7A6FF,#FF9A9E)',
       thumb: rainbow(34), build() {
         bgEl.classList.add('bgx-shift');
-        stream(9, () => { const w = rnd(34, 56), x = rnd(0, W() - w); return { html: balloon(w, pick(['#EF4444', '#F59E0B', '#22C55E', '#3B82F6', '#A855F7', '#EC4899']), '#ffffff55'),
+        const rw = Math.min(W() * 1.1, 560); box(rainbow(rw), 'bg', `left:${(W() - rw) / 2}px;top:${HZ() - rw * .5}px;opacity:.85`);
+        ground('#FFFFFF', '#F6E2F4', '#FFFFFF', `<svg viewBox="0 0 400 30" preserveAspectRatio="none" style="position:absolute;left:0;top:-14px;width:100%;height:30px">${Array.from({ length: 14 }, (_, i) => `<circle cx="${i * 30 + 14}" cy="18" r="${16 + (i % 3) * 4}" fill="#fff"/>`).join('')}</svg>`);
+        spread(8, (x, t) => put(cloud(110, 1), x, t));
+        spread(10, (x, t) => put(star4(26, pick(['#FFD23F', '#FF8AC8', '#8ADC8A', '#7AB8FF'])), x, t));
+        stream(7, () => { const w = rnd(34, 56), x = rnd(0, W() - w); return { html: balloon(w, pick(['#EF4444', '#F59E0B', '#22C55E', '#3B82F6', '#A855F7', '#EC4899']), '#ffffff55'),
           dur: rnd(14, 22) * 1000, frames: [{ transform: `translate(${x}px,${H() + 30}px)` }, { transform: `translate(${x + rnd(-50, 50)}px,${H() * .5}px)` }, { transform: `translate(${x + rnd(-70, 70)}px,${-w * 2}px)` }] }; });
-        stream(14, () => { const x = rnd(0, W()), y = rnd(80, H() - 60), s = rnd(12, 26);
+        stream(12, () => { const x = rnd(0, W()), y = rnd(80, H() - 60), s = rnd(12, 26);
           return { html: star4(s, '#fff'), dur: rnd(2.5, 4.5) * 1000, frames: [{ transform: `translate(${x}px,${y}px) scale(0)`, opacity: 0 }, { transform: `translate(${x}px,${y}px) scale(1) rotate(90deg)`, opacity: 1, offset: .5 }, { transform: `translate(${x}px,${y}px) scale(0) rotate(180deg)`, opacity: 0 }] }; });
-        every(20, 32, () => { const w = Math.min(W() * .9, 480); pass(rainbow(w), [{ opacity: 0 }, { opacity: .9, offset: .25 }, { opacity: .9, offset: .7 }, { opacity: 0 }], 8000, 'bg', `left:${(W() - w) / 2}px;top:${H() * .3}px`); }, [3, 6]);
+        every(9, 15, () => { const w = rnd(30, 40); pass(petSVG('butterfly', w), across(rnd(120, H() * .5), w, Math.random() < .5, rnd(-100, 100)), rnd(9, 13) * 1000); }, [3, 6]);
+        herd([['unicorn', 108, 11], ['bunny', 60, 9], ['lamb', 64, 13], ['kangaroo', 90, 9], ['koala', 60, 16], ['panda', 80, 18]], 4, 8);
       } },
 
-    { id: 'gold', e: '👑', n: 'Royal Gold', cost: 3500, dark: true, hdr: HDR.gold, tc: '#4C1D95', base: '#2A0F4A', sky: 'radial-gradient(ellipse at 50% 0%,#5B2A8C 0%,#2A0F4A 50%,#14062A 100%)',
+    { id: 'gold', e: '👑', n: 'Royal Gold', cost: 3500, land: true, dark: true, hdr: HDR.gold, tc: '#4C1D95', base: '#2A0F4A', sky: 'radial-gradient(ellipse at 50% 0%,#5B2A8C 0%,#2A0F4A 35%,#14062A 55%)',
       thumb: coin(26), build() {
-        box(`<img src="decor/crown.webp" alt="" class="bgx-float" style="position:absolute;right:8%;top:16%;height:64px"><img src="decor/gem.webp" alt="" class="bgx-float" style="position:absolute;left:7%;top:60%;height:46px;animation-delay:-3s">
-          <img src="decor/trophy.webp" alt="" style="position:absolute;right:10%;bottom:20px;height:62px">`, 'bg', 'inset:0;width:100%;height:100%');
-        stream(14, () => { const s = rnd(22, 36); return { html: `<div class="bgx-spin">${coin(s)}</div>`, ...drop(s, rnd(7, 12) * 1000, rnd(10, 30), 0, .45), pile: flatCoin(s) }; });
+        box(`<img src="decor/crown.webp" alt="" class="bgx-float" style="position:absolute;right:8%;top:16%;height:64px"><img src="decor/gem.webp" alt="" class="bgx-float" style="position:absolute;left:7%;top:30%;height:46px;animation-delay:-3s">`, 'bg', 'inset:0;width:100%;height:100%');
+        ground('#5B2A8C', '#2A0F4A', '#E2B13C', `<div style="position:absolute;left:50%;top:0;bottom:0;width:46%;transform:translateX(-50%);background:linear-gradient(#B91C1C,#7F1D1D);clip-path:polygon(40% 0,60% 0,100% 100%,0 100%);opacity:.85"></div>
+          <div style="position:absolute;left:50%;top:0;bottom:0;width:50%;transform:translateX(-50%);clip-path:polygon(39% 0,41% 0,2% 100%,0 100%,0 100%);background:#E2B13C"></div>
+          <div style="position:absolute;left:50%;top:0;bottom:0;width:50%;transform:translateX(-50%);clip-path:polygon(59% 0,61% 0,100% 100%,98% 100%);background:#E2B13C"></div>`);
+        spread(5, (x, t) => put(chest(70), x, .2 + t * .8));
+        spread(4, (x, t) => put(img('trophy', 66), x, t * .7));
+        spread(8, (x, t) => put(`<div style="display:flex;gap:2px">${coin(20)}${coin(20)}</div>`, x, t));
+        spread(4, (x, t) => put(img('gem', 30), x, t));
+        stream(10, () => { const s = rnd(22, 36); return { html: `<div class="bgx-spin">${coin(s)}</div>`, ...drop(s, rnd(7, 12) * 1000, rnd(10, 30), 0, .45), pile: flatCoin(s) }; });
         stream(18, () => { const x = rnd(0, W()), y = rnd(80, H() - 40), s = rnd(10, 22);
           return { html: star4(s), dur: rnd(2, 4) * 1000, frames: [{ transform: `translate(${x}px,${y}px) scale(0)`, opacity: 0 }, { transform: `translate(${x}px,${y}px) scale(1) rotate(45deg)`, opacity: 1, offset: .5 }, { transform: `translate(${x}px,${y}px) scale(0) rotate(90deg)`, opacity: 0 }] }; });
+        herd([['lion', 84, 12], ['unicorn', 108, 11], ['horse', 108, 12], ['tiger', 80, 12], ['cat', 64, 10]], 5, 9);
+        every(18, 30, () => { const w = 110; pass(`<div class="walking">${petSVG('dragon', w * .64)}</div>`, wavy(rnd(110, H() * .3), w, Math.random() < .5, 20, 1), rnd(10, 14) * 1000); }, [6, 10]);
       } },
 
-    { id: 'faith', e: '✝️', n: 'Faith', cost: 0, dark: true, hdr: 'linear-gradient(135deg,#0B1B4D,#27407A 55%,#B7791F)', tc: '#0B1B4D', base: '#27407A',
-      sky: 'linear-gradient(#081638 0%,#1E3A7A 36%,#7E5BA0 62%,#F2A65A 84%,#FFD79A 100%)', thumb: crossIcon, build() {
-        box(twinkles(44, 42, '#fff'), 'bg', full);
-        box('<div class="bgx-dawn"></div>', 'bg', 'left:50%;top:auto;bottom:-140px;transform:translateX(-50%)');
-        box('<div class="bgx-holyrays"></div>', 'bg', 'left:50%;top:auto;bottom:110px;transform:translateX(-50%)');
-        box(`<div class="bgx-bigstar">${bigStar(118)}</div>`, 'bg', `left:50%;top:${Math.max(84, H() * .12)}px;transform:translateX(-50%)`);
-        box(crossesHill(), 'bg', 'top:auto;bottom:0;width:100%');
-        stream(18, () => { const x = rnd(0, W()), s = rnd(8, 18), y0 = H() - rnd(60, 160);
+    { id: 'faith', e: '✝️', n: 'Faith', cost: 0, land: true, dark: true, hdr: 'linear-gradient(135deg,#0B1B4D,#27407A 55%,#B7791F)', tc: '#0B1B4D', base: '#27407A',
+      sky: 'linear-gradient(#081638 0%,#1E3A7A 20%,#7E5BA0 36%,#F2A65A 46%,#FFD79A 52%)', thumb: crossIcon, build() {
+        box(twinkles(44, 30, '#fff'), 'bg', full);
+        box('<div class="bgx-dawn"></div>', 'bg', `left:50%;top:${HZ() - 210}px;transform:translateX(-50%)`);
+        box('<div class="bgx-holyrays"></div>', 'bg', `left:50%;top:${HZ() - 330}px;transform:translateX(-50%)`);
+        box(`<div class="bgx-bigstar">${bigStar(110)}</div>`, 'bg', `left:50%;top:${Math.max(84, H() * .11)}px;transform:translateX(-50%)`);
+        box(crossesHill().replace('height:230px', 'height:100%'), 'bg', `top:${HZ() - 150}px;width:100%;height:180px`);
+        ground('#2A2048', '#100B22', '#1A1433');
+        spread(6, (x, t) => put(leafTree(130, '#1F1838', '#15102A', '#120D26'), x, t * .4));
+        spread(12, (x, t) => put(tuft('#2E2650'), x, t));
+        spread(8, (x, t) => put(flowerDot(18, pick(['#FFF7D6', '#FFE7A0', '#F8D0FF'])), x, .3 + t * .7));
+        stream(18, () => { const x = rnd(0, W()), s = rnd(8, 18), y0 = H() - rnd(60, 260);
           return { html: star4(s, '#FFE7A0'), dur: rnd(6, 10) * 1000, ease: 'ease-out',
             frames: [{ transform: `translate(${x}px,${y0}px) scale(.4)`, opacity: 0 }, { opacity: 1, offset: .3 }, { transform: `translate(${x + rnd(-40, 40)}px,${y0 - rnd(200, 380)}px) scale(1) rotate(90deg)`, opacity: 0 }] }; });
-        every(9, 16, () => { const w = rnd(70, 100); pass(dove(w), wavy(rnd(100, H() * .5), w, Math.random() < .5, rnd(10, 30), 1.5), rnd(10, 15) * 1000); }, [2, 5]);
+        every(9, 16, () => { const w = rnd(70, 100); pass(dove(w), wavy(rnd(100, H() * .4), w, Math.random() < .5, rnd(10, 30), 1.5), rnd(10, 15) * 1000); }, [2, 5]);
+        const soft = { filter: 'brightness(.85)' };
+        herd([['lamb', 64, 14, soft], ['sheep', 76, 16, soft], ['goat', 76, 13, soft], ['cow', 96, 20, soft]], 5, 9);
       } },
 
     { id: 'valentine', e: '💘', n: "Valentine's Day", cost: 600, dark: true, hdr: 'linear-gradient(135deg,#880E4F,#D81B60 55%,#FF4081)', tc: '#C2185B', base: '#D81B60',
@@ -591,11 +704,15 @@
               rnd(1, 1.5) * 1000, 'fx', '', 'cubic-bezier(.2,.7,.4,1)'); } }, [1, 2]);
       } },
 
-    { id: 'rain', e: '⛈️', n: 'Rainy Day', cost: 800, dark: true, hdr: 'linear-gradient(135deg,#111827,#1F2937 55%,#4B5563)', tc: '#1F2937', base: '#3A4655',
-      sky: 'linear-gradient(#141B24,#26313E 45%,#3E4C5E)', thumb: darkCloud(34), build() {
-        stream(5, () => { const w = rnd(170, 300), y = rnd(60, H() * .32); return { html: darkCloud(w, pick(['#566170', '#4A5462', '#606B7A'])), dur: rnd(40, 70) * 1000, frames: across(y, w, Math.random() < .5) }; }, 'bg');
-        box(`<div style="position:absolute;left:0;right:0;bottom:0;height:60px;background:linear-gradient(#36414F,#2A333E)"></div>` +
-          [12, 38, 66, 88].map((x, i) => `<div class="bgx-puddle" style="left:${x}%;bottom:${14 + (i % 2) * 14}px"><i></i><i style="animation-delay:-1s"></i></div>`).join(''), 'bg', full);
+    { id: 'rain', e: '⛈️', n: 'Rainy Day', cost: 800, land: true, dark: true, hdr: 'linear-gradient(135deg,#111827,#1F2937 55%,#4B5563)', tc: '#1F2937', base: '#3A4655',
+      sky: 'linear-gradient(#141B24,#26313E 30%,#3E4C5E 50%)', thumb: darkCloud(34), build() {
+        stream(5, () => { const w = rnd(170, 300), y = rnd(60, H() * .3); return { html: darkCloud(w, pick(['#566170', '#4A5462', '#606B7A'])), dur: rnd(40, 70) * 1000, frames: across(y, w, Math.random() < .5) }; }, 'bg');
+        box(forest('#2A3A30'), 'bg', `top:${HZ() - 80}px;width:100%;height:96px`);
+        ground('#3E5A42', '#1E2C22', '#4A6A4E');
+        spread(5, (x, t) => put(`<div class="bgx-puddle" style="position:relative;width:120px;height:22px"><i></i><i style="animation-delay:-1s"></i></div>`, x, t));
+        spread(5, (x, t) => put(bush(90, '#3E6A44', '#2A4A30'), x, t * .6));
+        spread(12, (x, t) => put(tuft('#2E4A32'), x, t));
+        spread(4, (x, t) => put(img('mushroom', 32), x, .4 + t * .6));
         stream(54, () => { const len = rnd(16, 34), x = rnd(-40, W() + 120), fy = floorY();
           return { html: `<span class="bgx-rain" style="height:${len}px"></span>`, dur: rnd(.5, .85) * 1000,
             frames: [{ transform: `translate(${x}px,${-len}px) rotate(14deg)` }, { transform: `translate(${x - (fy + len) * .25}px,${fy - len}px) rotate(14deg)` }],
@@ -605,18 +722,24 @@
           const h = rnd(180, 300), x = rnd(20, W() - 100);
           pass(bolt(h), [{ opacity: 0 }, { opacity: 1, offset: .08 }, { opacity: .2, offset: .2 }, { opacity: 1, offset: .3 }, { opacity: 0 }], 900, 'fx', `left:${x}px;top:${rnd(40, 120)}px;filter:drop-shadow(0 0 12px #fff)`);
         }, [2, 4]);
-        every(16, 26, () => { const w = rnd(46, 64); pass(`<div class="bgx-bob">${boat(w)}</div>`, across(floorY() - w * .62, w, Math.random() < .5), rnd(14, 20) * 1000); }, [5, 9]);
-        every(20, 34, () => { const w = rnd(50, 70), ltr = Math.random() < .5, y = rnd(150, H() * .55), x0 = ltr ? -w : W() + w, x1 = ltr ? W() + w : -w;
+        every(20, 34, () => { const w = rnd(50, 70), ltr = Math.random() < .5, y = rnd(150, H() * .45), x0 = ltr ? -w : W() + w, x1 = ltr ? W() + w : -w;
           pass(umbrella(w), [{ transform: `translate(${x0}px,${y}px) rotate(0)` }, { transform: `translate(${(x0 + x1) / 2}px,${y - rnd(30, 80)}px) rotate(${ltr ? 300 : -300}deg)` }, { transform: `translate(${x1}px,${y + rnd(-40, 80)}px) rotate(${ltr ? 640 : -640}deg)` }], rnd(4, 6) * 1000); }, [8, 14]);
+        herd([['duck', 56, 12], ['frog', 36, 8], ['hedgehog', 34, 12], ['chicken', 56, 13], ['dog', 70, 9], ['otter', 40, 10]], 4, 8);
       } },
 
-    { id: 'stpat', e: '☘️', n: "St. Patrick's Day", cost: 1000, dark: true, hdr: 'linear-gradient(135deg,#064E3B,#047857 55%,#10B981)', tc: '#047857', base: '#0E7A45',
-      sky: 'linear-gradient(#0B5D3B,#138A55 50%,#0A4A2E)', thumb: shamrock(26), build() {
+    { id: 'stpat', e: '☘️', n: "St. Patrick's Day", cost: 1000, land: true, dark: true, hdr: 'linear-gradient(135deg,#064E3B,#047857 55%,#10B981)', tc: '#047857', base: '#0E7A45',
+      sky: 'linear-gradient(#0B5D3B,#138A55 35%,#36B47A 50%)', thumb: shamrock(26), build() {
         const rw = Math.max(320, W() * 1.05), potW = Math.min(110, W() * .26), potX = W() - potW - 14;
         box(`<div style="position:absolute;left:${potX + potW * .5 - rw * .97}px;bottom:${H() - floorY() + potW * .45}px;opacity:.9">${rainbow(rw)}</div>`, 'bg', full);
+        box(`<svg viewBox="0 0 400 60" preserveAspectRatio="none" style="width:100%;height:100%;display:block"><path d="M0 60 V30 C70 6 140 12 200 30 C260 48 330 8 400 22 V60Z" fill="#1E9A55"/></svg>`, 'bg', `top:${HZ() - 60}px;width:100%;height:80px`);
+        ground('#22A055', '#0B5A30', '#2CB262');
+        spread(12, (x, t) => put(tuft('#14743C'), x, t));
+        spread(10, (x, t) => put(shamrock(30), x, t));
+        spread(4, (x, t) => put(img('clover', 34), x, .3 + t * .7));
+        spread(3, (x, t) => put(lepHat(40), x, .2 + t * .6));
         box(`<div class="bgx-goldglow" style="left:${potX - 20}px;bottom:${H() - floorY() - 10}px;width:${potW + 40}px;height:${potW}px"></div>`, 'fx', full);
         box(`<div style="position:absolute;left:${potX}px;top:${floorY() - potW * .8}px">${potOfGold(potW)}</div>`, 'fx', full);
-        stream(16, () => { const r = Math.random();
+        stream(12, () => { const r = Math.random();
           if (r < .6) { const s = rnd(28, 46); return { html: shamrock(s), ...drop(s, rnd(8, 13) * 1000, rnd(30, 60), rnd(-300, 300), .55) }; }
           if (r < .9) { const s = rnd(20, 28); return { html: `<div class="bgx-spin">${coin(s)}</div>`, ...drop(s, rnd(7, 11) * 1000, rnd(10, 30), 0, .45), pile: flatCoin(s) }; }
           const s = rnd(30, 40); return { html: lepHat(s), ...drop(s, rnd(9, 13) * 1000, rnd(20, 40), rnd(-120, 120), .5) }; });
@@ -626,185 +749,202 @@
           for (let k = 0; k < 9; k++) { const s = rnd(18, 26), x1 = Math.min(W() - s, Math.max(0, px + rnd(-W() * .55, W() * .1))), y1 = landY(x1, s, .45), peak = py - rnd(120, 240);
             pass(`<div class="bgx-spin">${coin(s)}</div>`, [{ transform: `translate(${px}px,${py}px)` }, { transform: `translate(${(px + x1) / 2}px,${peak}px)`, offset: .45 }, { transform: `translate(${x1}px,${y1}px)` }],
               rnd(1.3, 1.9) * 1000 + k * 90, 'fx', '', 'linear', () => settle(flatCoin(s), x1, y1, 0, s)); } }, [3, 6]);
+        herd([['bunny', 60, 9], ['lamb', 64, 13], ['sheep', 76, 16], ['horse', 108, 12], ['goat', 76, 13], ['highland', 96, 18]], 4, 8);
       } },
 
-    { id: 'easter', e: '🐣', n: 'Easter', cost: 1400, hdr: 'linear-gradient(135deg,#6D28D9,#8B5CF6 50%,#10B981)', tc: '#7C3AED', base: '#BFE9C9',
-      sky: 'linear-gradient(#7CC8FF,#C4EBFF 38%,#BDF0A8 66%,#73C761)', thumb: egg(28), build() {
-        box(['tulip', 'blossom', 'tulip', 'sunflower', 'tulip', 'blossom', 'tulip'].map((f, i) =>
-          `<img class="bgx-sway" src="decor/${f}.webp" alt="" style="position:absolute;bottom:${H() - floorY() + 4 + (i % 2) * 8}px;left:${i * 14 + 1}%;height:${40 + (i % 3) * 10}px;animation-delay:-${i * .6}s">`).join('') +
-          `<div style="position:absolute;right:4%;bottom:${H() - floorY()}px">${basket(Math.min(120, W() * .28))}</div>`, 'bg', full);
-        stream(14, () => { const s = rnd(30, 46); return { html: egg(s), ...drop(s, rnd(8, 13) * 1000, rnd(20, 50), rnd(-260, 260), .55) }; });
-        every(12, 20, () => { const h = 56; pass(`<div class="walking">${petSVG('bunny', h)}</div>`, across(floorY() - h, h * 1.43, Math.random() < .5), rnd(9, 12) * 1000); }, [2, 5]);
-        every(10, 18, () => { const ltr = Math.random() < .5, w = rnd(30, 38), n = Math.round(rnd(2, 4));
+    { id: 'easter', e: '🐣', n: 'Easter', cost: 1400, land: true, hdr: 'linear-gradient(135deg,#6D28D9,#8B5CF6 50%,#10B981)', tc: '#7C3AED', base: '#BFE9C9',
+      sky: 'linear-gradient(#7CC8FF,#C4EBFF 40%,#E8F8FF 50%)', thumb: egg(28), build() {
+        box(cloud(140, .9), 'bg', `left:6%;top:${H() * .15}px`); box(cloud(100, .8), 'bg', `left:auto;right:6%;top:${H() * .26}px`);
+        ground('#A6E68E', '#5CB848', '#B8EE9E');
+        spread(4, (x, t) => put(leafTree(150, '#FFC1DA', '#F59AC0'), x, t * .25));
+        spread(12, (x, t) => put(tuft('#4E9E3C'), x, t));
+        spread(14, (x, t, i) => put(img(['tulip', 'blossom', 'sunflower'][i % 3], 50, 'bgx-sway'), x, t));
+        spread(10, (x, t) => put(egg(30), x, .15 + t * .85));
+        spread(2, (x, t) => put(basket(110), x, .5 + t * .5));
+        stream(10, () => { const s = rnd(30, 46); return { html: egg(s), ...drop(s, rnd(8, 13) * 1000, rnd(20, 50), rnd(-260, 260), .55) }; });
+        every(10, 18, () => { const ltr = Math.random() < .5, n = Math.round(rnd(2, 4)), t = rnd(.2, 1), w = rnd(30, 38) * dS(t);
           const parade = Array.from({ length: n }, (_, k) => `<div style="position:absolute;left:${k * w * 1.15}px;top:0">${chick(w * (k ? .85 : 1))}</div>`).join('');
-          pass(`<div style="position:relative;width:${n * w * 1.2}px;height:${w * 1.1}px">${parade}</div>`, across(floorY() - w * 1.05, n * w * 1.2, ltr), rnd(12, 16) * 1000); }, [6, 10]);
-        every(12, 20, () => { const w = rnd(30, 40); pass(petSVG('butterfly', w), across(rnd(120, H() * .6), w, Math.random() < .5, rnd(-100, 100)), rnd(9, 13) * 1000); }, [4, 8]);
+          pass(`<div style="position:relative;width:${n * w * 1.2}px;height:${w * 1.1}px">${parade}</div>`, across(dY(t) - w * 1.05, n * w * 1.2, ltr), rnd(12, 16) * 1000, 'bg', `z-index:${zOf(t)}`); }, [3, 6]);
+        every(12, 20, () => { const w = rnd(30, 40); pass(petSVG('butterfly', w), across(rnd(120, H() * .5), w, Math.random() < .5, rnd(-100, 100)), rnd(9, 13) * 1000); }, [4, 8]);
+        herd([['bunny', 60, 8], ['bunny', 60, 8], ['lamb', 64, 13], ['duck', 56, 12], ['chicken', 56, 13], ['guineapig', 38, 11]], 3, 7);
       } },
 
-    { id: 'christmas', e: '🎅', n: 'Christmas', cost: 2200, dark: true, hdr: 'linear-gradient(135deg,#7F1D1D,#B91C1C 50%,#166534)', tc: '#B91C1C', base: '#13234F',
-      sky: 'linear-gradient(#08122E,#13234F 50%,#26407A)', thumb: xmasTree(30), build() {
-        box(twinkles(46, 60, '#fff'), 'bg', full);
+    { id: 'christmas', e: '🎅', n: 'Christmas', cost: 2200, land: true, dark: true, hdr: 'linear-gradient(135deg,#7F1D1D,#B91C1C 50%,#166534)', tc: '#B91C1C', base: '#13234F',
+      sky: 'linear-gradient(#08122E,#13234F 35%,#26407A 50%)', thumb: xmasTree(30), build() {
+        box(twinkles(46, 40, '#fff'), 'bg', full);
         box('<div class="bgx-moon"></div>', 'bg', `left:10%;top:${Math.max(90, H() * .13)}px`);
-        box(`<svg viewBox="0 0 400 90" preserveAspectRatio="none" style="position:absolute;left:0;bottom:${H() - floorY() - 20}px;width:100%;height:90px"><path d="M0 40 C80 14 160 22 230 40 C300 58 350 30 400 36 L400 90 L0 90Z" fill="#E8F0FB"/><path d="M0 62 C90 46 170 56 250 70 C320 82 360 62 400 66 L400 90 L0 90Z" fill="#fff"/></svg>
-          <div style="position:absolute;left:4%;bottom:${H() - floorY() + 26}px">${xmasTree(Math.min(170, H() * .22))}</div>
-          <div style="position:absolute;left:30%;bottom:${H() - floorY() + 22}px">${present(46, '#E8304A', '#FFD23F')}</div>
-          <div style="position:absolute;left:43%;bottom:${H() - floorY() + 20}px">${present(36, '#3AA0FF', '#fff')}</div>
-          <div style="position:absolute;right:8%;bottom:${H() - floorY() + 30}px">${pine(110)}</div>`, 'bg', full);
+        ground('#EEF4FC', '#C8D8EC', '#F6FAFF');
+        spread(7, (x, t) => put(pine(150), x, t * .6));
+        spread(2, (x, t) => put(xmasTree(170), x, .3 + t * .5));
+        spread(6, (x, t) => put(present(46, ...pick([['#E8304A', '#FFD23F'], ['#3AA0FF', '#fff'], ['#22C55E', '#E8304A'], ['#A855F7', '#FFD23F']])), x, .3 + t * .7));
+        spread(4, (x, t) => put(cane(60), x, t));
+        spread(2, (x, t) => put(img('snowman', 90), x, .4 + t * .5));
         box(xmasLights(), 'fx', 'left:0;right:0;width:100%');
-        stream(26, i => { const s = i % 5 === 0 ? rnd(22, 32) : rnd(6, 16);
+        stream(24, i => { const s = i % 5 === 0 ? rnd(22, 32) : rnd(6, 16);
           return { html: i % 3 ? flake(s, rnd(.8, 1)) : `<span class="bgx-dot" style="width:${s / 2}px;height:${s / 2}px"></span>`, ...drop(s, rnd(9, 16) * 1000, rnd(20, 50), rnd(-200, 200), .45), pile: snowPile(s) }; });
-        stream(3, () => { const s = rnd(30, 44); return { html: cane(s), ...drop(s, rnd(9, 13) * 1000, rnd(20, 40), rnd(-300, 300), .4) }; });
-        every(16, 28, () => { const w = Math.min(W() * 1.1, rnd(320, 460)), y = rnd(90, H() * .3);
+        every(16, 28, () => { const w = Math.min(W() * 1.1, rnd(320, 460)), y = rnd(90, H() * .28);
           pass(sleigh(w), wavy(y, w, Math.random() < .7, rnd(12, 26), 1.5), rnd(9, 13) * 1000); }, [3, 6]);
+        herd([['reindeer', 110, 12], ['reindeer', 110, 12], ['penguin', 64, 16], ['polarbear', 80, 16], ['lamb', 64, 13]], 4, 8);
       } },
 
-    { id: 'desert', e: '🌵', n: 'Arizona Desert', cost: 1800, hdr: 'linear-gradient(135deg,#7C2D12,#C2410C 55%,#0E9F9A)', tc: '#B4461B', base: '#F2C38A',
-      sky: 'linear-gradient(#2F86DA,#74BDF2 34%,#FFE2AE 66%,#F5B46A)', thumb: saguaro(30, true), build() {
-        const fy = floorY(), up = H() - fy;
+    { id: 'desert', e: '🌵', n: 'Arizona Desert', cost: 1800, land: true, hdr: 'linear-gradient(135deg,#7C2D12,#C2410C 55%,#0E9F9A)', tc: '#B4461B', base: '#F2C38A',
+      sky: 'linear-gradient(#2F86DA,#74BDF2 26%,#FFE2AE 46%,#F5B46A 52%)', thumb: saguaro(30, true), build() {
+        const fy = floorY();
         box('<div class="bgx-sun"></div>', 'bg', `left:auto;right:12%;top:${Math.max(100, H() * .13)}px`);
-        box(mesas(), 'bg', `top:auto;bottom:${up + 40}px;width:100%;height:${Math.min(170, H() * .2)}px`);
-        box(dunes(), 'bg', `top:auto;bottom:${up - 6}px;width:100%;height:70px`);
-        const ch = Math.min(200, H() * .25);
-        box(`<div style="position:absolute;left:3%;bottom:${up + 10}px">${saguaro(ch, true)}</div>
-          <div style="position:absolute;right:5%;bottom:${up + 16}px">${saguaro(ch * .7)}</div>
-          <div style="position:absolute;left:38%;bottom:${up + 30}px">${saguaro(ch * .38)}</div>
-          <div style="position:absolute;left:24%;bottom:${up + 4}px">${barrel(40)}</div>
-          <div style="position:absolute;right:28%;bottom:${up + 2}px">${pear(64)}</div>`, 'bg', full);
-        // The wind blows left to right: sand grains, dust clouds and tumbleweeds all go with it.
+        box(mesas(), 'bg', `top:${HZ() - Math.min(150, H() * .18) + 16}px;width:100%;height:${Math.min(150, H() * .18)}px`);
+        ground('#EDBB7A', '#C98A48', '#F2C88A', `<svg viewBox="0 0 400 100" preserveAspectRatio="none" style="position:absolute;left:0;top:0;width:100%;height:100%"><path d="M0 30 C90 18 170 26 250 36 C320 44 360 30 400 32" stroke="#DFA05C" stroke-width="3" fill="none" opacity=".6"/><path d="M0 64 C90 52 170 60 250 70 C320 78 360 64 400 66" stroke="#DFA05C" stroke-width="3" fill="none" opacity=".6"/></svg>`);
+        spread(6, (x, t, i) => put(saguaro(190, i % 2 === 0), x, t * .7));
+        spread(5, (x, t) => put(barrel(44), x, t));
+        spread(4, (x, t) => put(pear(64), x, t));
+        spread(5, (x, t) => put(rock(64, '#C47A4A', '#9C5A30'), x, t));
         stream(20, () => { const y = rnd(H() * .35, fy - 6), x = rnd(-40, W() * .3), s = rnd(2, 4.5);
           return { html: `<span class="bgx-sand" style="width:${s}px;height:${s}px"></span>`, dur: rnd(1.4, 2.8) * 1000,
             frames: [{ transform: `translate(${x}px,${y}px)`, opacity: 0 }, { opacity: .8, offset: .2 }, { transform: `translate(${x + W() * rnd(.6, 1)}px,${y + rnd(-30, 20)}px)`, opacity: 0 }] }; });
-        const roll = (s, delay = 0) => { const x0 = -s - 30, x1 = W() + 30, hops = Math.round(rnd(3, 6)), N = hops * 8, hh = Array.from({ length: hops }, () => rnd(.35, 1) * rnd(30, 90)), frames = [];
-          for (let k = 0; k <= N; k++) { const t = k / N, j = Math.min(hops - 1, Math.floor(t * hops)), ph = t * hops - j, x = x0 + (x1 - x0) * t;
-            frames.push({ transform: `translate(${x}px,${fy - s * .92 - Math.sin(ph * Math.PI) * hh[j]}px) rotate(${(x - x0) / (Math.PI * s) * 360}deg)` }); }
-          timers.push(setTimeout(() => pass(tumbleweed(s), frames, rnd(4.5, 7.5) * 1000), delay)); };
+        const roll = (s0, delay = 0) => { const t = rnd(.1, 1), s = s0 * dS(t), base = dY(t), x0 = -s - 30, x1 = W() + 30, hops = Math.round(rnd(3, 6)), N = hops * 8, hh = Array.from({ length: hops }, () => rnd(.35, 1) * rnd(30, 90) * dS(t)), frames = [];
+          for (let k = 0; k <= N; k++) { const tt = k / N, j = Math.min(hops - 1, Math.floor(tt * hops)), ph = tt * hops - j, x = x0 + (x1 - x0) * tt;
+            frames.push({ transform: `translate(${x}px,${base - s * .92 - Math.sin(ph * Math.PI) * hh[j]}px) rotate(${(x - x0) / (Math.PI * s) * 360}deg)` }); }
+          timers.push(setTimeout(() => pass(tumbleweed(s), frames, rnd(4.5, 7.5) * 1000, 'bg', `z-index:${zOf(t)}`), delay)); };
         every(5, 10, () => { roll(rnd(42, 74)); if (Math.random() < .35) roll(rnd(30, 48), rnd(600, 1600)); }, [1, 3]);
-        every(12, 20, () => { const w = rnd(160, 260), h = w * .45;
-          pass(`<div class="bgx-dust" style="width:${w}px;height:${h}px"></div>`, [{ transform: `translate(${-w}px,${fy - h * .8}px)`, opacity: 0 }, { opacity: .9, offset: .2 }, { opacity: .7, offset: .8 }, { transform: `translate(${W() + 20}px,${fy - h * .9}px)`, opacity: 0 }], rnd(5, 8) * 1000);
+        every(12, 20, () => { const w = rnd(160, 260), h = w * .45, y = dY(rnd(.2, 1));
+          pass(`<div class="bgx-dust" style="width:${w}px;height:${h}px"></div>`, [{ transform: `translate(${-w}px,${y - h * .8}px)`, opacity: 0 }, { opacity: .9, offset: .2 }, { opacity: .7, offset: .8 }, { transform: `translate(${W() + 20}px,${y - h * .9}px)`, opacity: 0 }], rnd(5, 8) * 1000);
           roll(rnd(50, 70), 400); }, [6, 10]);
-        // Critters scurry, slither, zoom and soar.
-        every(9, 16, () => { const h = 26; pass(`<div class="walking">${petSVG('lizard', h)}</div>`, across(fy - h + 2, h * 3, Math.random() < .5), rnd(3, 4.5) * 1000); }, [3, 6]);
-        every(14, 24, () => { const w = rnd(150, 200); pass(snake(w), across(fy - w * .12, w, Math.random() < .5), rnd(13, 18) * 1000); }, [7, 12]);
-        every(16, 28, () => { const h = 64; pass(`<div class="walking">${petSVG('roadrunner', h)}</div>`, across(fy - h + 2, h * 1.33, Math.random() < .5), rnd(2.2, 3) * 1000); }, [10, 16]);
-        every(18, 30, () => { const w = rnd(70, 100); pass(hawk(w), wavy(rnd(110, H() * .35), w, Math.random() < .5, rnd(20, 40), 1), rnd(14, 20) * 1000); }, [4, 9]);
+        herd([['lizard', 30, 4], ['roadrunner', 70, 3], ['turtle', 40, 22], ['wolf', 76, 11, { filter: 'sepia(.5) saturate(1.3)' }], ['lizard', 30, 4]], 3, 7);
+        every(14, 24, () => roamArt(snake, 170, .12, 15), [5, 9]);
+        every(18, 30, () => { const w = rnd(70, 100); pass(hawk(w), wavy(rnd(110, H() * .3), w, Math.random() < .5, rnd(20, 40), 1), rnd(14, 20) * 1000); }, [4, 9]);
       } },
 
-    { id: 'harvest', e: '🦃', n: 'Thanksgiving Harvest', cost: 3150, hdr: 'linear-gradient(135deg,#7C2D12,#B45309 55%,#D97706)', tc: '#B45309', base: '#F6D7A7',
-      sky: 'linear-gradient(#FF9F5A,#FFC98A 36%,#FFE3B8 62%,#F4D29A)', thumb: pumpkin(30), build() {
-        const fy = floorY(), up = H() - fy;
-        box('<div class="bgx-sunset" style="width:150px;height:150px"></div>', 'bg', `left:auto;right:10%;top:auto;bottom:${up + 70}px`);
-        box(fields(), 'bg', `top:auto;bottom:${up - 4}px;width:100%;height:${Math.min(150, H() * .18)}px`);
-        box(`<div style="position:absolute;left:2%;bottom:${up}px;display:flex;align-items:flex-end">${cornStalk(110)}${cornStalk(130)}${cornStalk(100)}</div>
-          <div style="position:absolute;left:26%;bottom:${up}px">${scarecrow(104)}</div>
-          <div style="position:absolute;right:4%;bottom:${up}px">${hayBale(84)}</div><div style="position:absolute;right:9%;bottom:${up + 52}px">${pumpkin(48)}</div>
-          <div style="position:absolute;right:30%;bottom:${up}px">${pumpkin(56)}</div>
-          <div style="position:absolute;left:47%;bottom:${up}px">${pumpkin(38)}</div>`, 'bg', full);
-        stream(12, () => { const s = rnd(26, 46); return { html: maple(s), ...drop(s, rnd(10, 16) * 1000, rnd(30, 60), rnd(-300, 300), .55) }; });
-        every(9, 16, () => { if (!PETART.turkey) return; const h = 56, ltr = Math.random() < .5, n = Math.random() < .35 ? 2 : 1;
-          for (let k = 0; k < n; k++) timers.push(setTimeout(() => pass(`<div class="walking">${petSVG('turkey', h)}</div>`, across(fy - h + 2, h * 1.1, ltr), rnd(11, 15) * 1000), k * 900)); }, [1, 4]);
-        every(12, 20, () => pass(flock(Math.round(rnd(5, 8)), '#3b2a1a'), across(rnd(90, H() * .35), 170, Math.random() < .5, rnd(-40, 40)), rnd(12, 17) * 1000), [3, 7]);
+    { id: 'harvest', e: '🦃', n: 'Thanksgiving Harvest', cost: 3150, land: true, hdr: 'linear-gradient(135deg,#7C2D12,#B45309 55%,#D97706)', tc: '#B45309', base: '#F6D7A7',
+      sky: 'linear-gradient(#FF9F5A,#FFC98A 26%,#FFE3B8 44%,#F4D29A 52%)', thumb: pumpkin(30), build() {
+        box('<div class="bgx-sunset" style="width:150px;height:150px"></div>', 'bg', `left:auto;right:10%;top:${HZ() - 150}px`);
+        ground('#D9A441', '#9A6418', '#E2B456', `<svg viewBox="0 0 400 100" preserveAspectRatio="none" style="position:absolute;left:0;top:0;width:100%;height:100%">${[14, 30, 48, 68, 90].map((y, i) => `<path d="M0 ${y} C100 ${y - 6} 300 ${y + 6} 400 ${y}" stroke="#B7791F" stroke-width="${1.5 + i}" fill="none" opacity=".45"/>`).join('')}</svg>`);
+        spread(4, (x, t) => put(leafTree(150, '#E8792A', '#C2551A'), x, t * .2));
+        spread(10, (x, t) => put(`<div style="display:flex;align-items:flex-end">${cornStalk(110)}${cornStalk(130)}</div>`, x, t * .35));
+        spread(2, (x, t) => put(scarecrow(110), x, .35 + t * .4));
+        spread(4, (x, t) => put(hayBale(84), x, .2 + t * .8));
+        spread(8, (x, t) => put(pumpkin(50), x, .3 + t * .7));
+        stream(10, () => { const s = rnd(26, 46); return { html: maple(s), ...drop(s, rnd(10, 16) * 1000, rnd(30, 60), rnd(-300, 300), .55) }; });
+        herd([['turkey', 64, 13], ['turkey', 64, 13], ['chicken', 56, 13], ['pig', 66, 14], ['cow', 96, 20], ['horse', 108, 12], ['goat', 76, 13], ['sheep', 76, 16]], 3, 7);
+        every(12, 20, () => pass(flock(Math.round(rnd(5, 8)), '#3b2a1a'), across(rnd(90, H() * .32), 170, Math.random() < .5, rnd(-40, 40)), rnd(12, 17) * 1000), [3, 7]);
       } },
 
-    { id: 'beach', e: '🏖️', n: 'Sunny Beach', cost: 3300, hdr: 'linear-gradient(135deg,#0369A1,#0EA5E9 55%,#F59E0B)', tc: '#0284C7', base: '#F9E3B4',
-      sky: 'linear-gradient(#1E90E8,#62BDF6 38%,#B8E6FF 60%)', thumb: beachBall(26), build() {
-        const fy = floorY(), up = H() - fy, sea = fy - 150;
-        box('<div class="bgx-sun"></div>', 'bg', `left:auto;right:12%;top:${Math.max(100, H() * .12)}px`);
-        stream(3, () => { const w = rnd(110, 180); return { html: cloud(w, .95), dur: rnd(40, 60) * 1000, frames: across(rnd(70, H() * .3), w, true) }; }, 'bg');
-        box(`<div class="bgx-sea" style="top:${sea}px;height:${H() - sea}px"><div class="bgx-crest"></div><div class="bgx-crest" style="top:30px;opacity:.5;animation-duration:5s"></div></div>
-          <svg viewBox="0 0 400 80" preserveAspectRatio="none" style="position:absolute;left:0;bottom:${up - 4}px;width:100%;height:84px"><path d="M0 26 C60 12 120 30 200 20 C280 10 340 28 400 18 V80 H0Z" fill="#F7DFA6"/><path d="M0 30 C60 16 120 34 200 24 C280 14 340 32 400 22" stroke="#fff" stroke-width="3" fill="none" class="bgx-surf"/></svg>
-          <img src="decor/palm.webp" alt="" class="bgx-sway" style="position:absolute;left:1%;bottom:${up + 10}px;height:${Math.min(170, H() * .22)}px">
-          <div style="position:absolute;right:6%;bottom:${up + 8}px">${beachUmbrella(96)}</div>
-          <div style="position:absolute;left:38%;bottom:${up + 6}px">${sandcastle(70)}</div>
-          <img src="decor/shell.webp" alt="" style="position:absolute;left:62%;bottom:${up + 6}px;height:22px">`, 'bg', full);
-        every(14, 24, () => { const w = rnd(46, 60); pass(`<div class="bgx-bob">${boat(w)}</div>`, across(sea - w * .55, w, Math.random() < .5), rnd(22, 30) * 1000, 'bg'); }, [2, 6]);
-        every(10, 18, () => pass(flock(Math.round(rnd(2, 4)), '#F8FAFC'), across(rnd(90, H() * .35), 100, Math.random() < .5, rnd(-50, 50)), rnd(10, 14) * 1000), [3, 6]);
-        every(9, 15, () => { const w = 40; pass(crab(w), across(fy - w * .6, w, Math.random() < .5), rnd(7, 10) * 1000); }, [4, 8]);
-        every(12, 20, () => { const h = 40, x = rnd(30, W() - 220), ltr = Math.random() < .5, x0 = ltr ? x : x + 180, x1 = ltr ? x + 180 : x;
-          pass(`<div class="walking" style="transform:scaleX(${ltr ? 1 : -1})">${petSVG('dolphin', h)}</div>`, [{ transform: `translate(${x0}px,${sea + 30}px) rotate(${ltr ? -35 : 35}deg)`, opacity: 0 }, { opacity: 1, offset: .1 },
-            { transform: `translate(${(x0 + x1) / 2}px,${sea - 90}px) rotate(0)`, offset: .5 }, { opacity: 1, offset: .9 }, { transform: `translate(${x1}px,${sea + 30}px) rotate(${ltr ? 35 : -35}deg)`, opacity: 0 }], 1800, 'fx', '', 'ease-in-out'); }, [6, 10]);
-        every(13, 22, () => { const s = 44, x0 = -s - 30, x1 = W() + 30, hops = 4, N = 32, frames = [];
-          for (let k = 0; k <= N; k++) { const tt = k / N, ph = tt * hops % 1, x = x0 + (x1 - x0) * tt; frames.push({ transform: `translate(${x}px,${fy - s - Math.sin(ph * Math.PI) * 70 * (1 - tt * .5)}px) rotate(${(x - x0) / (Math.PI * s) * 360}deg)` }); }
-          pass(beachBall(s), frames, rnd(5, 7) * 1000); }, [8, 12]);
+    { id: 'beach', e: '🏖️', n: 'Sunny Beach', cost: 3300, land: true, hdr: 'linear-gradient(135deg,#0369A1,#0EA5E9 55%,#F59E0B)', tc: '#0284C7', base: '#F9E3B4',
+      sky: 'linear-gradient(#1E90E8,#62BDF6 22%,#B8E6FF 34%)', thumb: beachBall(26), build() {
+        const sea = Math.round(H() * .32);
+        box('<div class="bgx-sun"></div>', 'bg', `left:auto;right:12%;top:${Math.max(84, H() * .1)}px`);
+        stream(3, () => { const w = rnd(110, 180); return { html: cloud(w, .95), dur: rnd(40, 60) * 1000, frames: across(rnd(60, sea - 80), w, true) }; }, 'bg');
+        box(`<div class="bgx-sea" style="top:${sea}px;height:${H() - sea}px"><div class="bgx-crest"></div><div class="bgx-crest" style="top:30px;opacity:.5;animation-duration:5s"></div></div>`, 'bg', full);
+        ground('#F7DFA6', '#E2BC78', '#FCEBC4', `<svg viewBox="0 0 400 20" preserveAspectRatio="none" style="position:absolute;left:0;top:-14px;width:100%;height:20px"><path d="M0 12 C60 2 120 18 200 8 C280 0 340 16 400 6" stroke="#fff" stroke-width="3" fill="none" class="bgx-surf"/></svg>`);
+        spread(3, (x, t) => put(img('palm', 190, 'bgx-sway'), x, t * .5));
+        spread(3, (x, t) => put(beachUmbrella(100), x, .3 + t * .6));
+        spread(2, (x, t) => put(sandcastle(74), x, .4 + t * .6));
+        spread(8, (x, t) => put(img('shell', 22), x, t));
+        spread(5, (x, t) => put(starfish(26, pick(['#FF7A45', '#FF4F9A', '#FFC93C'])), x, t));
+        spread(3, (x, t, i) => put(`<div style="width:90px;height:22px;border-radius:5px;background:repeating-linear-gradient(90deg,${['#EF4444', '#3B82F6', '#22C55E'][i % 3]} 0 12px,#fff 12px 24px);transform:skewX(-30deg)"></div>`, x, .3 + t * .7));
+        every(14, 24, () => { const w = rnd(46, 60); pass(`<div class="bgx-bob">${boat(w)}</div>`, across(sea + rnd(10, 60), w, Math.random() < .5), rnd(22, 30) * 1000, 'bg'); }, [2, 6]);
+        every(10, 18, () => pass(flock(Math.round(rnd(2, 4)), '#F8FAFC'), across(rnd(70, sea - 40), 100, Math.random() < .5, rnd(-50, 50)), rnd(10, 14) * 1000), [3, 6]);
+        every(6, 11, () => roamArt(crab, 46, .63, 9), [1, 4]);
+        every(10, 18, () => { const h = 44, x = rnd(30, W() - 220), ltr = Math.random() < .5, x0 = ltr ? x : x + 180, x1 = ltr ? x + 180 : x, sy = sea + rnd(30, HZ() - sea - 20);
+          pass(`<div class="walking" style="transform:scaleX(${ltr ? 1 : -1})">${petSVG('dolphin', h)}</div>`, [{ transform: `translate(${x0}px,${sy}px) rotate(${ltr ? -35 : 35}deg)`, opacity: 0 }, { opacity: 1, offset: .1 },
+            { transform: `translate(${(x0 + x1) / 2}px,${sy - 100}px) rotate(0)`, offset: .5 }, { opacity: 1, offset: .9 }, { transform: `translate(${x1}px,${sy}px) rotate(${ltr ? 35 : -35}deg)`, opacity: 0 }], 1800, 'bg', 'z-index:2', 'ease-in-out'); }, [4, 8]);
+        every(13, 22, () => { const t = rnd(.3, 1), s = 44 * dS(t), base = dY(t), x0 = -s - 30, x1 = W() + 30, hops = 4, N = 32, frames = [];
+          for (let k = 0; k <= N; k++) { const tt = k / N, ph = tt * hops % 1, x = x0 + (x1 - x0) * tt; frames.push({ transform: `translate(${x}px,${base - s - Math.sin(ph * Math.PI) * 70 * dS(t) * (1 - tt * .5)}px) rotate(${(x - x0) / (Math.PI * s) * 360}deg)` }); }
+          pass(beachBall(s), frames, rnd(5, 7) * 1000, 'bg', `z-index:${zOf(t)}`); }, [8, 12]);
+        herd([['seal', 60, 18], ['dog', 70, 9], ['turtle', 40, 22], ['penguin', 60, 16]], 5, 9);
       } },
 
-    { id: 'campfire', e: '🏕️', n: 'Campfire Night', cost: 3600, dark: true, hdr: 'linear-gradient(135deg,#1C1917,#7C2D12 55%,#F97316)', tc: '#7C2D12', base: '#0B1736',
-      sky: 'linear-gradient(#030712,#0B1736 55%,#1C2A4A 85%,#2B2F3A)', thumb: campfire(28), build() {
-        const fy = floorY(), up = H() - fy, cx = W() * .56;
-        box(twinkles(60, 60, '#fff'), 'bg', full);
+    { id: 'campfire', e: '🏕️', n: 'Campfire Night', cost: 3600, land: true, dark: true, hdr: 'linear-gradient(135deg,#1C1917,#7C2D12 55%,#F97316)', tc: '#7C2D12', base: '#0B1736',
+      sky: 'linear-gradient(#030712,#0B1736 35%,#1C2A4A 50%)', thumb: campfire(28), build() {
+        const fy = floorY(), cx = W() * .56, ft = .62, fireY = dY(ft);
+        box(twinkles(60, 40, '#fff'), 'bg', full);
         box('<div class="bgx-moon"></div>', 'bg', `left:8%;top:${Math.max(96, H() * .12)}px`);
-        box(forest('#0A1220'), 'bg', `top:auto;bottom:${up + 30}px;width:100%;height:120px`);
-        box(`<div style="position:absolute;left:0;right:0;bottom:0;height:${up + 34}px;background:linear-gradient(#1A1410,#0E0B08)"></div>
-          <div style="position:absolute;left:5%;bottom:${up + 6}px">${tent(Math.min(130, W() * .32))}</div>
-          <div class="bgx-fireglow" style="left:${cx - 130}px;bottom:${up - 90}px"></div>
-          <div style="position:absolute;left:${cx - 55}px;bottom:${up}px">${campfire(110)}</div>`, 'bg', full);
-        stream(14, () => { const x = cx + rnd(-20, 20), y = fy - rnd(40, 70), s = rnd(3, 5);
+        box(forest('#0A1220'), 'bg', `top:${HZ() - 104}px;width:100%;height:120px`);
+        ground('#231A12', '#0E0B08', '#2A2016');
+        spread(7, (x, t) => put(pine(150, false), x, t * .35, 'bg', 'filter:brightness(.35)'));
+        put(tent(150), .18, .55);
+        box(`<div class="bgx-fireglow" style="left:${cx - 130}px;top:${fireY - 190}px;z-index:${zOf(ft) - 1}"></div>`, 'bg', full);
+        put(campfire(120), cx / W(), ft);
+        spread(6, (x, t) => put(rock(40, '#4A4440', '#2E2A26'), x, t));
+        stream(14, () => { const x = cx + rnd(-20, 20), y = fireY - rnd(50, 80), s = rnd(3, 5);
           return { html: `<span class="bgx-ember" style="width:${s}px;height:${s}px"></span>`, dur: rnd(1.6, 3) * 1000, ease: 'ease-out',
             frames: [{ transform: `translate(${x}px,${y}px)`, opacity: 1 }, { transform: `translate(${x + rnd(-40, 40)}px,${y - rnd(120, 260)}px)`, opacity: 0 }] }; });
-        stream(10, () => { const x = rnd(0, W()), y = rnd(H() * .35, fy - 40);
+        stream(12, () => { const x = rnd(0, W()), y = rnd(H() * .35, fy - 40);
           return { html: '<span class="bgx-fly"></span>', dur: rnd(5, 9) * 1000, ease: 'ease-in-out',
             frames: [{ transform: `translate(${x}px,${y}px)`, opacity: 0 }, { transform: `translate(${x + rnd(-50, 50)}px,${y + rnd(-50, 50)}px)`, opacity: 1, offset: .4 }, { transform: `translate(${x + rnd(-90, 90)}px,${y + rnd(-90, 90)}px)`, opacity: 0 }] }; });
         every(5, 10, () => { const x = rnd(W() * .3, W() * 1.1), y = rnd(60, H() * .3), len = rnd(100, 180);
           pass(`<span class="bgx-shoot" style="width:${len}px"></span>`, [{ transform: `translate(${x}px,${y}px) rotate(150deg)`, opacity: 0 }, { opacity: 1, offset: .15 }, { transform: `translate(${x - 380}px,${y + 220}px) rotate(150deg)`, opacity: 0 }], 1300); }, [2, 4]);
-        every(18, 30, () => { const w = 44; pass(`<div class="walking">${petSVG('owl', w)}</div>`, wavy(rnd(110, H() * .4), w * 1.3, Math.random() < .5, rnd(15, 30), 1.5), rnd(10, 14) * 1000); }, [6, 10]);
+        every(18, 30, () => { const w = 44; pass(`<div class="walking">${petSVG('owl', w)}</div>`, wavy(rnd(110, H() * .35), w * 1.3, Math.random() < .5, rnd(15, 30), 1.5), rnd(10, 14) * 1000); }, [6, 10]);
+        const night = { filter: 'brightness(.6) saturate(.8)' };
+        herd([['raccoon', 52, 10, night], ['fox', 62, 10, night], ['deer', 104, 11, night], ['hedgehog', 34, 12, night], ['grizzly', 84, 16, night], ['moose', 124, 16, night]], 5, 9);
       } },
 
-    { id: 'veterans', e: '🎖️', n: 'Veterans Day', cost: 3900, hdr: 'linear-gradient(135deg,#1E3A8A,#334155 55%,#B91C1C)', tc: '#1E3A8A', base: '#DCE8F5',
-      sky: 'linear-gradient(#6FA6DF,#A9CDEF 45%,#E6F0FA)', thumb: poppy(30), build() {
-        const fy = floorY(), up = H() - fy, fw = Math.min(190, W() * .46);
-        stream(3, () => { const w = rnd(110, 180); return { html: cloud(w, .9), dur: rnd(45, 65) * 1000, frames: across(rnd(70, H() * .32), w, true) }; }, 'bg');
+    { id: 'veterans', e: '🎖️', n: 'Veterans Day', cost: 3900, land: true, hdr: 'linear-gradient(135deg,#1E3A8A,#334155 55%,#B91C1C)', tc: '#1E3A8A', base: '#DCE8F5',
+      sky: 'linear-gradient(#6FA6DF,#A9CDEF 34%,#E6F0FA 50%)', thumb: poppy(30), build() {
+        const fw = Math.min(190, W() * .46);
+        stream(3, () => { const w = rnd(110, 180); return { html: cloud(w, .9), dur: rnd(45, 65) * 1000, frames: across(rnd(70, H() * .3), w, true) }; }, 'bg');
         box(`<div style="position:absolute;left:50%;transform:translateX(-50%);top:${Math.max(96, H() * .13)}px">${ribbonBanner('THANK YOU, VETERANS', Math.min(330, W() * .86))}</div>`, 'bg', full);
-        box(`<svg viewBox="0 0 400 60" preserveAspectRatio="none" style="position:absolute;left:0;bottom:${up - 4}px;width:100%;height:64px"><path d="M0 20 C80 6 160 16 240 22 C320 28 360 12 400 16 V60 H0Z" fill="#6DAF5E"/><path d="M0 34 C90 24 180 30 260 38 C330 44 370 32 400 34 V60 H0Z" fill="#4E9A48"/></svg>
-          <div style="position:absolute;left:8%;bottom:${up + 20}px">${flagPole(fw, Math.min(260, H() * .34))}</div>
-          ${Array.from({ length: 9 }, (_, i) => `<div class="bgx-sway" style="position:absolute;left:${i * 11 + 1}%;bottom:${up + (i % 2) * 6}px;animation-delay:-${i * .5}s">${poppy(46 + (i % 3) * 10)}</div>`).join('')}`, 'bg', full);
+        ground('#6DAF5E', '#3A7A34', '#7EBE6E');
+        put(flagPole(fw, Math.min(280, H() * .36)), .22, .35);
+        spread(4, (x, t) => put(leafTree(140, '#4E9A48', '#3A7A34'), x, t * .2));
+        spread(12, (x, t) => put(tuft('#3E8A38'), x, t));
+        spread(16, (x, t, i) => put(`<div class="bgx-sway" style="animation-delay:-${i * .5}s">${poppy(56)}</div>`, x, t));
         stream(8, () => { const s = rnd(12, 18); return { html: petal(s, pick(['#D62828', '#B91C1C', '#E63946'])), ...drop(s, rnd(10, 16) * 1000, rnd(30, 60), rnd(-200, 200), .5) }; });
-        stream(8, () => { const x = rnd(0, W()), y = rnd(80, H() * .6), s = rnd(10, 18);
-          return { html: star4(s, '#FFD23F'), dur: rnd(2.5, 4.5) * 1000, frames: [{ transform: `translate(${x}px,${y}px) scale(0)`, opacity: 0 }, { transform: `translate(${x}px,${y}px) scale(1) rotate(45deg)`, opacity: 1, offset: .5 }, { transform: `translate(${x}px,${y}px) scale(0)`, opacity: 0 }] }; });
-        every(16, 26, () => { const w = Math.min(300, W() * .8); pass(jets(w), across(rnd(80, H() * .3), w, true, rnd(-30, 10)), rnd(6, 8) * 1000); }, [3, 6]);
-        every(20, 32, () => { const w = 70; pass(`<div class="walking">${petSVG('eagle', w * .55)}</div>`, wavy(rnd(120, H() * .4), w, Math.random() < .5, 20, 1), rnd(11, 15) * 1000); }, [10, 16]);
+        every(16, 26, () => { const w = Math.min(300, W() * .8); pass(jets(w), across(rnd(80, H() * .28), w, true, rnd(-30, 10)), rnd(6, 8) * 1000); }, [3, 6]);
+        every(20, 32, () => { const w = 70; pass(`<div class="walking">${petSVG('eagle', w * .55)}</div>`, wavy(rnd(120, H() * .35), w, Math.random() < .5, 20, 1), rnd(11, 15) * 1000); }, [10, 16]);
+        herd([['horse', 108, 12], ['dog', 70, 9], ['deer', 104, 11], ['bunny', 60, 9]], 5, 9);
       } },
 
-    { id: 'aurora', e: '🌌', n: 'Northern Lights', cost: 4200, dark: true, hdr: 'linear-gradient(135deg,#022C22,#0F766E 50%,#6D28D9)', tc: '#0F766E', base: '#0B1638',
-      sky: 'linear-gradient(#020617,#0B1638 45%,#12305A 80%,#1D4A6E)', thumb: auroraIcon, build() {
-        const fy = floorY(), up = H() - fy;
-        box(twinkles(80, 70, '#fff'), 'bg', full);
-        box([['#34D399', 6, -10, 0], ['#22D3EE', 14, 6, 30], ['#4ADE80', 22, -4, -20], ['#A78BFA', 4, 12, 40], ['#F472B6', 30, -14, -40]].map(([c, top, rot, dx], i) =>
-          `<div style="position:absolute;left:${dx - 30}%;width:160%;top:${top}%;height:28%;transform:rotate(${rot}deg)"><div class="bgx-rib" style="--c:${c};animation-delay:-${(i * 2.3).toFixed(1)}s;animation-duration:${8 + i * 2}s"></div></div>`).join(''), 'bg', full);
-        box(peaks(), 'bg', `top:auto;bottom:${up + 24}px;width:100%;height:${Math.min(170, H() * .22)}px`);
-        box(`<div style="position:absolute;left:0;right:0;bottom:0;height:${up + 30}px;background:linear-gradient(#E8F1FA,#C9DCEE)"></div>
-          <div style="position:absolute;left:3%;bottom:${up + 16}px">${pine(110)}</div><div style="position:absolute;left:17%;bottom:${up + 12}px">${pine(80)}</div>
-          <div style="position:absolute;right:4%;bottom:${up + 14}px">${pine(124)}</div><div style="position:absolute;right:20%;bottom:${up + 10}px">${pine(70)}</div>`, 'bg', full);
-        stream(16, i => { const s = i % 5 === 0 ? rnd(18, 28) : rnd(6, 14); return { html: i % 3 ? flake(s, rnd(.75, 1)) : `<span class="bgx-dot" style="width:${s / 2}px;height:${s / 2}px"></span>`,
+    { id: 'aurora', e: '🌌', n: 'Northern Lights', cost: 4200, land: true, dark: true, hdr: 'linear-gradient(135deg,#022C22,#0F766E 50%,#6D28D9)', tc: '#0F766E', base: '#0B1638',
+      sky: 'linear-gradient(#020617,#0B1638 30%,#12305A 46%,#1D4A6E 52%)', thumb: auroraIcon, build() {
+        box(twinkles(80, 45, '#fff'), 'bg', full);
+        box([['#34D399', 4, -10, 0], ['#22D3EE', 10, 6, 30], ['#4ADE80', 16, -4, -20], ['#A78BFA', 2, 12, 40], ['#F472B6', 20, -14, -40]].map(([c, top, rot, dx], i) =>
+          `<div style="position:absolute;left:${dx - 30}%;width:160%;top:${top}%;height:24%;transform:rotate(${rot}deg)"><div class="bgx-rib" style="--c:${c};animation-delay:-${(i * 2.3).toFixed(1)}s;animation-duration:${8 + i * 2}s"></div></div>`).join(''), 'bg', full);
+        box(peaks(), 'bg', `top:${HZ() - Math.min(150, H() * .18) + 16}px;width:100%;height:${Math.min(150, H() * .18)}px`);
+        ground('#E8F1FA', '#B8CCE2', '#F2F8FF');
+        spread(9, (x, t) => put(pine(150), x, t * .7));
+        spread(3, (x, t) => put(iceberg(90), x, t * .4));
+        spread(6, (x, t) => put(`<span class="bgx-mound" style="width:70px;height:26px"></span>`, x, t));
+        stream(14, i => { const s = i % 5 === 0 ? rnd(18, 28) : rnd(6, 14); return { html: i % 3 ? flake(s, rnd(.75, 1)) : `<span class="bgx-dot" style="width:${s / 2}px;height:${s / 2}px"></span>`,
           ...drop(s, rnd(9, 16) * 1000, rnd(20, 50), rnd(-200, 200), .45), pile: snowPile(s) }; });
         every(5, 10, () => { const x = rnd(W() * .3, W() * 1.1), y = rnd(60, H() * .3), len = rnd(120, 200);
           pass(`<span class="bgx-shoot" style="width:${len}px"></span>`, [{ transform: `translate(${x}px,${y}px) rotate(150deg)`, opacity: 0 }, { opacity: 1, offset: .15 }, { transform: `translate(${x - 400}px,${y + 230}px) rotate(150deg)`, opacity: 0 }], 1300); }, [2, 4]);
-        every(15, 24, () => { const w = 48; pass(`<div class="walking">${petSVG(PETART.snowyowl ? 'snowyowl' : 'owl', w)}</div>`, wavy(rnd(110, H() * .4), w * 1.3, Math.random() < .5, rnd(15, 30), 1.5), rnd(10, 14) * 1000); }, [4, 8]);
-        every(20, 32, () => { const h = 52; pass(`<div class="walking">${petSVG('polarbear', h)}</div>`, across(fy - h + 2, h * 1.6, Math.random() < .5), rnd(16, 22) * 1000); }, [8, 14]);
+        every(15, 24, () => { const w = 48; pass(`<div class="walking">${petSVG('snowyowl', w)}</div>`, wavy(rnd(110, H() * .35), w * 1.3, Math.random() < .5, rnd(15, 30), 1.5), rnd(10, 14) * 1000); }, [4, 8]);
+        herd([['polarbear', 80, 16], ['reindeer', 110, 12], ['wolf', 80, 11], ['moose', 124, 16], ['fox', 62, 10], ['penguin', 64, 16]], 4, 8);
       } },
 
-    { id: 'newyear', e: '🎆', n: 'New Year’s Midnight', cost: 4600, dark: true, hdr: 'linear-gradient(135deg,#0F0A2E,#4C1D95 55%,#C026D3)', tc: '#4C1D95', base: '#120B33',
-      sky: 'linear-gradient(#05030F,#120B33 50%,#2A1650 85%,#3B1E5E)', thumb: burstIcon, build() {
-        const fy = floorY(), up = H() - fy, sh = Math.min(170, H() * .22);
-        box(twinkles(60, 55, '#fff'), 'bg', full);
-        box(skyline(), 'bg', `top:auto;bottom:${up}px;width:100%;height:${sh}px`);
-        box(`<div style="position:absolute;left:50%;transform:translateX(-50%);bottom:${up}px">${clockTower(sh * 1.3)}</div>`, 'bg', full);
+    { id: 'newyear', e: '🎆', n: 'New Year’s Midnight', cost: 4600, land: true, dark: true, hdr: 'linear-gradient(135deg,#0F0A2E,#4C1D95 55%,#C026D3)', tc: '#4C1D95', base: '#120B33',
+      sky: 'linear-gradient(#05030F,#120B33 30%,#2A1650 46%,#3B1E5E 52%)', thumb: burstIcon, build() {
+        const sh = Math.min(200, H() * .26);
+        box(twinkles(60, 30, '#fff'), 'bg', full);
+        box(skyline(), 'bg', `top:${HZ() - sh + 4}px;width:100%;height:${sh}px`);
+        box(`<div style="position:absolute;left:50%;transform:translateX(-50%);top:${HZ() - sh * 1.3 + 4}px">${clockTower(sh * 1.3)}</div>`, 'bg', full);
+        ground('#2A1F4A', '#0E0820', '#3A2C60', `<div style="position:absolute;left:0;right:0;top:46%;height:16%;background:linear-gradient(#1A1236,#120B26)"></div><div style="position:absolute;left:0;right:0;top:53%;height:2px;background:repeating-linear-gradient(90deg,#FFE9A0 0 26px,transparent 26px 52px);opacity:.6"></div>`);
+        spread(7, (x, t) => put(lamp(130), x, t < .5 ? .05 : .95));
+        spread(5, (x, t) => put(`<div class="bgx-float">${balloon(36, pick(['#FFD23F', '#C0C7D2', '#C77DFF', '#FF5C8A']), '#ffffff55')}</div>`, x, t));
         const NY = ['#FFD23F', '#FF5C8A', '#5CF2C2', '#7CC4FF', '#C77DFF', '#FFFFFF', '#FF9A3C'];
         every(1.4, 2.8, () => firework(NY), [.3, 1]);
-        stream(18, () => { const s = rnd(9, 15), c = pick(NY); return { html: `<span class="bgx-conf" style="background:${c};width:${s}px;height:${(s * .45).toFixed(1)}px"></span>`,
+        stream(16, () => { const s = rnd(9, 15), c = pick(NY); return { html: `<span class="bgx-conf" style="background:${c};width:${s}px;height:${(s * .45).toFixed(1)}px"></span>`,
           ...drop(s, rnd(7, 12) * 1000, rnd(30, 60), rnd(-500, 500), .3) }; });
         every(16, 26, () => { const w = rnd(34, 46), x = rnd(20, W() - 60); pass(balloon(w, pick(['#FFD23F', '#C0C7D2', '#C77DFF']), '#ffffff55'),
           [{ transform: `translate(${x}px,${H() + 30}px)` }, { transform: `translate(${x + rnd(-60, 60)}px,${-w * 2}px)` }], rnd(14, 20) * 1000); }, [4, 8]);
+        herd([['dog', 70, 9], ['cat', 64, 10], ['dog', 70, 9], ['penguin', 60, 16]], 6, 11);
       } },
 
-    { id: 'july4', e: '🎇', n: '4th of July', cost: 5200, dark: true, hdr: 'linear-gradient(135deg,#B91C1C,#7F1D1D 40%,#1E3A8A)', tc: '#1E3A8A', base: '#1B2A5E',
-      sky: 'linear-gradient(#0A1430,#1B2A5E 55%,#3A3F7A 80%,#5B4B8A)', thumb: miniFlag, build() {
-        const fy = floorY(), up = H() - fy, fw = Math.min(170, W() * .42);
-        box(twinkles(50, 55, '#fff'), 'bg', full);
-        box(forest('#0B1024'), 'bg', `top:auto;bottom:${up}px;width:100%;height:90px`);
-        box(`<div style="position:absolute;left:6%;bottom:${up + 10}px">${flagPole(fw, Math.min(240, H() * .32))}</div>`, 'bg', full);
+    { id: 'july4', e: '🎇', n: '4th of July', cost: 5200, land: true, dark: true, hdr: 'linear-gradient(135deg,#B91C1C,#7F1D1D 40%,#1E3A8A)', tc: '#1E3A8A', base: '#1B2A5E',
+      sky: 'linear-gradient(#0A1430,#1B2A5E 35%,#3A3F7A 50%)', thumb: miniFlag, build() {
+        const fw = Math.min(170, W() * .42);
+        box(twinkles(50, 40, '#fff'), 'bg', full);
+        box(forest('#0B1024'), 'bg', `top:${HZ() - 84}px;width:100%;height:100px`);
+        ground('#1E3A2A', '#0B1A12', '#24452F');
+        put(flagPole(fw, Math.min(260, H() * .34)), .2, .4);
+        spread(10, (x, t) => put(tuft('#14301F'), x, t));
+        spread(3, (x, t, i) => put(`<div style="width:100px;height:28px;border-radius:5px;background:repeating-linear-gradient(90deg,#B22234 0 14px,#fff 14px 28px);transform:skewX(-30deg);opacity:.85"></div>`, x, .45 + t * .5));
+        spread(8, (x, t) => put(`<span class="bgx-fly"></span>`, x, t));
         const USA = ['#EF4444', '#FFFFFF', '#3B82F6', '#F87171', '#93C5FD'];
         every(1.2, 2.4, () => firework(USA), [.3, 1]);
-        stream(12, () => { const s = rnd(16, 26); return { html: star5(s, pick(['#EF4444', '#FFFFFF', '#3B82F6'])), ...drop(s, rnd(9, 14) * 1000, rnd(20, 50), rnd(-260, 260), .5) }; });
-        every(18, 28, () => { const w = 80; pass(`<div class="walking">${petSVG('eagle', w * .55)}</div>`, wavy(rnd(110, H() * .4), w, Math.random() < .5, 20, 1), rnd(10, 14) * 1000); }, [6, 10]);
+        stream(10, () => { const s = rnd(16, 26); return { html: star5(s, pick(['#EF4444', '#FFFFFF', '#3B82F6'])), ...drop(s, rnd(9, 14) * 1000, rnd(20, 50), rnd(-260, 260), .5) }; });
+        every(18, 28, () => { const w = 80; pass(`<div class="walking">${petSVG('eagle', w * .55)}</div>`, wavy(rnd(110, H() * .35), w, Math.random() < .5, 20, 1), rnd(10, 14) * 1000); }, [6, 10]);
+        const dusk = { filter: 'brightness(.7)' };
+        herd([['dog', 70, 9, dusk], ['horse', 108, 12, dusk], ['raccoon', 52, 10, dusk], ['deer', 104, 11, dusk]], 5, 9);
       } },
   ];
   BG.sort((a, b) => a.cost - b.cost);  // the grid shows them in unlock order
@@ -940,5 +1080,5 @@
   const reflow = () => current && apply(current, true);
   // Coming back after the phone slept: start the scene fresh so nothing is left frozen mid-screen.
   document.addEventListener('visibilitychange', () => { if (!document.hidden) reflow(); });
-  window.RRBG = { list: BG.map(({ build, ...rest }) => rest), apply, reflow };
+  window.RRBG = { list: BG.map(({ build, ...rest }) => rest), apply, reflow, horizon: () => HZ() };
 })();
