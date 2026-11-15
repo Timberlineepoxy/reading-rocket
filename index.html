@@ -460,6 +460,10 @@ nav{background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,.04)
 /* with less frost the words need a stronger glow to stay readable */
 body:not(.darkbg) :is(.card,.stat,.badge,.ucard,.bmcard,.big-win,.fchip,.btn,.envbtn,nav button){text-shadow:0 0 3px #fff,0 0 7px rgba(255,255,255,.95),0 0 12px rgba(255,255,255,.7)}
 body.darkbg :is(.card,.stat,.badge,.ucard,.bmcard,.big-win,.fchip,.btn,.envbtn,nav button){text-shadow:0 0 3px rgba(0,0,0,.9),0 1px 4px rgba(0,0,0,.8),0 0 10px rgba(0,0,0,.5)}
+
+/* animals and backgrounds not won yet: still a little faded, but bright enough to see clearly through the glass */
+.ucard.locked .pic,.ucard.locked .e,.ucard.locked .sw{filter:grayscale(.45) brightness(1.08) drop-shadow(0 0 3px rgba(255,255,255,.75));opacity:.85}
+body.darkbg .ucard.locked .pic,body.darkbg .ucard.locked .e,body.darkbg .ucard.locked .sw{filter:grayscale(.35) brightness(1.2) drop-shadow(0 0 4px rgba(255,255,255,.55));opacity:.9}
 </style>
 </head>
 <body>
