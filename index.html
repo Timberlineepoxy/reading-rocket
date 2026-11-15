@@ -435,6 +435,21 @@ body.darkbg .fchip,body.darkbg .btn,body.darkbg .envbtn,body.darkbg nav button,b
 body.darkbg .fchip.on,body.darkbg nav button.on{background:linear-gradient(180deg,rgba(255,255,255,.4),rgba(255,255,255,.1) 65%)}
 /* inside the pop-up sheets (light paper) the words stay dark */
 body.darkbg .sheet .btn,body.darkbg .sheet .fchip,body.darkbg .sheet .fchip.on,body.darkbg .party .btn{color:#2B2340;text-shadow:0 0 6px rgba(255,255,255,.9)}
+
+/* ---------- everything is clear glass: cards, trophy tiles, stat boxes, shop tiles ----------
+   Barely any white at all, just a light frost (blur) so words stay readable and a bright rim of light. */
+.card,.stat,.badge,.ucard,.bmcard,.big-win,.bd-lock,.bd-prog,.bd-won,.fact,.note,.manual,.bd-group{
+  background:linear-gradient(160deg,rgba(255,255,255,.2),rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.6);
+  -webkit-backdrop-filter:blur(14px) saturate(1.6);backdrop-filter:blur(14px) saturate(1.6);box-shadow:var(--rim),0 8px 20px rgba(0,0,0,.08)}
+.fact,.note,.manual,.bd-group,.bd-won,.bd-lock,.bd-prog{-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:var(--rim)}
+.bar,.tile .pbar,.badge .mini{background:rgba(255,255,255,.35)}
+/* light backgrounds: dark words with a soft white glow */
+body:not(.darkbg) :is(.card,.stat,.badge,.ucard,.bmcard,.big-win){text-shadow:0 0 6px rgba(255,255,255,.9),0 0 2px rgba(255,255,255,.9)}
+body:not(.darkbg){--muted:#4E4566}
+/* dark backgrounds: the words inside the glass turn white */
+body.darkbg :is(.card,.stat,.badge,.ucard,.bmcard,.big-win){--ink:#fff;--muted:rgba(255,255,255,.85);color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.65)}
+body.darkbg :is(.card,.stat,.badge,.ucard,.bmcard,.big-win) :is(h1,h2,h3,b,p,small,span,div){color:inherit}
+body.darkbg :is(.card,.stat,.badge,.ucard,.bmcard) small{color:rgba(255,255,255,.85)}
 </style>
 </head>
 <body>
