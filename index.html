@@ -417,39 +417,24 @@ body:not(.darkbg) main .sectionhead h2,body:not(.darkbg) .shelf .tile .t,body:no
 body:not(.darkbg) .bookhero h1,body:not(.darkbg) .clock{text-shadow:0 0 4px rgba(255,255,255,.95),0 0 10px rgba(255,255,255,.7)}
 body:not(.darkbg) .shelf .tile .pp,body:not(.darkbg) main .sectionhead span,body:not(.darkbg) .bgroup span,body:not(.darkbg) main>.hint{color:#4E4566;text-shadow:0 0 4px rgba(255,255,255,.95)}
 
-/* ---------- iPhone-style glass bubbles for tabs, buttons and the bottom bar ----------
-   Clear glass with a light colour tint, a bright rim of light along the top edge and a soft glow inside.
-   Words take a deep shade of the tint on light backgrounds and turn white on dark ones. */
-:root{--rim:inset 0 1.5px 0 rgba(255,255,255,.85),inset 0 -1px 0 rgba(255,255,255,.25),inset 0 0 14px rgba(255,255,255,.22)}
-.fchip,.btn,.envbtn,nav,nav button.on{-webkit-backdrop-filter:blur(14px) saturate(1.8);backdrop-filter:blur(14px) saturate(1.8)}
-.fchip{background:linear-gradient(180deg,rgba(255,255,255,.34),rgba(255,255,255,.1));border:1px solid rgba(255,255,255,.6);color:#3A2F55;
-  box-shadow:var(--rim),0 4px 12px rgba(30,20,60,.1)}
-.fchip.on{background:linear-gradient(180deg,rgba(150,120,255,.4),rgba(108,75,244,.22));color:#3B1FB0;border-color:rgba(255,255,255,.7)}
-.btn{background:linear-gradient(180deg,rgba(255,255,255,.38),rgba(255,255,255,.06) 60%),rgba(108,75,244,.2);border:1px solid rgba(255,255,255,.65);
-  color:#3B1FB0;text-shadow:0 1px 0 rgba(255,255,255,.55);box-shadow:var(--rim),0 6px 16px rgba(60,30,160,.16)}
-.btn:active{transform:scale(.97);box-shadow:var(--rim),0 2px 8px rgba(60,30,160,.16)}
-.btn.green{background:linear-gradient(180deg,rgba(255,255,255,.38),rgba(255,255,255,.06) 60%),rgba(34,197,94,.22);color:#0E6B32;box-shadow:var(--rim),0 6px 16px rgba(20,120,60,.16)}
-.btn.green:active{box-shadow:var(--rim),0 2px 8px rgba(20,120,60,.16)}
-.btn.orange{background:linear-gradient(180deg,rgba(255,255,255,.38),rgba(255,255,255,.06) 60%),rgba(255,122,26,.24);color:#A8420A;box-shadow:var(--rim),0 6px 16px rgba(180,80,10,.16)}
-.btn.orange:active{box-shadow:var(--rim),0 2px 8px rgba(180,80,10,.16)}
-.btn.white{background:linear-gradient(180deg,rgba(255,255,255,.4),rgba(255,255,255,.1) 60%);color:#3A2F55;box-shadow:var(--rim),0 6px 16px rgba(30,20,60,.1)}
-.envbtn{background:linear-gradient(180deg,rgba(255,255,255,.38),rgba(255,255,255,.06) 60%),rgba(255,150,30,.26);border:1px solid rgba(255,255,255,.65);color:#A8420A;box-shadow:var(--rim),0 6px 16px rgba(180,80,10,.16)}
-nav{background:linear-gradient(180deg,rgba(255,255,255,.3),rgba(255,255,255,.12));border-top:1px solid rgba(255,255,255,.6);box-shadow:inset 0 1.5px 0 rgba(255,255,255,.7)}
-nav button{color:#3A2F55}
-nav button.on{background:linear-gradient(180deg,rgba(255,255,255,.45),rgba(255,255,255,.14));color:#3B1FB0;box-shadow:var(--rim),0 3px 10px rgba(30,20,60,.12)}
+/* ---------- clear glass bubbles for every button and tab ----------
+   No colour of their own: just clear glass with a bright rim of light, so whatever is behind shows through.
+   Words are dark on light backgrounds and white on dark ones. The chosen tab is a little brighter glass. */
+:root{--rim:inset 0 1.5px 0 rgba(255,255,255,.9),inset 0 -1px 0 rgba(255,255,255,.3),inset 0 0 16px rgba(255,255,255,.25)}
+.fchip,.btn,.btn.green,.btn.orange,.btn.white,.envbtn,nav,nav button.on,.stepper .sb,.bd-nav button,.sheet .x{
+  background:linear-gradient(180deg,rgba(255,255,255,.3),rgba(255,255,255,.04) 65%);border:1px solid rgba(255,255,255,.7);
+  -webkit-backdrop-filter:blur(14px) saturate(1.6);backdrop-filter:blur(14px) saturate(1.6);
+  color:#2B2340;text-shadow:0 0 6px rgba(255,255,255,.9);box-shadow:var(--rim),0 6px 16px rgba(0,0,0,.1)}
+.btn:active,.btn.green:active,.btn.orange:active,.btn.white:active{transform:scale(.97);box-shadow:var(--rim),0 2px 8px rgba(0,0,0,.1)}
+.fchip.on,nav button.on{background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,.16) 65%);border:1.5px solid rgba(255,255,255,.95);color:#2B2340}
+nav{border-width:1px 0 0;box-shadow:inset 0 1.5px 0 rgba(255,255,255,.8)}
+nav button{color:#2B2340;text-shadow:0 0 6px rgba(255,255,255,.9)}
+.bd-nav button[disabled]{opacity:.35}
 /* on dark backgrounds the glass words turn white */
-body.darkbg .fchip,body.darkbg .btn,body.darkbg .envbtn,body.darkbg nav button,body.darkbg nav button.on{color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.55)}
-body.darkbg .fchip{background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,.06))}
-body.darkbg .fchip.on{background:linear-gradient(180deg,rgba(170,140,255,.45),rgba(108,75,244,.28))}
-body.darkbg .btn{background:linear-gradient(180deg,rgba(255,255,255,.3),rgba(255,255,255,.04) 60%),rgba(108,75,244,.32)}
-body.darkbg .btn.green{background:linear-gradient(180deg,rgba(255,255,255,.3),rgba(255,255,255,.04) 60%),rgba(34,197,94,.34)}
-body.darkbg .btn.orange,body.darkbg .envbtn{background:linear-gradient(180deg,rgba(255,255,255,.3),rgba(255,255,255,.04) 60%),rgba(255,122,26,.36)}
-body.darkbg .btn.white{background:linear-gradient(180deg,rgba(255,255,255,.26),rgba(255,255,255,.05) 60%)}
-body.darkbg nav{background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.05))}
-/* inside the pop-up sheets (light paper) buttons keep their dark words */
-body.darkbg .sheet .btn,body.darkbg .sheet .fchip,body.darkbg .party .btn{text-shadow:0 1px 0 rgba(255,255,255,.55)}
-body.darkbg .sheet .btn,body.darkbg .party .btn{color:#3B1FB0} body.darkbg .sheet .btn.green{color:#0E6B32} body.darkbg .sheet .btn.orange{color:#A8420A}
-body.darkbg .sheet .fchip,body.darkbg .sheet .btn.white{color:#3A2F55} body.darkbg .sheet .fchip.on{color:#3B1FB0}
+body.darkbg .fchip,body.darkbg .btn,body.darkbg .envbtn,body.darkbg nav button,body.darkbg nav button.on,body.darkbg .fchip.on{color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.7)}
+body.darkbg .fchip.on,body.darkbg nav button.on{background:linear-gradient(180deg,rgba(255,255,255,.4),rgba(255,255,255,.1) 65%)}
+/* inside the pop-up sheets (light paper) the words stay dark */
+body.darkbg .sheet .btn,body.darkbg .sheet .fchip,body.darkbg .sheet .fchip.on,body.darkbg .party .btn{color:#2B2340;text-shadow:0 0 6px rgba(255,255,255,.9)}
 </style>
 </head>
 <body>
@@ -1998,7 +1983,7 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) naviga
 // ---------- staying up to date ----------
 // Phones often resume the app from memory instead of reloading it, so check for a newer
 // version whenever the app opens or comes back on screen, and reload into it.
-const APP_VERSION = 'rr-shell-v34';  // must match SHELL in sw.js
+const APP_VERSION = 'rr-shell-v35';  // must match SHELL in sw.js
 async function checkForUpdate() {
   if (!location.protocol.startsWith('http')) return;
   try {
