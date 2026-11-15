@@ -493,7 +493,7 @@ body.darkbg .ucard.locked .pic,body.darkbg .ucard.locked .e,body.darkbg .ucard.l
 const KEY = 'readingRocket.v1';
 const DEFAULTS = {
   name: 'Reader', goal: 20, books: [], sessions: [], goalDays: {}, badges: {},
-  stars: 0, pagesRead: 0, rereads: 0, rewardsGiven: 0, unlocked: {}, bg: 'cream', pets: [], reward: { text: '', cost: 0 }, timer: null, selBook: null, chimed: '', bonusDone: {}, marks: {}, sfx: { goal: 'popper', bonus: 'fireworks', book: 'applause' }
+  stars: 0, pagesRead: 0, chaptersRead: 0, rereads: 0, rewardsGiven: 0, unlocked: {}, bg: 'cream', pets: [], reward: { text: '', cost: 0 }, timer: null, selBook: null, chimed: '', bonusDone: {}, marks: {}, sfx: { goal: 'popper', bonus: 'fireworks', book: 'applause' }
 };
 let S = load();
 let view = 'shelf', currentBook = null, shelfFilter = 'all', parentOK = false, unlockTab = 'animal';
@@ -506,6 +506,8 @@ function load() {
   } catch (e) {}
   return JSON.parse(JSON.stringify(DEFAULTS));
 }
+// Older books saved the chapter as words. Turn a plain number into "chapters finished" (no stars for those).
+for (const b of S.books) if (b.chDone == null) { const n = /^\d+$/.test((b.chapter || '').trim()) ? parseInt(b.chapter) : 0; b.chDone = n; b.chPaid = n; if (n) b.chapter = ''; }
 function save() {
   try { localStorage.setItem(KEY, JSON.stringify(S)); }
   catch (e) { toast('Uh oh, the phone is out of room to save!'); }
@@ -606,6 +608,22 @@ function ring(pct, size, stroke, color) {
 /* ---------- badges ---------- */
 const DAY = 864e5;
 const weekOf = k => { const d = keyToDate(k); d.setDate(d.getDate() - (d.getDay() + 6) % 7); return dayKey(d); }; // Monday
+/* ---------- chapter stars ----------
+   Chapters are different lengths in every book, so a chapter's stars depend on how long it is:
+   about 1 star for every 2 pages, at least 3 and at most 20. If we don't know the pages, 5 stars. */
+const chStars = b => b.chapters && b.totalPages ? Math.min(20, Math.max(3, Math.round(b.totalPages / b.chapters / 2))) : 5;
+// A quarter, half and three-quarters of the way: bigger books give more.
+const msStars = b => b.totalPages ? Math.min(50, Math.max(10, Math.round(b.totalPages / 16))) : 15;
+const finStars = b => Math.min(150, Math.max(50, Math.round((b.totalPages || 0) / 4)));
+const bookFrac = b => Math.max(b.totalPages ? b.page / b.totalPages : 0, b.chapters ? (b.chDone || 0) / b.chapters : 0);
+// Pays for chapters finished since last time (each chapter only ever pays once). Returns [chapters, stars].
+function payChapters(b) {
+  const n = b.chapters ? Math.min(b.chDone || 0, b.chapters) : (b.chDone || 0), k = n - (b.chPaid || 0);
+  if (k <= 0) return [0, 0];
+  const st = k * chStars(b);
+  b.chPaid = n; S.chaptersRead = (S.chaptersRead || 0) + k; S.stars += st;
+  return [k, st];
+}
 const pagesOf = s => Math.max(0, (s.to || 0) - (s.from || 0));
 function tally(keyFn, valFn) { const m = {}; for (const s of S.sessions) { const k = keyFn(s); m[k] = (m[k] || 0) + valFn(s); } return m; }
 const most = o => Math.max(0, ...Object.values(o));
@@ -634,7 +652,7 @@ function superFan() {
   return most(n) >= 3;
 }
 
-const BADGE_GROUPS = [['start', '🚀 Getting started'], ['pages', '📄 Pages'], ['books', '📚 Books'], ['time', '⏱️ Reading time'],
+const BADGE_GROUPS = [['start', '🚀 Getting started'], ['pages', '📄 Pages & chapters'], ['books', '📚 Books'], ['time', '⏱️ Reading time'],
   ['habit', '🔥 Every day'], ['special', '🎉 Special']];
 const BADGES = [
   { c: 'start', id: 'first',  e: '🚀', n: 'Blast Off',        d: 'Use the reading timer once',       t: () => S.sessions.length >= 1 },
@@ -647,6 +665,10 @@ const BADGES = [
   { c: 'pages', id: 'p2000',  e: '🏔️', n: 'Page Mountain',    d: 'Read 2,000 pages',                 t: () => S.pagesRead >= 2000 },
   { c: 'pages', id: 'p5000',  e: '🪐', n: 'Page Planet',      d: 'Read 5,000 pages',                 t: () => S.pagesRead >= 5000 },
   { c: 'pages', id: 'p10000', e: '🌠', n: 'Page Galaxy',      d: 'Read 10,000 pages',                t: () => S.pagesRead >= 10000 },
+  { c: 'pages', id: 'ch10',   e: '📑', n: 'Chapter Champ',    d: 'Finish 10 chapters',               t: () => (S.chaptersRead || 0) >= 10 },
+  { c: 'pages', id: 'ch50',   e: '🔖', n: 'Chapter Chaser',   d: 'Finish 50 chapters',               t: () => (S.chaptersRead || 0) >= 50 },
+  { c: 'pages', id: 'ch100',  e: '🏅', n: 'Chapter Hero',     d: 'Finish 100 chapters',              t: () => (S.chaptersRead || 0) >= 100 },
+  { c: 'pages', id: 'ch500',  e: '👑', n: 'Chapter King',     d: 'Finish 500 chapters',              t: () => (S.chaptersRead || 0) >= 500 },
   { c: 'pages', id: 'pday50', e: '🌪️', n: 'Page Storm',       d: 'Read 50 pages in one day',         t: () => most(tally(s => s.day, pagesOf)) >= 50 },
   { c: 'pages', id: 'pwk150', e: '🏎️', n: 'Page Racer',       d: 'Read 150 pages in one week',       t: () => most(tally(s => weekOf(s.day), pagesOf)) >= 150 },
 
@@ -711,6 +733,7 @@ const PROGRESS = {
   first: () => [S.sessions.length, 1, 'reading times'], goal1: () => [Object.keys(S.goalDays).length, 1, 'goal days'], shelf5: () => [S.books.length, 5, 'books on your shelf'],
   p100: () => [S.pagesRead, 100, 'pages'], p500: () => [S.pagesRead, 500, 'pages'], p1000: () => [S.pagesRead, 1000, 'pages'], p2000: () => [S.pagesRead, 2000, 'pages'],
   p5000: () => [S.pagesRead, 5000, 'pages'], p10000: () => [S.pagesRead, 10000, 'pages'],
+  ch10: () => [S.chaptersRead || 0, 10, 'chapters'], ch50: () => [S.chaptersRead || 0, 50, 'chapters'], ch100: () => [S.chaptersRead || 0, 100, 'chapters'], ch500: () => [S.chaptersRead || 0, 500, 'chapters'],
   pday50: () => [most(tally(s => s.day, pagesOf)), 50, 'pages in your best day'], pwk150: () => [most(tally(s => weekOf(s.day), pagesOf)), 150, 'pages in your best week'],
   b1: () => [finishedCount(), 1, 'books finished'], b3: () => [finishedCount(), 3, 'books finished'], b5: () => [finishedCount(), 5, 'books finished'], b10: () => [finishedCount(), 10, 'books finished'],
   b20: () => [finishedCount(), 20, 'books finished'], b30: () => [finishedCount(), 30, 'books finished'], b50: () => [finishedCount(), 50, 'books finished'],
@@ -1105,7 +1128,7 @@ function bookView() {
     ${b.totalPages && !fin ? `<div style="text-align:center;color:var(--muted);margin-top:4px">${Math.round(p * 100)}% of the way · ${Math.max(0, b.totalPages - b.page)} pages to go</div>` : ''}
     ${!b.totalPages && !fin ? `<div style="text-align:center;color:var(--muted);margin-top:4px">How many pages is it? Tap <b>Update my page</b> to add it.</div>` : ''}
     <div class="facts">
-      <div class="fact"><small>Chapter</small><b>${b.chapter ? esc(b.chapter) : '—'}</b></div>
+      <div class="fact"><small>Chapters done</small><b>${b.chDone ? b.chDone + (b.chapters ? ` of ${b.chapters}` : '') : b.chapter ? esc(b.chapter) : b.chapters ? `0 of ${b.chapters}` : '—'}</b></div>
       <div class="fact"><small>Last read</small><b>${niceDate(b.lastRead)}</b></div>
       <div class="fact"><small>Time in this book</small><b>${fmtMin(b.secs || 0)}</b></div>
       <div class="fact"><small>Reading times</small><b>${S.sessions.filter(s => s.bookId === b.id && s.start >= (b.resetAt || 0)).length}</b></div>
@@ -1392,7 +1415,7 @@ function parentView() {
     <input class="in" id="pReward" value="${esc(S.reward.text)}" placeholder="e.g. Pick the movie for movie night" maxlength="60">
     <div class="stepper" style="margin-top:8px"><span style="flex:none;color:var(--muted)">Stars needed</span>
       <input class="in" id="pCost" type="number" inputmode="numeric" value="${S.reward.cost || ''}" placeholder="200"></div>
-    <div class="hint">Stars: 1 per minute read, +10 for reaching the daily goal, +50 for finishing a book.</div>
+    <div class="hint">Stars: 1 per minute read, +10 for reaching the daily goal, 3 to 20 for each chapter finished (longer chapters give more), a bonus at a quarter, half and three-quarters of a book, and 50 to 150 for finishing a book (bigger books give more).</div>
     <button class="btn block" style="margin-top:16px" data-act="saveParent">Save settings</button>
     ${S.reward.text && S.reward.cost ? `<button class="btn white block small" style="margin-top:12px" data-act="rewardGiven" ${S.stars >= S.reward.cost ? '' : 'disabled'}>🎁 Reward given (takes away ${S.reward.cost} ⭐)</button>` : ''}
   </div>
@@ -1453,7 +1476,7 @@ function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.ad
 function openAdd(editId) {
   const b = editId && book(editId);
   addFlow = { step: b ? 'details' : 'search', q: '', results: [], loading: false, error: '', editId: b ? b.id : null,
-    chosen: b ? { title: b.title, author: b.author, cover: b.cover, pages: b.totalPages } : { title: '', author: '', cover: '', pages: 0 } };
+    chosen: b ? { title: b.title, author: b.author, cover: b.cover, pages: b.totalPages, chapters: b.chapters || 0 } : { title: '', author: '', cover: '', pages: 0, chapters: 0 } };
   renderAdd();
 }
 function renderAdd() {
@@ -1486,13 +1509,16 @@ function renderAdd() {
       <label class="l">Author</label><input class="in" id="bAuthor" value="${esc(c.author)}" placeholder="Who wrote it?" maxlength="80">
       <label class="l">How many pages?</label><input class="in" id="bPages" type="number" inputmode="numeric" value="${c.pages || ''}" placeholder="Look at the last page number">
       <div class="hint">${c.pages && !f.editId ? 'This is a guess from the internet. Check the last page of your book!' : 'Flip to the very last page and look at the number.'}</div>
-      ${f.editId ? '' : `<label class="l">What page are you on now?</label><input class="in" id="bStart" type="number" inputmode="numeric" value="0">`}
+      <label class="l">How many chapters?</label><input class="in" id="bChap" type="number" inputmode="numeric" value="${c.chapters || ''}" placeholder="Look at the list of chapters at the front">
+      <div class="hint">Longer chapters are worth more stars!</div>
+      ${f.editId ? '' : `<label class="l">What page are you on now?</label><input class="in" id="bStart" type="number" inputmode="numeric" value="0">
+      <label class="l">How many chapters have you finished already?</label><input class="in" id="bChDone" type="number" inputmode="numeric" value="0">`}
       <button class="btn orange block" style="margin-top:20px" data-act="saveBook">${f.editId ? 'Save' : '📚 Put it on my shelf!'}</button>`);
   }
 }
 function grabDetails() {
   if (!$('#bTitle')) return;
-  Object.assign(addFlow.chosen, { title: $('#bTitle').value.trim(), author: $('#bAuthor').value.trim(), pages: parseInt($('#bPages').value) || 0 });
+  Object.assign(addFlow.chosen, { title: $('#bTitle').value.trim(), author: $('#bAuthor').value.trim(), pages: parseInt($('#bPages').value) || 0, chapters: Math.max(0, parseInt($('#bChap').value) || 0) });
 }
 async function doSearch() {
   const q = $('#q').value.trim();
@@ -1613,19 +1639,28 @@ function openProgress(bookId, session) {
     <div class="hint" style="text-align:center">You started at page ${b.page}</div>
     <label class="l">How many pages in the whole book?</label>
     <input class="in" id="tp" type="number" inputmode="numeric" value="${b.totalPages || ''}" placeholder="Look at the last page number">
-    <label class="l">What chapter?</label><input class="in" id="ch" value="${esc(b.chapter)}" placeholder="e.g. 5 or The Big Storm" maxlength="40">
+    <label class="l">What chapter did you just finish?</label>
+    <div class="stepper"><button class="sb" data-act="chStep" data-n="-1">−1</button>
+      <input class="in" id="ch" type="number" inputmode="numeric" value="${b.chDone || 0}"><button class="sb" data-act="chStep" data-n="1">+1</button></div>
+    <div class="hint" style="text-align:center">${b.chapters ? `Each chapter in this book is worth ${chStars(b)} ⭐` : 'Each chapter is worth ⭐ stars! Add how many chapters below.'}</div>
+    <label class="l">How many chapters in the whole book?</label>
+    <input class="in" id="tch" type="number" inputmode="numeric" value="${b.chapters || ''}" placeholder="Look at the list of chapters at the front">
     <label class="l">Where did you stop? <small style="color:var(--muted);font-family:Nunito">(if you want)</small></label>
     <input class="in" id="note" value="${esc(b.note)}" placeholder="e.g. Right after the dragon showed up" maxlength="100">
     <button class="btn green block" style="margin-top:20px" data-act="saveProgress">💾 Save</button>`);
 }
 function saveProgress() {
-  const ctx = progressCtx, b = book(ctx.bookId), st0 = bookStage(b);
+  const ctx = progressCtx, b = book(ctx.bookId), st0 = bookStage(b), f0 = bookFrac(b);
   b.totalPages = Math.max(0, parseInt($('#tp').value) || 0);
   let pg = Math.max(0, parseInt($('#pg').value) || 0);
   if (b.totalPages) pg = Math.min(pg, b.totalPages);
   const prev = b.page;
   if (pg > prev) S.pagesRead += pg - prev;
-  b.page = pg; b.chapter = $('#ch').value.trim(); b.note = $('#note').value.trim(); b.lastRead = Date.now();
+  b.chapters = Math.max(0, parseInt($('#tch').value) || 0);
+  b.chDone = Math.max(0, parseInt($('#ch').value) || 0);
+  if (b.chapters) b.chDone = Math.min(b.chDone, b.chapters);
+  if (b.chDone) b.chapter = '';
+  b.page = pg; b.note = $('#note').value.trim(); b.lastRead = Date.now();
 
   if (ctx.secs != null) {
     const secs = Math.round(ctx.secs);
@@ -1640,17 +1675,32 @@ function saveProgress() {
         confetti: true, sound: seenLive ? null : 'goal', show: seenLive ? null : () => { rocketLaunch(); confetti(); } });
     }
   }
-  const st1 = bookStage(b);
-  if (b.totalPages && pg >= b.totalPages && b.status !== 'finished') finishBook(b);
+  const st1 = bookStage(b), [chN, chS] = payChapters(b);
+  const done = b.status !== 'finished' && ((b.totalPages && pg >= b.totalPages) || (b.chapters && b.chDone >= b.chapters));
+  const chMsg = chS ? `+${chS} ⭐ for finishing ${chN} chapter${chN === 1 ? '' : 's'}!` : '';
+  if (done) finishBook(b, chS);
+  else {
+    // checkpoints a quarter, half and three-quarters of the way through
+    const f1 = bookFrac(b), ms = [25, 50, 75].filter(q => f0 < q / 100 && f1 >= q / 100 && !(b.msPaid || {})[q]);
+    if (ms.length) {
+      b.msPaid = b.msPaid || {}; ms.forEach(q => b.msPaid[q] = 1);
+      const bonus = ms.length * msStars(b), q = ms[ms.length - 1];
+      S.stars += bonus;
+      celebrate({ e: q === 50 ? '🚩' : q === 25 ? '🛰️' : '🌕', title: { 25: 'A quarter of the way!', 50: 'Halfway there!', 75: 'Three-quarters done!' }[q],
+        text: `You're ${q === 50 ? 'half' : q === 25 ? 'a quarter of the' : 'three-quarters of the'} way through "${b.title}"!${chMsg ? ' ' + chMsg : ''} +${bonus} bonus stars!`, confetti: true, show: confetti });
+    } else if (chMsg && (partyQueue.length || $('#party').classList.contains('open'))) celebrate({ e: '📑', title: 'Chapter done!', text: chMsg });
+  }
   save(); closeSheet(); checkBadges(); render(); updateTimerUI();
   const grew = st1 > st0 && b.status !== 'finished' ? { 1: '🎨 Your bookmark got its colors!', 2: '🖼️ Pictures popped onto your bookmark!', 3: '✨ Your bookmark got fancy! Almost done!' }[st1] : '';
-  if (!partyQueue.length && !$('#party').classList.contains('open')) toast(grew || 'Saved! 👍');
+  if (!partyQueue.length && !$('#party').classList.contains('open')) toast(chMsg || grew || 'Saved! 👍');
 }
-function finishBook(b) {
+function finishBook(b, chEarlier = 0) {
   b.status = 'finished'; b.finishedAt = Date.now();
   if (b.totalPages) { if (b.page < b.totalPages) S.pagesRead += b.totalPages - b.page; b.page = b.totalPages; }
-  S.stars += 50;
-  celebrate({ e: '🏆', title: 'You finished a book!', text: `"${b.title}" is DONE! That's ${finishedCount()} book${finishedCount() === 1 ? '' : 's'} finished. +50 stars!`, sound: 'book', show: cannons });
+  if (b.chapters) b.chDone = b.chapters;
+  const chS = chEarlier + payChapters(b)[1], fs = finStars(b);
+  S.stars += fs;
+  celebrate({ e: '🏆', title: 'You finished a book!', text: `"${b.title}" is DONE! That's ${finishedCount()} book${finishedCount() === 1 ? '' : 's'} finished. +${fs} stars!${chS ? ` And +${chS} ⭐ for chapters!` : ''}`, sound: 'book', show: cannons });
 }
 
 /* =========================================================
@@ -1852,14 +1902,17 @@ const ACT = {
     if (addFlow.editId) {
       const b = book(addFlow.editId);
       const looks = b.title !== c.title || b.cover !== c.cover;
-      Object.assign(b, { title: c.title, author: c.author, cover: c.cover, totalPages: c.pages });
+      Object.assign(b, { title: c.title, author: c.author, cover: c.cover, totalPages: c.pages, chapters: c.chapters });
       if (b.totalPages && b.page > b.totalPages) b.page = b.totalPages;
       if (looks) { delete b.bmv; analyzeBook(b); }
       toast('Changed! ✏️');
     } else {
       let start = Math.max(0, parseInt($('#bStart').value) || 0);
       if (c.pages) start = Math.min(start, c.pages);
+      let chd = Math.max(0, parseInt($('#bChDone').value) || 0);
+      if (c.chapters) chd = Math.min(chd, c.chapters);
       const b = { id: uid(), title: c.title, author: c.author, cover: c.cover, totalPages: c.pages, page: start, chapter: '', note: '',
+        chapters: c.chapters, chDone: chd, chPaid: chd, msPaid: {},
         status: 'reading', added: Date.now(), lastRead: null, secs: 0 };
       S.books.push(b); S.selBook = b.id;
       analyzeBook(b);
@@ -1884,6 +1937,7 @@ const ACT = {
   },
   cancelTimer() { if (confirm('Stop the timer without saving this time?')) { S.timer = null; save(); releaseWake(); render(); updateTimerUI(); } },
   updatePage(el) { openProgress(el.dataset.id); },
+  chStep(el) { const i = $('#ch'); i.value = Math.max(0, (parseInt(i.value) || 0) + +el.dataset.n); },
   pgStep(el) { const i = $('#pg'); i.value = Math.max(0, (parseInt(i.value) || 0) + +el.dataset.n); },
   saveProgress,
   finishAsk(el) {
@@ -1896,7 +1950,7 @@ const ACT = {
   startOverAsk(el) {
     const b = book(el.dataset.id);
     openSheet(`<button class="x" data-act="closeSheet">✕</button><h2>Start "${esc(b.title)}" over? 🔄</h2>
-      <p class="hint">This book goes back to page 0. Its chapter, note and time in this book are cleared.</p>
+      <p class="hint">This book goes back to page 0 and chapter 0. Its note and time in this book are cleared.</p>
       <p class="hint">Your stars ⭐, streak 🔥 and badges 🏆 stay. You already earned those!</p>
       <div class="row2" style="margin-top:18px"><button class="btn white" data-act="closeSheet">Keep it</button>
       <button class="btn orange" data-act="startOver" data-id="${b.id}">Start over</button></div>`);
@@ -1904,7 +1958,7 @@ const ACT = {
   startOver(el) {
     const b = book(el.dataset.id);
     if (b.status === 'finished') S.rereads = (S.rereads || 0) + 1;
-    Object.assign(b, { status: 'reading', page: 0, chapter: '', note: '', secs: 0, lastRead: null, finishedAt: null, resetAt: Date.now() });
+    Object.assign(b, { status: 'reading', page: 0, chapter: '', chDone: 0, chPaid: 0, msPaid: {}, note: '', secs: 0, lastRead: null, finishedAt: null, resetAt: Date.now() });
     save(); closeSheet(); render(); scrollTo(0, 0); toast('Back to page 0. Here we go! 🚀');
   },
   editBook(el) { openAdd(el.dataset.id); },
@@ -2012,7 +2066,7 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) naviga
 // ---------- staying up to date ----------
 // Phones often resume the app from memory instead of reloading it, so check for a newer
 // version whenever the app opens or comes back on screen, and reload into it.
-const APP_VERSION = 'rr-shell-v35';  // must match SHELL in sw.js
+const APP_VERSION = 'rr-shell-v36';  // must match SHELL in sw.js
 async function checkForUpdate() {
   if (!location.protocol.startsWith('http')) return;
   try {
