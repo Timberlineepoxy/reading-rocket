@@ -450,6 +450,16 @@ body:not(.darkbg){--muted:#4E4566}
 body.darkbg :is(.card,.stat,.badge,.ucard,.bmcard,.big-win){--ink:#fff;--muted:rgba(255,255,255,.85);color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.65)}
 body.darkbg :is(.card,.stat,.badge,.ucard,.bmcard,.big-win) :is(h1,h2,h3,b,p,small,span,div){color:inherit}
 body.darkbg :is(.card,.stat,.badge,.ucard,.bmcard) small{color:rgba(255,255,255,.85)}
+
+/* very clear glass: only the faintest frost, so the background stays sharp behind every card, tile, button and tab */
+.card,.stat,.badge,.ucard,.bmcard,.big-win,.fchip,.btn,.btn.green,.btn.orange,.btn.white,.envbtn,nav,nav button.on,.stepper .sb,.bd-nav button,.sheet .x,header{
+  -webkit-backdrop-filter:blur(2.5px) saturate(1.3);backdrop-filter:blur(2.5px) saturate(1.3)}
+.card,.stat,.badge,.ucard,.bmcard,.big-win{background:linear-gradient(160deg,rgba(255,255,255,.14),rgba(255,255,255,.02))}
+.fchip,.btn,.btn.green,.btn.orange,.btn.white,.envbtn,.stepper .sb,.bd-nav button,.sheet .x{background:linear-gradient(180deg,rgba(255,255,255,.24),rgba(255,255,255,.02) 65%)}
+nav{background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,.04))}
+/* with less frost the words need a stronger glow to stay readable */
+body:not(.darkbg) :is(.card,.stat,.badge,.ucard,.bmcard,.big-win,.fchip,.btn,.envbtn,nav button){text-shadow:0 0 3px #fff,0 0 7px rgba(255,255,255,.95),0 0 12px rgba(255,255,255,.7)}
+body.darkbg :is(.card,.stat,.badge,.ucard,.bmcard,.big-win,.fchip,.btn,.envbtn,nav button){text-shadow:0 0 3px rgba(0,0,0,.9),0 1px 4px rgba(0,0,0,.8),0 0 10px rgba(0,0,0,.5)}
 </style>
 </head>
 <body>
