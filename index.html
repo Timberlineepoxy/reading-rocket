@@ -498,6 +498,47 @@ body.darkbg .ucard.locked .pic,body.darkbg .ucard.locked .e,body.darkbg .ucard.l
 .daylist{display:grid;gap:8px;margin-top:12px}
 .daylist div{display:flex;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:14px;background:#F7F2FF}
 .daylist b{font-family:'Fredoka';font-weight:600}
+/* book series: covers sit in clear glass holders, tinted with stained-glass colours won on the Unlocks page */
+.holder{position:relative;padding:8px;border-radius:16px;background:var(--g,linear-gradient(160deg,rgba(255,255,255,.26),rgba(255,255,255,.05)));box-shadow:var(--rim),0 6px 16px rgba(30,20,60,.12);-webkit-backdrop-filter:blur(2.5px) saturate(1.3);backdrop-filter:blur(2.5px) saturate(1.3);overflow:hidden}
+.holder::before{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:var(--lead,none)}
+.holder::after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:2;background:linear-gradient(125deg,rgba(255,255,255,.5) 0 5%,rgba(255,255,255,0) 28%)}
+.holder>.cover{position:relative;z-index:1;border-radius:9px}
+.sno{position:absolute;z-index:3;top:3px;left:3px;background:rgba(255,255,255,.9);color:#2B2250;font:600 13px 'Fredoka';border-radius:999px;padding:2px 8px;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.sedit{position:absolute;z-index:3;bottom:4px;right:4px;width:32px;height:32px;border-radius:50%;border:0;background:rgba(255,255,255,.9);font-size:14px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px 12px;margin-top:6px}
+@media (min-width:480px){.sgrid{grid-template-columns:repeat(4,1fr)}}
+.sslot{cursor:pointer;min-width:0}
+.sslot .t{font-weight:700;font-size:13px;margin-top:7px;line-height:1.2;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.sslot .pp{font-size:12px;color:var(--muted);margin-top:2px}
+.sslot.missing .holder{background:rgba(255,255,255,.1)}
+.sslot.missing .holder::before{background:none}
+.sslot.missing .t{color:var(--muted)}
+.cover.ph{background:repeating-linear-gradient(135deg,rgba(150,150,170,.16) 0 10px,rgba(150,150,170,.28) 10px 20px);outline:2px dashed rgba(120,120,140,.55);outline-offset:-2px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--muted);font-weight:700;text-align:center;font-size:13px;line-height:1.2;padding:6px}
+.cover.ph b{font-family:'Fredoka';font-size:20px;color:var(--muted)}
+.scard{cursor:pointer}
+.scard h3{margin:0;font-size:19px}
+.scard .sub{font-size:13px;color:var(--muted);margin-top:2px}
+.srow{display:flex;gap:8px;overflow-x:auto;padding:10px 2px 8px;scrollbar-width:none}
+.srow::-webkit-scrollbar{display:none}
+.srow .mini{flex:none;width:58px}
+.mini .holder{padding:4px;border-radius:11px}
+.mini .sno{font-size:10px;padding:1px 5px;top:2px;left:2px}
+.mini .cover.ph{font-size:0}
+.mini .cover.ph b{font-size:14px}
+.mini .cover .gen{font-size:8px;padding:3px}
+.sertag{position:absolute;z-index:3;left:5px;bottom:5px;background:rgba(255,255,255,.92);color:#2B2250;font:600 11px 'Fredoka';border-radius:999px;padding:1px 7px}
+.serline{display:inline-block;margin-top:8px;padding:0;font-size:15px}
+.utabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.utabs .fchip{min-width:0;font-size:13px}
+.shelfchips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;gap:5px;margin-left:-2px;margin-right:-2px;padding:2px}
+.shelfchips::-webkit-scrollbar{display:none}
+.shelfchips .fchip{padding:9px 9px;font-size:14px;flex:none}
+.tints{display:grid;grid-template-columns:repeat(4,1fr);gap:12px 10px;margin-top:6px}
+.tint{border:0;padding:0;background:none;cursor:pointer;font:inherit;color:inherit;text-align:center;font-size:12px;font-weight:700}
+.tint .holder{aspect-ratio:1;padding:0;margin-bottom:4px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.tint.sel .holder{outline:3px solid var(--orange);outline-offset:2px}
+.tint.locked{opacity:.6}
+.ucard .holder.sw2{width:100%;aspect-ratio:3/2;padding:0;margin-bottom:6px}
 </style>
 </head>
 <body>
@@ -527,7 +568,7 @@ body.darkbg .ucard.locked .pic,body.darkbg .ucard.locked .e,body.darkbg .ucard.l
 const KEY = 'readingRocket.v1';
 const DEFAULTS = {
   name: 'Reader', goal: 20, books: [], sessions: [], goalDays: {}, badges: {},
-  stars: 0, pagesRead: 0, chaptersRead: 0, pageLog: {}, rereads: 0, rewardsGiven: 0, unlocked: {}, bg: 'cream', pets: [], reward: { text: '', cost: 0 }, timer: null, selBook: null, chimed: '', bonusDone: {}, marks: {}, sfx: { goal: 'popper', bonus: 'fireworks', book: 'applause' }
+  stars: 0, pagesRead: 0, chaptersRead: 0, pageLog: {}, series: [], extraEarned: 0, rereads: 0, rewardsGiven: 0, unlocked: {}, bg: 'cream', pets: [], reward: { text: '', cost: 0 }, timer: null, selBook: null, chimed: '', bonusDone: {}, marks: {}, sfx: { goal: 'popper', bonus: 'fireworks', book: 'applause' }
 };
 let S = load();
 let view = 'shelf', currentBook = null, shelfFilter = 'all', parentOK = false, unlockTab = 'animal';
@@ -692,6 +733,64 @@ function ring(pct, size, stroke, color) {
       stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - p)}" transform="rotate(-90 ${size / 2} ${size / 2})" style="transition:stroke-dashoffset .5s"/></svg>`;
 }
 
+/* ---------- book series ----------
+   S.series = [{ id, name, total, tint }]; a book in a series has b.seriesId and b.seriesNo (its number in the series).
+   One book is enough to make a series. Missing numbers show as grey "not added yet" slots. */
+const GLASS = [
+  { id: 'clear',      n: 'Clear',      cost: 0 },
+  { id: 'g-ruby',     n: 'Ruby',       cost: 200,  c: ['#E11D48', '#FB7185', '#9F1239'] },
+  { id: 'g-sapphire', n: 'Sapphire',   cost: 600,  c: ['#2563EB', '#60A5FA', '#1E3A8A'] },
+  { id: 'g-emerald',  n: 'Emerald',    cost: 1000, c: ['#059669', '#34D399', '#065F46'] },
+  { id: 'g-amber',    n: 'Amber',      cost: 1500, c: ['#F59E0B', '#FCD34D', '#B45309'] },
+  { id: 'g-amethyst', n: 'Amethyst',   cost: 2000, c: ['#7C3AED', '#C4B5FD', '#4C1D95'] },
+  { id: 'g-rose',     n: 'Rose',       cost: 2500, c: ['#EC4899', '#F9A8D4', '#9D174D'] },
+  { id: 'g-lagoon',   n: 'Lagoon',     cost: 3000, c: ['#0D9488', '#5EEAD4', '#134E4A'] },
+  { id: 'g-sunset',   n: 'Sunset',     cost: 3500, c: ['#F97316', '#F43F5E', '#A855F7'] },
+  { id: 'g-ocean',    n: 'Deep Ocean', cost: 4000, c: ['#0EA5E9', '#1D4ED8', '#06B6D4'] },
+  { id: 'g-rainbow',  n: 'Rainbow',    cost: 4500, c: ['#EF4444', '#F59E0B', '#22C55E', '#3B82F6', '#A855F7'] },
+  { id: 'g-gold',     n: 'Gold',       cost: 5000, c: ['#FBBF24', '#FDE68A', '#B45309'] },
+  { id: 'g-galaxy',   n: 'Galaxy',     cost: 5500, c: ['#4C1D95', '#1E1B4B', '#EC4899'] },
+];
+const glassOf = id => GLASS.find(t => t.id === id) || GLASS[0];
+const glassOwned = t => starsEarned() >= t.cost;
+const rgba = (hex, a) => { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; };
+// Style for a holder: clear frosted glass, or stained glass with dark "lead" lines between the coloured panes.
+function glassStyle(id) {
+  const t = glassOf(id);
+  if (!t.c) return '';
+  const c = t.c, stops = c.map((x, i) => `${rgba(x, .7)} ${Math.round(i / (c.length - 1) * 100)}%`).join(',');
+  const g = `radial-gradient(circle at 18% 22%,${rgba(c[1], .75)},transparent 38%),radial-gradient(circle at 82% 75%,${rgba(c[c.length - 1], .7)},transparent 42%),linear-gradient(135deg,${stops})`;
+  const lead = 'repeating-linear-gradient(55deg,transparent 0 22px,rgba(35,25,55,.28) 22px 24px),repeating-linear-gradient(-35deg,transparent 0 30px,rgba(35,25,55,.22) 30px 32px)';
+  return `--g:${g};--lead:${lead}`;
+}
+const seriesOf = id => (S.series || []).find(x => x.id === id);
+const seriesBooks = sr => S.books.filter(b => b.seriesId === sr.id).sort((a, b) => (a.seriesNo || 999) - (b.seriesNo || 999) || sortTitle(a, b));
+const seriesTotal = sr => Math.max(sr.total || 0, seriesBooks(sr).length, ...seriesBooks(sr).map(b => b.seriesNo || 0));
+// Number slots 1..total in reading order: each is the book(s) with that number, or empty (not added yet).
+function seriesSlots(sr) {
+  const books = seriesBooks(sr), out = [];
+  for (let n = 1; n <= seriesTotal(sr); n++) {
+    const here = books.filter(b => b.seriesNo === n);
+    if (here.length) here.forEach(b => out.push({ n, b })); else out.push({ n, b: null });
+  }
+  books.filter(b => !b.seriesNo).forEach(b => out.push({ n: 0, b }));
+  return out;
+}
+const nextNo = sid => { const sr = seriesOf(sid); if (!sr) return 1; const used = new Set(seriesBooks(sr).map(b => b.seriesNo)); let n = 1; while (used.has(n)) n++; return n; };
+function seriesStats(sr) {
+  const books = seriesBooks(sr), ids = new Set(books.map(b => b.id)), total = seriesTotal(sr);
+  const fin = books.filter(b => b.status === 'finished').length;
+  const pages = books.reduce((a, b) => a + (b.status === 'finished' ? (b.totalPages || b.page || 0) : (b.page || 0)), 0);
+  const secs = S.sessions.reduce((a, x) => a + (ids.has(x.bookId) ? x.secs : 0), 0);
+  return { books, total, added: books.length, fin, pages, secs, pct: total ? fin / total : 0 };
+}
+// A book in its glass holder with its number tag.
+function holderHTML(b, n, tint, editBtn) {
+  const fin = b && b.status === 'finished';
+  return `<div class="holder" style="${b ? glassStyle(tint) : ''}">${n ? `<span class="sno">#${n}</span>` : ''}${b ? coverHTML(b, fin ? '<span class="ribbon">DONE!</span>' : '')
+    : `<div class="cover ph"><b>#${n}</b>Not added yet</div>`}${editBtn || ''}</div>`;
+}
+
 /* ---------- badges ---------- */
 const DAY = 864e5;
 const weekOf = k => { const d = keyToDate(k); d.setDate(d.getDate() - (d.getDay() + 6) % 7); return dayKey(d); }; // Monday
@@ -708,7 +807,7 @@ function payChapters(b) {
   const n = b.chapters ? Math.min(b.chDone || 0, b.chapters) : (b.chDone || 0), k = n - (b.chPaid || 0);
   if (k <= 0) return [0, 0];
   const st = k * chStars(b);
-  b.chPaid = n; S.chaptersRead = (S.chaptersRead || 0) + k; S.stars += st;
+  b.chPaid = n; S.chaptersRead = (S.chaptersRead || 0) + k; S.stars += st; S.extraEarned = (S.extraEarned || 0) + st;
   return [k, st];
 }
 const pagesOf = s => Math.max(0, (s.to || 0) - (s.from || 0));
@@ -717,7 +816,7 @@ const most = o => Math.max(0, ...Object.values(o));
 const minsByDay = () => tally(s => s.day, s => s.secs / 60);
 const finishedBooks = () => S.books.filter(b => b.status === 'finished');
 const readOn = md => S.sessions.some(s => md.includes(s.day.slice(5)));
-const starsEarned = () => S.sessions.reduce((a, s) => a + Math.floor(s.secs / 60), 0) + 10 * Object.keys(S.goalDays).length + 50 * finishedCount();
+const starsEarned = () => S.sessions.reduce((a, s) => a + Math.floor(s.secs / 60), 0) + 10 * Object.keys(S.goalDays).length + 50 * finishedCount() + (S.extraEarned || 0);
 function perfectWeek() {
   return Object.keys(S.goalDays).some(d => weekOf(d) === d && [1, 2, 3, 4, 5, 6].every(i => S.goalDays[addDays(d, i)]));
 }
@@ -953,6 +1052,15 @@ for (const [id, add] of [['harvest', 180], ['turkey', 100]]) {
   u.cost = S.dyn[id];
 }
 BACKGROUNDS.sort((a, b) => a.cost - b.cost); ANIMALS.sort((a, b) => a.cost - b.cost);
+// Chapter stars, checkpoint bonuses and the bigger finish bonus (from Nov 15, 2026) weren't counted toward unlocks
+// at first. Add them in once, worked out from each book.
+if (!S.extraFix) {
+  let ch = 0, w = 0, extra = 0;
+  for (const b of S.books) { ch += b.chPaid || 0; w += (b.chPaid || 0) * chStars(b); extra += Object.keys(b.msPaid || {}).length * msStars(b);
+    if (b.status === 'finished' && b.finishedAt >= new Date(2026, 10, 15).getTime()) extra += finStars(b) - 50; }
+  if (ch) extra += Math.round(w * (S.chaptersRead || 0) / ch);
+  S.extraEarned = (S.extraEarned || 0) + extra; S.extraFix = 1; save();
+}
 function checkUnlocks() {
   S.unlocked ||= {};
   const have = starsEarned();
@@ -966,6 +1074,11 @@ function checkUnlocks() {
       ? { e: animalImg(u, 96), title: `You unlocked the ${u.n}!`, text: 'Go to 🐾 Unlocks and tap it to take it for a walk!', confetti: true }
       : { e: u.e, title: `New background: ${u.n}!`, text: 'Go to 🐾 Unlocks to use it!', confetti: true });
   }
+  S.glassSeen ||= {};
+  const glass = GLASS.filter(t => t.cost && !S.glassSeen[t.id] && have >= t.cost);
+  glass.forEach(t => S.glassSeen[t.id] = 1);
+  if (glass.length) celebrate({ e: '💎', title: glass.length > 1 ? `${glass.length} new glass colors!` : `New glass color: ${glass[0].n}!`,
+    text: `${glass.map(t => t.n).join(', ')}. Use ${glass.length > 1 ? 'them' : 'it'} on your book series holders!`, confetti: true });
 }
 /* ---------- bookmarks ----------
    Every book on the shelf builds its own bookmark while he reads it (a sketch, then colours, pictures and a
@@ -1121,7 +1234,7 @@ function render() { applyTheme(); renderHeader(); renderMain(); renderNav(); }
 function renderHeader() {
   const st = streak();
   const sub = { shelf: 'Ready for a reading adventure?', book: 'Let\'s see how far you got!', read: 'Find a cozy spot 📖',
-    trophies: 'Look at everything you did!', calendar: 'Your reading calendar 📅', unlocks: 'Pick friends to walk with you 🐾', parent: 'Grown-up corner' }[view];
+    trophies: 'Look at everything you did!', calendar: 'Your reading calendar 📅', series: 'Your book series 📚', unlocks: 'Pick friends to walk with you 🐾', parent: 'Grown-up corner' }[view];
   $('#hdr').innerHTML = `<div class="top">
     <div class="hi">Hi, ${esc(S.name)}! <small>${sub}</small></div>
     <div class="chips"><span class="chip" title="Days in a row">🔥 ${st}</span><span class="chip" title="Stars">⭐ ${S.stars}</span>
@@ -1132,7 +1245,7 @@ function renderNav() {
   const items = [['shelf', '📚', 'My Books'], ['read', '⏱️', 'Read!'], ['trophies', '🏆', 'Trophies'], ['unlocks', '🐾', 'Unlocks']];
   const running = S.timer && S.timer.startedAt;
   $('#nav').innerHTML = items.map(([v, ic, label]) =>
-    `<button data-act="nav" data-v="${v}" class="${view === v || (view === 'book' && v === 'shelf') || (view === 'calendar' && v === 'trophies') ? 'on' : ''}"><span class="ic">${ic}</span><span>${label}${(v === 'read' && running) || (v === 'unlocks' && unopened().length) ? '<i class="dot"></i>' : ''}</span></button>`).join('');
+    `<button data-act="nav" data-v="${v}" class="${view === v || ((view === 'book' || view === 'series') && v === 'shelf') || (view === 'calendar' && v === 'trophies') ? 'on' : ''}"><span class="ic">${ic}</span><span>${label}${(v === 'read' && running) || (v === 'unlocks' && unopened().length) ? '<i class="dot"></i>' : ''}</span></button>`).join('');
 }
 
 function renderMain() {
@@ -1142,6 +1255,7 @@ function renderMain() {
   else if (view === 'read') m.innerHTML = readView();
   else if (view === 'trophies') m.innerHTML = trophiesView();
   else if (view === 'calendar') m.innerHTML = calendarView();
+  else if (view === 'series') m.innerHTML = seriesView();
   else if (view === 'unlocks') m.innerHTML = unlocksView();
   else if (view === 'parent') m.innerHTML = parentView();
 }
@@ -1170,13 +1284,14 @@ function shelfView() {
   }
 
   const inProgress = b => b.status !== 'finished' && b.page > 0;  // started, not done yet
-  const counts = { all: S.books.length, reading: S.books.filter(inProgress).length, finished: finishedCount() };
+  const counts = { all: S.books.length, reading: S.books.filter(inProgress).length, finished: finishedCount(), series: (S.series || []).length };
   const list = S.books.filter(b => shelfFilter === 'all' || (shelfFilter === 'finished' ? b.status === 'finished' : inProgress(b))).sort(sortTitle);
   html += `<div class="sectionhead"><h2>My Bookshelf</h2></div>`;
   if (S.books.length) {
-    html += `<div class="filters">${[['all', 'All'], ['reading', 'Reading'], ['finished', 'Finished']].map(([f, l]) =>
+    html += `<div class="filters shelfchips">${[['all', 'All'], ['reading', 'Reading'], ['finished', 'Finished'], ['series', '📚 Series']].map(([f, l]) =>
       `<button class="fchip ${shelfFilter === f ? 'on' : ''}" data-act="filter" data-f="${f}">${l} ${counts[f]}</button>`).join('')}</div>`;
   }
+  if (S.books.length && shelfFilter === 'series') return html + seriesShelfHTML();
   if (!S.books.length) {
     html += `<div class="card empty"><div class="big">📚</div><h2>Your shelf is empty!</h2><p>Add the books you're reading and watch your shelf fill up.</p>
       <button class="btn orange" data-act="addBook">＋ Add my first book</button></div>`;
@@ -1188,13 +1303,51 @@ function shelfView() {
   if (S.books.length) html += `<button class="btn orange fab" data-act="addBook">＋ Add a book</button>`;
   return html;
 }
+function seriesShelfHTML() {
+  const list = [...(S.series || [])].sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base', numeric: true }));
+  if (!list.length) return `<div class="card empty"><div class="big">📚</div><h2>No series yet</h2>
+    <p>Reading a book that's part of a series? Make a series and line up every book in order. Even one book is enough to start!</p>
+    <button class="btn orange" data-act="serEditAsk">＋ Make a series</button></div>`;
+  return list.map(sr => { const st = seriesStats(sr);
+    return `<div class="card scard" data-act="openSeries" data-id="${sr.id}"><h3>📚 ${esc(sr.name)}</h3>
+      <div class="sub">${st.added} of ${st.total} book${st.total === 1 ? '' : 's'} added · ${st.fin} finished</div>
+      <div class="srow">${seriesSlots(sr).map(x => `<div class="mini">${holderHTML(x.b, x.n, sr.tint)}</div>`).join('')}</div>
+      <div style="display:flex;align-items:center;gap:8px"><div class="bar"><i style="width:${st.pct * 100}%"></i></div>
+      <small style="color:var(--muted);white-space:nowrap">${Math.round(st.pct * 100)}% done</small></div></div>`; }).join('')
+    + `<button class="btn orange fab" data-act="serEditAsk">＋ New series</button>`;
+}
 function tileHTML(b) {
   const fin = b.status === 'finished';
   const p = b.totalPages ? Math.min(1, b.page / b.totalPages) : 0;
-  return `<button class="tile" data-act="openBook" data-id="${b.id}"><span class="peek">${RRBM.svg(bookSpec(b), 20, 'still')}</span>${coverHTML(b, fin ? '<span class="ribbon">DONE!</span>' : '')}
+  return `<button class="tile" data-act="openBook" data-id="${b.id}"><span class="peek">${RRBM.svg(bookSpec(b), 20, 'still')}</span>${coverHTML(b, (fin ? '<span class="ribbon">DONE!</span>' : '') + (b.seriesId && b.seriesNo && seriesOf(b.seriesId) ? `<span class="sertag">#${b.seriesNo}</span>` : ''))}
     <div class="t">${esc(b.title)}</div>
     ${fin ? '<div class="pp">⭐ Finished</div>' : `<div class="pbar"><i style="width:${p * 100}%"></i></div><div class="pp">${b.totalPages ? `Page ${b.page} of ${b.totalPages}` : `Page ${b.page}`}</div>`}
     ${(pl => pl && pl.left ? `<div class="plan-pp">📖 ${pl.need ?? pl.perGoal} pages a day</div>` : '')(plan(b))}</button>`;
+}
+
+/* ---------- one series ---------- */
+let currentSeries = null, backTo = 'shelf';
+function seriesView() {
+  const sr = seriesOf(currentSeries);
+  if (!sr) { view = 'shelf'; return shelfView(); }
+  const st = seriesStats(sr);
+  return `<button class="backbtn" data-act="backSeries">← My Series</button>
+  <div class="card" style="margin-top:8px"><h1 style="margin:0;font-size:26px">📚 ${esc(sr.name)}</h1>
+    <div style="display:flex;align-items:center;gap:8px;margin-top:12px"><div class="bar"><i style="width:${st.pct * 100}%"></i></div>
+      <small style="color:var(--muted);white-space:nowrap">${st.fin} of ${st.total} finished</small></div>
+    <button class="link" style="margin-top:8px;padding:0" data-act="serEditAsk" data-id="${sr.id}">✏️ Change name, total books or glass</button></div>
+  <div class="stats" style="margin-top:14px">
+    <div class="stat"><span class="e">📚</span><b>${st.added}<i>of</i>${st.total}</b><small>books added</small></div>
+    <div class="stat"><span class="e">🏁</span><b>${st.fin}<i>of</i>${st.total}</b><small>books finished</small></div>
+    <div class="stat"><span class="e">📄</span><b>${st.pages.toLocaleString()}</b><small>pages read in this series</small></div>
+    <div class="stat"><span class="e">⏱️</span><b>${hrMin(st.secs)}</b><small>reading time in this series</small></div>
+  </div>
+  <div class="sectionhead"><h2>The books in order</h2></div>
+  <div class="sgrid">${seriesSlots(sr).map(x => x.b
+    ? `<div class="sslot" data-act="openBook" data-id="${x.b.id}">${holderHTML(x.b, x.n, sr.tint, `<button class="sedit" data-act="serBookAsk" data-id="${x.b.id}" aria-label="Change number or remove">✏️</button>`)}
+        <div class="t">${esc(x.b.title)}</div><div class="pp">${x.b.status === 'finished' ? '⭐ Finished' : x.b.page > 0 ? (x.b.totalPages ? `${Math.round(Math.min(1, x.b.page / x.b.totalPages) * 100)}% read` : `Page ${x.b.page}`) : 'Not started'}</div></div>`
+    : `<div class="sslot missing" data-act="serAddAsk" data-id="${sr.id}" data-n="${x.n}">${holderHTML(null, x.n, sr.tint)}<div class="t">Book #${x.n}</div><div class="pp">Not added yet</div></div>`).join('')}</div>
+  <div class="stack" style="margin-top:22px"><button class="btn orange block" data-act="serAddAsk" data-id="${sr.id}">＋ Add a book to this series</button></div>`;
 }
 
 /* ---------- one book ---------- */
@@ -1204,9 +1357,11 @@ function bookView() {
   const fin = b.status === 'finished';
   const p = b.totalPages ? Math.min(1, b.page / b.totalPages) : 0;
   const leftPct = `calc(24px + (100% - 48px) * ${p})`;
-  return `<button class="backbtn" data-act="nav" data-v="shelf">← My Bookshelf</button>
+  const sr = b.seriesId && seriesOf(b.seriesId);
+  return `${backTo === 'series' && sr ? `<button class="backbtn" data-act="openSeries" data-id="${sr.id}">← ${esc(sr.name)}</button>` : '<button class="backbtn" data-act="nav" data-v="shelf">← My Bookshelf</button>'}
   <div class="bookhero">${coverHTML(b)}
     <div><h1>${esc(b.title)}</h1>${b.author ? `<div class="by">by ${esc(b.author)}</div>` : ''}
+    ${sr ? `<button class="link serline" data-act="openSeries" data-id="${sr.id}">📚 Book #${b.seriesNo || '?'} in ${esc(sr.name)}</button>` : ''}
     ${fin ? '<div class="fun" style="margin-top:10px;color:var(--green-d);font-size:19px">🏁 You finished it!</div>' : ''}</div></div>
 
   <div class="card" style="margin-top:20px">
@@ -1236,6 +1391,7 @@ function bookView() {
     <button class="btn white small" data-act="finishAsk" data-id="${b.id}">🏁 I finished it!</button></div>`}
     ${fin && (!b.chapters || (b.chPaid || 0) < b.chapters) ? `<button class="btn white small" data-act="chapAsk" data-id="${b.id}">📑 Add this book's chapters for stars</button>` : ''}
     ${fin ? '' : `<button class="btn white small" data-act="startOverAsk" data-id="${b.id}">🔄 Start this book over</button>`}
+    ${sr ? `<button class="btn white small" data-act="serBookAsk" data-id="${b.id}">📚 Change series number or remove</button>` : `<button class="btn white small" data-act="serJoinAsk" data-id="${b.id}">📚 Add to a series</button>`}
     <div style="text-align:center"><button class="link" data-act="editBook" data-id="${b.id}">Change name or picture</button>
     <button class="link" data-act="delBook" data-id="${b.id}">Take off my shelf</button></div>
   </div>`;
@@ -1438,9 +1594,10 @@ function unlocksView() {
     const status = !got ? `⭐ ${u.cost.toLocaleString()}` : u.kind === 'animal' ? (on ? '✓ Out walking' : 'Tap to bring out') : on ? '✓ Using it' : 'Tap to use';
     return `<button class="ucard ${got ? '' : 'locked'} ${on ? 'on' : ''}" data-act="pickUnlock" data-id="${u.id}">${got ? '' : '<span class="lock">🔒</span>'}${pic}<b>${u.n}</b><small>${status}</small></button>`;
   };
-  const tabs = `<div class="filters utabs" style="margin-top:18px">${[['animal', '🐾', 'Animals'], ['bg', '🖼️', 'Backgrounds'], ['mark', '🔖', 'Bookmarks']].map(([k, e, l]) =>
+  const tabs = `<div class="filters utabs" style="margin-top:18px">${[['animal', '🐾', 'Animals'], ['bg', '🖼️', 'Backgrounds'], ['mark', '🔖', 'Bookmarks'], ['glass', '💎', 'Glass']].map(([k, e, l]) =>
       `<button class="fchip ${unlockTab === k ? 'on' : ''}" data-act="unlockTab" data-k="${k}"><i>${e}</i>${l}</button>`).join('')}</div>`;
   if (unlockTab === 'mark') return marksView(have, tabs);
+  if (unlockTab === 'glass') return glassView(have, tabs);
   return `<div class="card nextup" style="margin-top:-12px;position:relative">
       ${unlockTab === 'animal' ? nextRow('Next animal', nextOf(ANIMALS), 'Every animal unlocked!') : nextRow('Next background', nextOf(BACKGROUNDS), 'Every background unlocked!')}
       <small style="color:var(--muted);display:block;text-align:center;margin-top:8px">⭐ ${have.toLocaleString()} stars earned all-time</small></div>
@@ -1450,6 +1607,22 @@ function unlocksView() {
       ? `Tap an animal to bring it out. It walks around on every page! Tap it again to send it home.${out ? ` <b>${out} out now.</b> <button class="link" data-act="petsAway" style="padding:0">Send them all home</button>` : ''}`
       : 'Tap a background to change how the whole app looks.'}</p>
     <div class="ugrid">${(unlockTab === 'animal' ? ANIMALS : BACKGROUNDS).map(card).join('')}</div>
+    <p class="hint" style="text-align:center;margin-top:16px">Unlocks count every star you've ever earned.<br>Getting a reward never takes them away!</p>`;
+}
+
+function glassView(have, tabs) {
+  const next = GLASS.find(t => have < t.cost);
+  return `<div class="card nextup" style="margin-top:-12px;position:relative">
+    ${next ? `<div class="nextrow"><span class="nicon"><span class="holder" style="display:block;width:40px;height:40px;padding:0;${glassStyle(next.id)}"></span></span><div style="flex:1;min-width:0">
+      <div class="fun nlabel">Next glass: ${next.n}</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:5px"><div class="bar"><i style="width:${Math.min(100, have / next.cost * 100)}%"></i></div>
+      <small style="color:var(--muted);white-space:nowrap">${(next.cost - have).toLocaleString()} more ⭐</small></div></div></div>`
+      : '<div class="nextrow"><span class="nicon">🏆</span><div style="flex:1;min-width:0"><div class="fun nlabel">Every glass color unlocked!</div></div></div>'}
+    <small style="color:var(--muted);display:block;text-align:center;margin-top:8px">⭐ ${have.toLocaleString()} stars earned all-time</small></div>
+    ${tabs}
+    <p class="hint" style="margin:0 2px 12px">Stained glass colors for the holders in your book series. Pick one when you make or change a series.</p>
+    <div class="ugrid">${GLASS.map(t => { const got = have >= t.cost;
+      return `<button class="ucard ${got ? '' : 'locked'}" data-act="glassInfo" data-id="${t.id}">${got ? '' : '<span class="lock">🔒</span>'}<div class="holder sw2" style="${glassStyle(t.id)}"></div><b>${t.n}</b><small>${got ? (t.cost ? 'Unlocked' : 'Always free') : `⭐ ${t.cost.toLocaleString()}`}</small></button>`; }).join('')}</div>
     <p class="hint" style="text-align:center;margin-top:16px">Unlocks count every star you've ever earned.<br>Getting a reward never takes them away!</p>`;
 }
 
@@ -1644,6 +1817,15 @@ function nextParty() {
 let toastT;
 function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2600); }
 
+// Series pickers: show the number box and fill in the next free number for the chosen series.
+function serNoFill(selId, noId, boxId) {
+  const v = $('#' + selId).value, box = $('#' + boxId);
+  if (box) box.style.display = v ? '' : 'none';
+  const nw = $('#serNewBox'); if (nw) nw.style.display = v === 'new' ? '' : 'none';
+  if (v && v !== 'new') $('#' + noId).value = nextNo(v); else if (v === 'new') $('#' + noId).value = 1;
+}
+let serTint = 'clear', serPick = null;
+
 /* ---------- add / edit a book ---------- */
 function openAdd(editId) {
   const b = editId && book(editId);
@@ -1683,6 +1865,10 @@ function renderAdd() {
       <div class="hint">${c.pages && !f.editId ? 'This is a guess from the internet. Check the last page of your book!' : 'Flip to the very last page and look at the number.'}</div>
       <label class="l">How many chapters?</label><input class="in" id="bChap" type="number" inputmode="numeric" value="${c.chapters || ''}" placeholder="Look at the list of chapters at the front">
       <div class="hint">Longer chapters are worth more stars!</div>
+      ${(S.series || []).length && !f.editId ? `<label class="l">Part of a series?</label>
+      <select class="in" id="bSer" onchange="serNoFill('bSer','bSerNo','bSerBox')"><option value="">No</option>${S.series.map(x => `<option value="${x.id}" ${c.ser === x.id ? 'selected' : ''}>${esc(x.name)}</option>`).join('')}</select>
+      <div id="bSerBox" style="${c.ser ? '' : 'display:none'}"><label class="l">What number book is it in the series?</label>
+      <input class="in" id="bSerNo" type="number" inputmode="numeric" min="1" value="${c.serNo || (c.ser ? nextNo(c.ser) : '')}" placeholder="e.g. 1 for book #1"></div>` : ''}
       ${f.editId ? '' : `<label class="l">What page are you on now?</label><input class="in" id="bStart" type="number" inputmode="numeric" value="0">
       <label class="l">How many chapters have you finished already?</label><input class="in" id="bChDone" type="number" inputmode="numeric" value="0">`}
       <button class="btn orange block" style="margin-top:20px" data-act="saveBook">${f.editId ? 'Save' : '📚 Put it on my shelf!'}</button>`);
@@ -1691,6 +1877,7 @@ function renderAdd() {
 function grabDetails() {
   if (!$('#bTitle')) return;
   Object.assign(addFlow.chosen, { title: $('#bTitle').value.trim(), author: $('#bAuthor').value.trim(), pages: parseInt($('#bPages').value) || 0, chapters: Math.max(0, parseInt($('#bChap').value) || 0) });
+  if ($('#bSer')) Object.assign(addFlow.chosen, { ser: $('#bSer').value, serNo: parseInt($('#bSerNo').value) || 0 });
 }
 async function doSearch() {
   const q = $('#q').value.trim();
@@ -1859,7 +2046,7 @@ function saveProgress() {
     if (ms.length) {
       b.msPaid = b.msPaid || {}; ms.forEach(q => b.msPaid[q] = 1);
       const bonus = ms.length * msStars(b), q = ms[ms.length - 1];
-      S.stars += bonus;
+      S.stars += bonus; S.extraEarned = (S.extraEarned || 0) + bonus;
       celebrate({ e: q === 50 ? '🚩' : q === 25 ? '🛰️' : '🌕', title: { 25: 'A quarter of the way!', 50: 'Halfway there!', 75: 'Three-quarters done!' }[q],
         text: `You're ${q === 50 ? 'half' : q === 25 ? 'a quarter of the' : 'three-quarters of the'} way through "${b.title}"!${chMsg ? ' ' + chMsg : ''} +${bonus} bonus stars!`, confetti: true, show: confetti });
     } else if (chMsg && (partyQueue.length || $('#party').classList.contains('open'))) celebrate({ e: '📑', title: 'Chapter done!', text: chMsg });
@@ -1881,7 +2068,7 @@ function finishBook(b, chEarlier = 0) {
   if (!b.startedAt) b.startedAt = startedOn(b) || Date.now();
   if (b.chapters) b.chDone = b.chapters;
   const chS = chEarlier + payChapters(b)[1], fs = finStars(b);
-  S.stars += fs;
+  S.stars += fs; S.extraEarned = (S.extraEarned || 0) + fs - 50;
   celebrate({ e: '🏆', title: 'You finished a book!', text: `"${b.title}" is DONE! That's ${finishedCount()} book${finishedCount() === 1 ? '' : 's'} finished. +${fs} stars!${chS ? ` And +${chS} ⭐ for chapters!` : ''}`, sound: 'book', show: cannons });
 }
 
@@ -2064,7 +2251,7 @@ const ACT = {
   },
   petsAway() { S.pets = []; save(); syncPets(); renderMain(); toast('Everyone went home for a nap 💤'); },
   watch() { startWatch(); },
-  openBook(el) { closeSheet(); currentBook = el.dataset.id; view = 'book'; render(); scrollTo(0, 0); },
+  openBook(el) { closeSheet(); backTo = view === 'series' ? 'series' : 'shelf'; currentBook = el.dataset.id; view = 'book'; render(); scrollTo(0, 0); },
   addBook() { openAdd(); },
   closeSheet,
   search: doSearch,
@@ -2097,6 +2284,10 @@ const ACT = {
       const b = { id: uid(), title: c.title, author: c.author, cover: c.cover, totalPages: c.pages, page: start, chapter: '', note: '',
         chapters: c.chapters, chDone: chd, chPaid: chd, msPaid: {}, startedAt: start > 0 ? Date.now() : null,
         status: 'reading', added: Date.now(), lastRead: null, secs: 0 };
+      if (c.ser && seriesOf(c.ser)) {
+        if (!(c.serNo >= 1)) return toast('What number book is it in the series?');
+        b.seriesId = c.ser; b.seriesNo = c.serNo;
+      }
       S.books.push(b); S.selBook = b.id;
       analyzeBook(b);
       toast('On your shelf! 📚');
@@ -2121,6 +2312,119 @@ const ACT = {
   cancelTimer() { if (confirm('Stop the timer without saving this time?')) { S.timer = null; save(); releaseWake(); render(); updateTimerUI(); } },
   updatePage(el) { openProgress(el.dataset.id); },
   chStep(el) { const i = $('#ch'); i.value = Math.max(0, (parseInt(i.value) || 0) + +el.dataset.n); },
+  openSeries(el) { closeSheet(); currentSeries = el.dataset.id; backTo = 'series'; view = 'series'; render(); scrollTo(0, 0); },
+  backSeries() { shelfFilter = 'series'; backTo = 'shelf'; view = 'shelf'; render(); scrollTo(0, 0); },
+  glassInfo(el) { const t = glassOf(el.dataset.id);
+    if (!glassOwned(t)) return toast(`Earn ${(t.cost - starsEarned()).toLocaleString()} more ⭐ to unlock ${t.n} glass!`);
+    toast(`Pick ${t.n} when you make or change a series 📚`); },
+  // make or change a series: name, how many books in the whole series, glass color
+  serEditAsk(el) {
+    const sr = el && el.dataset.id ? seriesOf(el.dataset.id) : null;
+    serTint = sr ? sr.tint || 'clear' : 'clear';
+    openSheet(`<button class="x" data-act="closeSheet">✕</button><h2>${sr ? 'Change series' : 'New series 📚'}</h2>
+      <label class="l">Series name</label><input class="in" id="srName" value="${esc(sr ? sr.name : '')}" placeholder="e.g. Dog Man" maxlength="60">
+      <label class="l">How many books are in the whole series?</label>
+      <input class="in" id="srTotal" type="number" inputmode="numeric" min="1" value="${sr && sr.total ? sr.total : ''}" placeholder="e.g. 12">
+      <div class="hint">Count every book in the series, even ones you don't have yet. Missing ones show as empty spots.</div>
+      <label class="l">Glass color for the book holders</label>
+      <div class="tints">${GLASS.map(t => { const got = glassOwned(t);
+        return `<button class="tint ${t.id === serTint ? 'sel' : ''} ${got ? '' : 'locked'}" data-act="serTintPick" data-id="${t.id}"><div class="holder" style="${glassStyle(t.id)}">${got ? '' : '🔒'}</div>${t.n}</button>`; }).join('')}</div>
+      <div class="hint">Win more glass colors with stars on the 🐾 Unlocks page.</div>
+      <button class="btn green block" style="margin-top:20px" data-act="serSave" data-id="${sr ? sr.id : ''}">💾 Save</button>
+      ${sr ? `<button class="btn white block" style="margin-top:10px" data-act="serDelete" data-id="${sr.id}">Delete this series</button>
+      <div class="hint" style="text-align:center">Deleting the series keeps all its books on your shelf.</div>` : ''}`);
+  },
+  serTintPick(el) {
+    const t = glassOf(el.dataset.id);
+    if (!glassOwned(t)) return toast(`Earn ${(t.cost - starsEarned()).toLocaleString()} more ⭐ to unlock ${t.n} glass!`);
+    serTint = t.id; document.querySelectorAll('.tint').forEach(x => x.classList.toggle('sel', x === el));
+  },
+  serSave(el) {
+    const name = $('#srName').value.trim(), total = Math.max(0, parseInt($('#srTotal').value) || 0);
+    if (!name) return toast('Give the series a name!');
+    let sr = el.dataset.id ? seriesOf(el.dataset.id) : null;
+    if (sr) Object.assign(sr, { name, total, tint: serTint });
+    else { sr = { id: uid(), name, total, tint: serTint, created: Date.now() }; (S.series ||= []).push(sr); }
+    const top = Math.max(0, ...seriesBooks(sr).map(b => b.seriesNo || 0));
+    if (total && top > total) { toast(`You have book #${top}, so the series has at least ${top} books.`); }
+    save(); closeSheet(); currentSeries = sr.id; backTo = 'series'; view = 'series'; render(); scrollTo(0, 0);
+  },
+  serDelete(el) {
+    const sr = seriesOf(el.dataset.id);
+    if (!confirm(`Delete the "${sr.name}" series? The books stay on your shelf.`)) return;
+    S.books.forEach(b => { if (b.seriesId === sr.id) { delete b.seriesId; delete b.seriesNo; } });
+    S.series = S.series.filter(x => x !== sr); save(); closeSheet(); shelfFilter = 'series'; view = 'shelf'; render(); toast('Series deleted. The books are still on your shelf.');
+  },
+  // add a book from the shelf to a series (or a brand new book)
+  serAddAsk(el) {
+    const sr = seriesOf(el.dataset.id), n = +el.dataset.n || nextNo(sr.id);
+    const pickFrom = [...S.books].filter(b => b.seriesId !== sr.id).sort(sortTitle);
+    serPick = null;
+    openSheet(`<button class="x" data-act="closeSheet">✕</button><h2>Add to ${esc(sr.name)}</h2>
+      ${pickFrom.length ? `<label class="l">Pick a book from your shelf</label>
+      <div class="picker">${pickFrom.map(b => `<button class="tile" data-act="serPickBook" data-id="${b.id}">${coverHTML(b)}<div class="t">${esc(b.title)}</div>${b.seriesId && seriesOf(b.seriesId) ? `<div class="pp">in ${esc(seriesOf(b.seriesId).name)}</div>` : ''}</button>`).join('')}</div>
+      <label class="l">What number book is it in the series?</label>
+      <input class="in" id="serNo" type="number" inputmode="numeric" min="1" value="${n}">
+      <button class="btn green block" style="margin-top:18px" data-act="serAddSave" data-id="${sr.id}">📚 Add it</button>` : '<p class="hint">All the books on your shelf are already in this series.</p>'}
+      <button class="btn white block" style="margin-top:10px" data-act="serAddNew" data-id="${sr.id}" data-n="${n}">＋ Add a new book to my shelf for this series</button>`);
+  },
+  serPickBook(el) { serPick = el.dataset.id; document.querySelectorAll('.picker .tile').forEach(t => t.classList.toggle('sel', t === el)); },
+  serAddSave(el) {
+    const sr = seriesOf(el.dataset.id), n = parseInt($('#serNo').value) || 0;
+    if (!serPick) return toast('Tap a book first!');
+    if (n < 1) return toast('What number book is it in the series?');
+    const b = book(serPick); b.seriesId = sr.id; b.seriesNo = n;
+   
+    save(); closeSheet(); render(); toast(`Added as book #${n}! 📚`);
+  },
+  serAddNew(el) {
+    closeSheet(); openAdd(); addFlow.chosen.ser = el.dataset.id; addFlow.chosen.serNo = +el.dataset.n || nextNo(el.dataset.id);
+  },
+  // put a book from its own page into a series (an existing one or a new one)
+  serJoinAsk(el) {
+    const b = book(el.dataset.id), list = S.series || [];
+    openSheet(`<button class="x" data-act="closeSheet">✕</button><h2>Add to a series 📚</h2><div class="hint" style="margin:0">${esc(b.title)}</div>
+      <label class="l">Which series?</label>
+      <select class="in" id="sjSer" onchange="serNoFill('sjSer','sjNo','sjBox')">${list.map(x => `<option value="${x.id}">${esc(x.name)}</option>`).join('')}<option value="new" ${list.length ? '' : 'selected'}>＋ Make a new series</option></select>
+      <div id="serNewBox" style="${list.length ? 'display:none' : ''}"><label class="l">New series name</label><input class="in" id="sjName" placeholder="e.g. Dog Man" maxlength="60">
+        <label class="l">How many books are in the whole series?</label><input class="in" id="sjTotal" type="number" inputmode="numeric" min="1" placeholder="e.g. 12"></div>
+      <div id="sjBox"><label class="l">What number book is it in the series?</label>
+      <input class="in" id="sjNo" type="number" inputmode="numeric" min="1" value="${list.length ? nextNo(list[0].id) : 1}"></div>
+      <button class="btn green block" style="margin-top:20px" data-act="serJoinSave" data-id="${b.id}">📚 Add it</button>`);
+  },
+  serJoinSave(el) {
+    const b = book(el.dataset.id), v = $('#sjSer').value, n = parseInt($('#sjNo').value) || 0;
+    if (n < 1) return toast('What number book is it in the series?');
+    let sr;
+    if (v === 'new') {
+      const name = $('#sjName').value.trim(); if (!name) return toast('Give the series a name!');
+      sr = { id: uid(), name, total: Math.max(0, parseInt($('#sjTotal').value) || 0), tint: 'clear', created: Date.now() }; (S.series ||= []).push(sr);
+    } else sr = seriesOf(v);
+    b.seriesId = sr.id; b.seriesNo = n;
+    save(); closeSheet(); render(); toast(`Book #${n} in ${sr.name}! 📚`);
+  },
+  // change a book's number, or take it out of its series
+  serBookAsk(el) {
+    const b = book(el.dataset.id), sr = seriesOf(b.seriesId);
+    openSheet(`<button class="x" data-act="closeSheet">✕</button><h2>${esc(b.title)}</h2><div class="hint" style="margin:0">In ${esc(sr.name)}</div>
+      <label class="l">What number book is it in the series?</label>
+      <div class="stepper"><button class="sb" data-act="serNoStep" data-n="-1">−1</button>
+        <input class="in" id="sbNo" type="number" inputmode="numeric" min="1" value="${b.seriesNo || 1}"><button class="sb" data-act="serNoStep" data-n="1">+1</button></div>
+      <button class="btn green block" style="margin-top:20px" data-act="serBookSave" data-id="${b.id}">💾 Save</button>
+      <button class="btn white block" style="margin-top:10px" data-act="serRemove" data-id="${b.id}">Take it out of this series</button>
+      <div class="hint" style="text-align:center">The book stays on your shelf.</div>`);
+  },
+  serNoStep(el) { const i = $('#sbNo'); i.value = Math.max(1, (parseInt(i.value) || 1) + +el.dataset.n); },
+  serBookSave(el) {
+    const b = book(el.dataset.id), sr = seriesOf(b.seriesId), n = parseInt($('#sbNo').value) || 0;
+    if (n < 1) return toast('Pick a number of 1 or more!');
+    b.seriesNo = n;
+    save(); closeSheet(); render(); toast(`Now book #${n}! ✏️`);
+  },
+  serRemove(el) {
+    const b = book(el.dataset.id), sr = seriesOf(b.seriesId);
+    delete b.seriesId; delete b.seriesNo; save(); closeSheet(); render(); toast(`Taken out of ${sr ? sr.name : 'the series'}.`);
+  },
   openCal() { calYear = new Date().getFullYear(); calMonth = new Date().getMonth(); view = 'calendar'; render(); scrollTo(0, 0); },
   calDay(el) { dayInfo(el.dataset.d); },
   calPick(el, e) { if (e && e.target.closest('[data-act="calDay"]')) return; calMonth = +el.dataset.m; render(); $('.calnav').scrollIntoView({ behavior: 'smooth' }); },
@@ -2290,7 +2594,7 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) naviga
 // ---------- staying up to date ----------
 // Phones often resume the app from memory instead of reloading it, so check for a newer
 // version whenever the app opens or comes back on screen, and reload into it.
-const APP_VERSION = 'rr-shell-v38';  // must match SHELL in sw.js
+const APP_VERSION = 'rr-shell-v39';  // must match SHELL in sw.js
 async function checkForUpdate() {
   if (!location.protocol.startsWith('http')) return;
   try {
