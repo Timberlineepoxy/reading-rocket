@@ -464,6 +464,40 @@ body.darkbg :is(.card,.stat,.badge,.ucard,.bmcard,.big-win,.fchip,.btn,.envbtn,n
 /* animals and backgrounds not won yet: still a little faded, but bright enough to see clearly through the glass */
 .ucard.locked .pic,.ucard.locked .e,.ucard.locked .sw{filter:grayscale(.45) brightness(1.08) drop-shadow(0 0 3px rgba(255,255,255,.75));opacity:.85}
 body.darkbg .ucard.locked .pic,body.darkbg .ucard.locked .e,body.darkbg .ucard.locked .sw{filter:grayscale(.35) brightness(1.2) drop-shadow(0 0 4px rgba(255,255,255,.55));opacity:.9}
+/* reading plan, dates, calendar */
+.plan{margin-top:14px;border-radius:16px;padding:12px 14px;background:rgba(255,255,255,.18);box-shadow:var(--rim)}
+.plan .big{font-family:'Fredoka';font-size:30px;font-weight:600;line-height:1.1}
+.plan .big small{font-size:16px;font-weight:500}
+.plan p{margin:4px 0 0;font-size:14px;line-height:1.4}
+.plan .ok{color:var(--green-d)} body.darkbg .plan .ok{color:#7CF0A8}
+.plan .link{margin-top:6px;padding:0}
+.tile .plan-pp{font-size:12px;margin-top:2px;font-weight:700;color:var(--purple)} body.darkbg .tile .plan-pp{color:#E4D9FF}
+.weekcard{cursor:pointer}
+.weekcard .tap{text-align:center;font-size:13px;color:var(--muted);margin-top:8px}
+.calnav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:18px 0 10px}
+.calnav h2{margin:0;font-size:22px}
+.calnav .sb{width:44px;height:44px;border-radius:14px;border:0;font-size:20px;cursor:pointer;color:var(--ink);background:linear-gradient(180deg,rgba(255,255,255,.24),rgba(255,255,255,.02) 65%);box-shadow:var(--rim)}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal .h{font-size:10px;text-align:center;color:var(--muted);font-weight:700}
+.cal button{aspect-ratio:1;border:0;border-radius:7px;font-size:11px;padding:0;background:rgba(255,255,255,.3);color:var(--ink);cursor:pointer;font-family:inherit}
+.cal button.read{background:#C9BCF7;color:#2B2250}
+.cal button.goal{background:var(--green);color:#fff;font-weight:700}
+.cal button.today{outline:2px solid var(--orange);outline-offset:-2px}
+.cal button.future{opacity:.4}
+.cal.big{gap:6px}
+.cal.big .h{font-size:12px}
+.cal.big button{border-radius:12px;font-size:15px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+.cal.big button i{font-style:normal;font-size:9px;font-weight:600;opacity:.85;margin-top:2px}
+.calkey{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--muted);margin-top:10px}
+.calkey span::before{content:'';display:inline-block;width:12px;height:12px;border-radius:4px;margin-right:5px;vertical-align:-2px;background:var(--c)}
+.months{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:12px}
+.mon{padding:12px;cursor:pointer}
+.mon.sel{outline:3px solid var(--orange);outline-offset:-3px}
+.mon h3{margin:0 0 6px;font-size:16px}
+.mon .tot{font-size:11.5px;color:var(--muted);margin-top:6px;line-height:1.35}
+.daylist{display:grid;gap:8px;margin-top:12px}
+.daylist div{display:flex;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:14px;background:#F7F2FF}
+.daylist b{font-family:'Fredoka';font-weight:600}
 </style>
 </head>
 <body>
@@ -493,7 +527,7 @@ body.darkbg .ucard.locked .pic,body.darkbg .ucard.locked .e,body.darkbg .ucard.l
 const KEY = 'readingRocket.v1';
 const DEFAULTS = {
   name: 'Reader', goal: 20, books: [], sessions: [], goalDays: {}, badges: {},
-  stars: 0, pagesRead: 0, chaptersRead: 0, rereads: 0, rewardsGiven: 0, unlocked: {}, bg: 'cream', pets: [], reward: { text: '', cost: 0 }, timer: null, selBook: null, chimed: '', bonusDone: {}, marks: {}, sfx: { goal: 'popper', bonus: 'fireworks', book: 'applause' }
+  stars: 0, pagesRead: 0, chaptersRead: 0, pageLog: {}, rereads: 0, rewardsGiven: 0, unlocked: {}, bg: 'cream', pets: [], reward: { text: '', cost: 0 }, timer: null, selBook: null, chimed: '', bonusDone: {}, marks: {}, sfx: { goal: 'popper', bonus: 'fireworks', book: 'applause' }
 };
 let S = load();
 let view = 'shelf', currentBook = null, shelfFilter = 'all', parentOK = false, unlockTab = 'animal';
@@ -590,6 +624,59 @@ function bestStreak() {
   for (const d of days) { run = prev && addDays(prev, 1) === d ? run + 1 : 1; best = Math.max(best, run); prev = d; }
   return best;
 }
+/* ---------- reading plan ----------
+   How fast he reads (pages a minute): this book's reading times first, then all reading, then a guess of 1 page a minute.
+   Times shorter than a minute or with no pages are skipped; we need at least 5 minutes of reading to trust it. */
+function pace(b) {
+  const rate = list => { let pg = 0, sec = 0; for (const x of list) if (x.secs >= 60 && pagesOf(x) > 0) { pg += pagesOf(x); sec += x.secs; } return sec >= 300 ? pg / (sec / 60) : 0; };
+  return (b && rate(S.sessions.filter(x => x.bookId === b.id))) || rate(S.sessions) || 1;
+}
+const daysBetween = (a, z) => Math.round((keyToDate(z) - keyToDate(a)) / 864e5);
+const fullDate = ms => new Date(ms).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+const keyDate = (k, o = { weekday: 'short', month: 'short', day: 'numeric' }) => keyToDate(k).toLocaleDateString(undefined, o);
+// The plan for a book: pages his daily goal covers, when that finishes it, and (with a finish-by date) pages a day needed.
+// Worked out fresh every time it is shown, so changing the daily goal changes it straight away.
+function plan(b) {
+  if (b.status === 'finished' || !b.totalPages) return null;
+  const left = Math.max(0, b.totalPages - b.page), pm = pace(b), today = dayKey();
+  const perGoal = Math.max(1, Math.round(S.goal * pm)), daysAtGoal = Math.max(1, Math.ceil(left / perGoal));
+  const r = { left, pm, perGoal, daysAtGoal, doneBy: addDays(today, daysAtGoal - 1), need: null, daysLeft: null, late: false };
+  if (b.due) {
+    if (b.due < today) r.late = true;
+    else { r.daysLeft = daysBetween(today, b.due) + 1; r.need = Math.max(1, Math.ceil(left / r.daysLeft)); r.needMin = Math.ceil(r.need / pm); }
+  }
+  return r;
+}
+// The day he started a book: saved when he first reads it; older books use their first reading time.
+function startedOn(b) {
+  if (b.startedAt) return b.startedAt;
+  const t = S.sessions.filter(x => x.bookId === b.id && x.start >= (b.resetAt || 0)).map(x => x.start);
+  return t.length ? Math.min(...t) : (b.page > 0 || b.status === 'finished' ? b.added : null);
+}
+// Pages from "Update my page" without the timer, kept by day so the calendar can count them.
+const logPages = n => { if (n > 0) { const d = dayKey(); S.pageLog = S.pageLog || {}; S.pageLog[d] = (S.pageLog[d] || 0) + n; } };
+// Minutes and pages for every day, plus which books.
+function dayStats() {
+  const m = {}, g = d => m[d] ||= { secs: 0, pages: 0, books: {} };
+  for (const x of S.sessions) {
+    const o = g(x.day), bb = o.books[x.bookId] ||= { secs: 0, pages: 0 };
+    o.secs += x.secs; o.pages += pagesOf(x); bb.secs += x.secs; bb.pages += pagesOf(x);
+  }
+  for (const [d, n] of Object.entries(S.pageLog || {})) g(d).pages += n;
+  if (S.timer) g(S.timer.day).secs += timerMs() / 1000;
+  return m;
+}
+const hitGoal = (d, o) => !!S.goalDays[d] || (!!o && o.secs / 60 >= S.goal);
+// The first day he used the app: days before it don't count as missed goals.
+const firstUse = () => [...S.sessions.map(x => x.day), ...S.books.filter(b => b.added).map(b => dayKey(new Date(b.added)))].sort()[0] || dayKey();
+function sumDays(M, from, to) {
+  const r = { secs: 0, pages: 0, goals: 0, days: 0, n: 0 }, fu = firstUse();
+  if (from < fu) from = fu;
+  for (let d = from; d <= to; d = addDays(d, 1)) { const o = M[d]; r.n++; if (o) { r.secs += o.secs; r.pages += o.pages; if (o.secs >= 30 || o.pages) r.days++; } if (hitGoal(d, o)) r.goals++; }
+  return r;
+}
+const monthKey = (y, m) => `${y}-${pad(m + 1)}-01`;
+const monthEnd = (y, m) => `${y}-${pad(m + 1)}-${pad(new Date(y, m + 1, 0).getDate())}`;
 const totalSecs = () => S.sessions.reduce((a, x) => a + x.secs, 0);
 const finishedCount = () => S.books.filter(b => b.status === 'finished').length;
 
@@ -1034,7 +1121,7 @@ function render() { applyTheme(); renderHeader(); renderMain(); renderNav(); }
 function renderHeader() {
   const st = streak();
   const sub = { shelf: 'Ready for a reading adventure?', book: 'Let\'s see how far you got!', read: 'Find a cozy spot 📖',
-    trophies: 'Look at everything you did!', unlocks: 'Pick friends to walk with you 🐾', parent: 'Grown-up corner' }[view];
+    trophies: 'Look at everything you did!', calendar: 'Your reading calendar 📅', unlocks: 'Pick friends to walk with you 🐾', parent: 'Grown-up corner' }[view];
   $('#hdr').innerHTML = `<div class="top">
     <div class="hi">Hi, ${esc(S.name)}! <small>${sub}</small></div>
     <div class="chips"><span class="chip" title="Days in a row">🔥 ${st}</span><span class="chip" title="Stars">⭐ ${S.stars}</span>
@@ -1045,7 +1132,7 @@ function renderNav() {
   const items = [['shelf', '📚', 'My Books'], ['read', '⏱️', 'Read!'], ['trophies', '🏆', 'Trophies'], ['unlocks', '🐾', 'Unlocks']];
   const running = S.timer && S.timer.startedAt;
   $('#nav').innerHTML = items.map(([v, ic, label]) =>
-    `<button data-act="nav" data-v="${v}" class="${view === v || (view === 'book' && v === 'shelf') ? 'on' : ''}"><span class="ic">${ic}</span><span>${label}${(v === 'read' && running) || (v === 'unlocks' && unopened().length) ? '<i class="dot"></i>' : ''}</span></button>`).join('');
+    `<button data-act="nav" data-v="${v}" class="${view === v || (view === 'book' && v === 'shelf') || (view === 'calendar' && v === 'trophies') ? 'on' : ''}"><span class="ic">${ic}</span><span>${label}${(v === 'read' && running) || (v === 'unlocks' && unopened().length) ? '<i class="dot"></i>' : ''}</span></button>`).join('');
 }
 
 function renderMain() {
@@ -1054,6 +1141,7 @@ function renderMain() {
   else if (view === 'book') m.innerHTML = bookView();
   else if (view === 'read') m.innerHTML = readView();
   else if (view === 'trophies') m.innerHTML = trophiesView();
+  else if (view === 'calendar') m.innerHTML = calendarView();
   else if (view === 'unlocks') m.innerHTML = unlocksView();
   else if (view === 'parent') m.innerHTML = parentView();
 }
@@ -1105,7 +1193,8 @@ function tileHTML(b) {
   const p = b.totalPages ? Math.min(1, b.page / b.totalPages) : 0;
   return `<button class="tile" data-act="openBook" data-id="${b.id}"><span class="peek">${RRBM.svg(bookSpec(b), 20, 'still')}</span>${coverHTML(b, fin ? '<span class="ribbon">DONE!</span>' : '')}
     <div class="t">${esc(b.title)}</div>
-    ${fin ? '<div class="pp">⭐ Finished</div>' : `<div class="pbar"><i style="width:${p * 100}%"></i></div><div class="pp">${b.totalPages ? `Page ${b.page} of ${b.totalPages}` : `Page ${b.page}`}</div>`}</button>`;
+    ${fin ? '<div class="pp">⭐ Finished</div>' : `<div class="pbar"><i style="width:${p * 100}%"></i></div><div class="pp">${b.totalPages ? `Page ${b.page} of ${b.totalPages}` : `Page ${b.page}`}</div>`}
+    ${(pl => pl && pl.left ? `<div class="plan-pp">📖 ${pl.need ?? pl.perGoal} pages a day</div>` : '')(plan(b))}</button>`;
 }
 
 /* ---------- one book ---------- */
@@ -1128,11 +1217,14 @@ function bookView() {
     ${b.totalPages && !fin ? `<div style="text-align:center;color:var(--muted);margin-top:4px">${Math.round(p * 100)}% of the way · ${Math.max(0, b.totalPages - b.page)} pages to go</div>` : ''}
     ${!b.totalPages && !fin ? `<div style="text-align:center;color:var(--muted);margin-top:4px">How many pages is it? Tap <b>Update my page</b> to add it.</div>` : ''}
     <div class="facts">
+      <div class="fact"><small>📅 Started</small><b>${startedOn(b) ? fullDate(startedOn(b)) : 'Not started yet'}</b></div>
+      <div class="fact"><small>🏁 Finished</small><b>${fin && b.finishedAt ? fullDate(b.finishedAt) : fin ? 'Finished' : 'In progress'}</b></div>
       <div class="fact"><small>Chapters done</small><b>${b.chDone ? b.chDone + (b.chapters ? ` of ${b.chapters}` : '') : b.chapter ? esc(b.chapter) : b.chapters ? `0 of ${b.chapters}` : '—'}</b></div>
       <div class="fact"><small>Last read</small><b>${niceDate(b.lastRead)}</b></div>
       <div class="fact"><small>Time in this book</small><b>${fmtMin(b.secs || 0)}</b></div>
       <div class="fact"><small>Reading times</small><b>${S.sessions.filter(s => s.bookId === b.id && s.start >= (b.resetAt || 0)).length}</b></div>
     </div>
+    ${planHTML(b)}
     ${b.note ? `<div class="note">📍 <b>Where I stopped:</b> ${esc(b.note)}</div>` : ''}
   </div>
   ${bookmarkCard(b)}
@@ -1147,6 +1239,84 @@ function bookView() {
     <div style="text-align:center"><button class="link" data-act="editBook" data-id="${b.id}">Change name or picture</button>
     <button class="link" data-act="delBook" data-id="${b.id}">Take off my shelf</button></div>
   </div>`;
+}
+
+function planHTML(b) {
+  const pl = plan(b);
+  if (!pl || !pl.left) return '';
+  const g = `${S.goal}-minute goal`, pm = pl.pm < 1 ? pl.pm.toFixed(1) : (Math.round(pl.pm * 10) / 10);
+  const dueBtn = `<button class="link" data-act="dueAsk" data-id="${b.id}">📅 ${b.due ? 'Change the finish-by date' : 'Pick a finish-by date'}</button>`;
+  if (pl.need) {
+    const ok = pl.perGoal >= pl.need;
+    return `<div class="plan"><div class="big">${pl.need} <small>pages a day</small></div>
+      <p>to finish by <b>${keyDate(b.due, { weekday: 'short', month: 'short', day: 'numeric' })}</b> (${pl.daysLeft} day${pl.daysLeft === 1 ? '' : 's'} left, ${pl.left} pages to go).</p>
+      <p>${ok ? `<span class="ok">✅ Your ${g} is about ${pl.perGoal} pages a day, so you're on track!</span>`
+        : `Your ${g} is about ${pl.perGoal} pages a day. Read about <b>${pl.needMin} minutes</b> a day to make it.`}</p>
+      ${dueBtn}</div>`;
+  }
+  return `<div class="plan"><div class="big">${pl.perGoal} <small>pages a day</small></div>
+    <p>That's about how many pages your ${g} covers (you read about ${pm} page${pm == 1 ? '' : 's'} a minute).</p>
+    <p>${pl.late ? 'Your finish-by date has passed. Pick a new one! ' : ''}At that speed you'll finish in <b>${pl.daysAtGoal} day${pl.daysAtGoal === 1 ? '' : 's'}</b>, around ${keyDate(pl.doneBy)}.</p>
+    ${dueBtn}</div>`;
+}
+
+/* ---------- calendar ---------- */
+let calYear = new Date().getFullYear(), calMonth = new Date().getMonth();
+function monthGrid(y, m, M, big) {
+  const today = dayKey(), first = new Date(y, m, 1), off = (first.getDay() + 6) % 7, n = new Date(y, m + 1, 0).getDate();
+  let h = ['M', 'T', 'W', 'T', 'F', 'S', 'S'].map(d => `<span class="h">${d}</span>`).join('') + '<span></span>'.repeat(off);
+  for (let i = 1; i <= n; i++) {
+    const d = `${y}-${pad(m + 1)}-${pad(i)}`, o = M[d];
+    const cls = [hitGoal(d, o) ? 'goal' : o && (o.secs >= 30 || o.pages) ? 'read' : '', d === today ? 'today' : '', d > today ? 'future' : ''].join(' ');
+    h += `<button class="${cls}" data-act="calDay" data-d="${d}">${i}${big && o && o.secs >= 60 ? `<i>${Math.round(o.secs / 60)}m</i>` : ''}</button>`;
+  }
+  return `<div class="cal${big ? ' big' : ''}">${h}</div>`;
+}
+const totLine = t => `⏱️ ${fmtMin(t.secs)} · 📄 ${t.pages.toLocaleString()} pages · 🎯 ${t.goals} goal day${t.goals === 1 ? '' : 's'}`;
+function calendarView() {
+  const M = dayStats(), today = dayKey(), y = calYear, ty = new Date().getFullYear();
+  const first = Math.min(ty, ...S.sessions.map(x => +x.day.slice(0, 4)));
+  const box = (e, label, t, of) => `<div class="stat"><span class="e">${e}</span><small style="display:block;font-weight:700">${label}</small>
+    <b style="font-size:22px">${fmtMin(t.secs)}</b><small style="display:block">📄 ${t.pages.toLocaleString()} pages<br>🎯 goal ${t.goals} of ${of} day${of === 1 ? '' : 's'}</small></div>`;
+  const wk = sumDays(M, weekOf(today), today), mo = sumDays(M, today.slice(0, 8) + '01', today), yr = sumDays(M, today.slice(0, 5) + '01-01', today), td = sumDays(M, today, today);
+  const ms = monthKey(y, calMonth), me = monthEnd(y, calMonth), mt = sumDays(M, ms, me < today ? me : today);
+  const yt = sumDays(M, `${y}-01-01`, `${y}-12-31` < today ? `${y}-12-31` : today);
+  return `<button class="backbtn" data-act="nav" data-v="trophies">← Trophies</button>
+  <div class="stats" style="margin-top:8px">${box('☀️', 'Today', td, 1)}${box('📆', 'This week', wk, wk.n)}${box('🗓️', 'This month', mo, mo.n)}${box('🌟', 'This year', yr, yr.n)}</div>
+
+  <div class="calnav"><button class="sb" data-act="calMonth" data-n="-1" aria-label="Last month">‹</button>
+    <h2>${new Date(y, calMonth, 1).toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}</h2>
+    <button class="sb" data-act="calMonth" data-n="1" aria-label="Next month">›</button></div>
+  <div class="card">${monthGrid(y, calMonth, M, true)}
+    <div class="calkey"><span style="--c:var(--green)">Hit my goal</span><span style="--c:#C9BCF7">Read</span><span style="--c:transparent;outline:0">Tap a day to see it</span></div>
+    <div class="tot" style="margin-top:10px;color:var(--muted);font-size:14px">${totLine(mt)}</div></div>
+
+  <div class="calnav"><button class="sb" data-act="calYear" data-n="-1" aria-label="Last year" ${y <= first ? 'disabled style="opacity:.3"' : ''}>‹</button>
+    <h2>All of ${y}</h2>
+    <button class="sb" data-act="calYear" data-n="1" aria-label="Next year" ${y >= ty ? 'disabled style="opacity:.3"' : ''}>›</button></div>
+  <div class="card" style="margin-bottom:10px"><div class="tot" style="color:var(--muted);font-size:14px">${totLine(yt)}</div></div>
+  <div class="months">${[...Array(12)].map((_, m) => {
+    const a = monthKey(y, m), z = monthEnd(y, m), t = a > today ? null : sumDays(M, a, z < today ? z : today);
+    return `<div class="card mon${m === calMonth ? ' sel' : ''}" data-act="calPick" data-m="${m}"><h3>${new Date(y, m, 1).toLocaleDateString(undefined, { month: 'long' })}</h3>
+      ${monthGrid(y, m, M, false)}<div class="tot">${t ? `⏱️ ${fmtMin(t.secs)}<br>📄 ${t.pages} pages · 🎯 ${t.goals} days` : 'Coming up'}</div></div>`;
+  }).join('')}</div>`;
+}
+function dayInfo(d) {
+  const M = dayStats(), o = M[d] || { secs: 0, pages: 0, books: {} }, today = dayKey(), hit = hitGoal(d, M[d]);
+  const wk = sumDays(M, weekOf(d), addDays(weekOf(d), 6) < today ? addDays(weekOf(d), 6) : today);
+  const mo = sumDays(M, d.slice(0, 8) + '01', monthEnd(+d.slice(0, 4), +d.slice(5, 7) - 1) < today ? monthEnd(+d.slice(0, 4), +d.slice(5, 7) - 1) : today);
+  const books = Object.entries(o.books).map(([id, x]) => { const b = book(id); return `<div><span>${esc(b ? b.title : 'A book')}</span><b>${fmtMin(x.secs)} · ${x.pages} pg</b></div>`; }).join('');
+  const goalTxt = d > today ? 'Not here yet' : hit ? '✅ Yes!' : d === today ? 'Not yet today' : '❌ No';
+  openSheet(`<button class="x" data-act="closeSheet">✕</button><h2>${keyDate(d, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</h2>
+    <div class="facts">
+      <div class="fact"><small>⏱️ Minutes read</small><b>${Math.round(o.secs / 60)}</b></div>
+      <div class="fact"><small>📄 Pages read</small><b>${o.pages}</b></div>
+      <div class="fact" style="grid-column:1/-1"><small>🎯 Hit my ${S.goal}-minute goal?</small><b>${goalTxt}</b></div>
+    </div>
+    ${books ? `<label class="l">Books read</label><div class="daylist">${books}</div>` : ''}
+    <label class="l">That week</label><div class="hint" style="margin:0">${totLine(wk)}</div>
+    <label class="l">That month</label><div class="hint" style="margin:0">${totLine(mo)}</div>
+    <button class="btn white block" style="margin-top:18px" data-act="closeSheet">Close</button>`);
 }
 
 /* ---------- timer ---------- */
@@ -1220,13 +1390,13 @@ function trophiesView() {
     <button class="stat wide" data-act="nav" data-v="unlocks"><span class="e">🐾</span><span><b style="font-size:22px">My Unlocks</b>
       <small>${ANIMALS.filter(a => S.unlocked[a.id]).length} animal friends · ${UNLOCKS.filter(u => S.unlocked[u.id]).length} of ${UNLOCKS.length} unlocked</small></span></button></div>
 
-  <div class="sectionhead"><h2>This week</h2></div>
-  <div class="card"><div class="week">
+  <div class="sectionhead"><h2>This week</h2><button class="link" data-act="openCal">📅 Calendar</button></div>
+  <div class="card weekcard" data-act="openCal"><div class="week">
     <div class="goalline" style="bottom:${(S.goal / top) * 120 + 22}px"><span>goal ${S.goal} min</span></div>
     ${days.map((d, i) => `<div class="col"><span class="m">${mins[i] >= 1 ? Math.round(mins[i]) : ''}</span>
       <div class="b ${S.goalDays[d] || mins[i] >= S.goal ? 'met' : ''}" style="height:${(mins[i] / top) * 120}px"></div>
       <span class="d ${d === today ? 'today' : ''}">${d === today ? 'Today' : dayName(d)}</span></div>`).join('')}
-  </div></div>
+  </div><div class="tap">📅 Tap to see every day, week and month</div></div>
 
   <div class="sectionhead"><h2>Badges</h2><span style="color:var(--muted)">${earned} of ${BADGES.length}</span></div>
   ${BADGE_GROUPS.map(([c, label]) => {
@@ -1658,6 +1828,8 @@ function saveProgress() {
   if (b.totalPages) pg = Math.min(pg, b.totalPages);
   const prev = b.page;
   if (pg > prev) S.pagesRead += pg - prev;
+  if (pg > prev && ctx.secs == null) logPages(pg - prev);
+  if (!b.startedAt && (pg > prev || ctx.secs != null)) b.startedAt = startedOn(b) || ctx.start || Date.now();
   b.chapters = Math.max(0, parseInt($('#tch').value) || 0);
   b.chDone = Math.max(0, parseInt($('#ch').value) || 0);
   if (b.chapters) b.chDone = Math.min(b.chDone, b.chapters);
@@ -1705,7 +1877,8 @@ function payFinishedChapters(b) {
 }
 function finishBook(b, chEarlier = 0) {
   b.status = 'finished'; b.finishedAt = Date.now();
-  if (b.totalPages) { if (b.page < b.totalPages) S.pagesRead += b.totalPages - b.page; b.page = b.totalPages; }
+  if (b.totalPages) { if (b.page < b.totalPages) { S.pagesRead += b.totalPages - b.page; logPages(b.totalPages - b.page); } b.page = b.totalPages; }
+  if (!b.startedAt) b.startedAt = startedOn(b) || Date.now();
   if (b.chapters) b.chDone = b.chapters;
   const chS = chEarlier + payChapters(b)[1], fs = finStars(b);
   S.stars += fs;
@@ -1922,7 +2095,7 @@ const ACT = {
       let chd = Math.max(0, parseInt($('#bChDone').value) || 0);
       if (c.chapters) chd = Math.min(chd, c.chapters);
       const b = { id: uid(), title: c.title, author: c.author, cover: c.cover, totalPages: c.pages, page: start, chapter: '', note: '',
-        chapters: c.chapters, chDone: chd, chPaid: chd, msPaid: {},
+        chapters: c.chapters, chDone: chd, chPaid: chd, msPaid: {}, startedAt: start > 0 ? Date.now() : null,
         status: 'reading', added: Date.now(), lastRead: null, secs: 0 };
       S.books.push(b); S.selBook = b.id;
       analyzeBook(b);
@@ -1948,6 +2121,33 @@ const ACT = {
   cancelTimer() { if (confirm('Stop the timer without saving this time?')) { S.timer = null; save(); releaseWake(); render(); updateTimerUI(); } },
   updatePage(el) { openProgress(el.dataset.id); },
   chStep(el) { const i = $('#ch'); i.value = Math.max(0, (parseInt(i.value) || 0) + +el.dataset.n); },
+  openCal() { calYear = new Date().getFullYear(); calMonth = new Date().getMonth(); view = 'calendar'; render(); scrollTo(0, 0); },
+  calDay(el) { dayInfo(el.dataset.d); },
+  calPick(el, e) { if (e && e.target.closest('[data-act="calDay"]')) return; calMonth = +el.dataset.m; render(); $('.calnav').scrollIntoView({ behavior: 'smooth' }); },
+  calMonth(el) {
+    let m = calMonth + +el.dataset.n, y = calYear;
+    if (m < 0) { m = 11; y--; } if (m > 11) { m = 0; y++; }
+    const now = new Date();
+    if (y > now.getFullYear() || (y === now.getFullYear() && m > now.getMonth() + 1)) return;
+    calYear = y; calMonth = m; render();
+  },
+  calYear(el) { const ty = new Date().getFullYear(); calYear = Math.min(ty, calYear + +el.dataset.n); if (calYear === ty) calMonth = new Date().getMonth(); render(); },
+  dueAsk(el) {
+    const b = book(el.dataset.id);
+    openSheet(`<button class="x" data-act="closeSheet">✕</button><h2>Finish by when? 📅</h2><div class="hint" style="margin:0">${esc(b.title)}</div>
+      <label class="l">Pick the day you want to finish</label>
+      <input class="in" id="due" type="date" min="${dayKey()}" value="${b.due && b.due >= dayKey() ? b.due : ''}">
+      <div class="hint">We'll work out how many pages a day you need.</div>
+      <button class="btn green block" style="margin-top:20px" data-act="dueSave" data-id="${b.id}">💾 Save</button>
+      ${b.due ? `<button class="btn white block" style="margin-top:10px" data-act="dueClear" data-id="${b.id}">No finish-by date</button>` : ''}`);
+  },
+  dueSave(el) {
+    const v = $('#due').value;
+    if (!v) return toast('Pick a day first!');
+    if (v < dayKey()) return toast('Pick today or a day after!');
+    book(el.dataset.id).due = v; save(); closeSheet(); render(); toast('Plan made! 📅');
+  },
+  dueClear(el) { book(el.dataset.id).due = null; save(); closeSheet(); render(); },
   chapAsk(el) {
     const b = book(el.dataset.id);
     openSheet(`<button class="x" data-act="closeSheet">✕</button><h2>How many chapters? 📑</h2><div class="hint" style="margin:0">${esc(b.title)}</div>
@@ -1982,7 +2182,7 @@ const ACT = {
   startOver(el) {
     const b = book(el.dataset.id);
     if (b.status === 'finished') S.rereads = (S.rereads || 0) + 1;
-    Object.assign(b, { status: 'reading', page: 0, chapter: '', chDone: 0, chPaid: 0, msPaid: {}, note: '', secs: 0, lastRead: null, finishedAt: null, resetAt: Date.now() });
+    Object.assign(b, { status: 'reading', page: 0, chapter: '', chDone: 0, chPaid: 0, msPaid: {}, startedAt: null, due: null, note: '', secs: 0, lastRead: null, finishedAt: null, resetAt: Date.now() });
     save(); closeSheet(); render(); scrollTo(0, 0); toast('Back to page 0. Here we go! 🚀');
   },
   editBook(el) { openAdd(el.dataset.id); },
@@ -2090,7 +2290,7 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) naviga
 // ---------- staying up to date ----------
 // Phones often resume the app from memory instead of reloading it, so check for a newer
 // version whenever the app opens or comes back on screen, and reload into it.
-const APP_VERSION = 'rr-shell-v37';  // must match SHELL in sw.js
+const APP_VERSION = 'rr-shell-v38';  // must match SHELL in sw.js
 async function checkForUpdate() {
   if (!location.protocol.startsWith('http')) return;
   try {
