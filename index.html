@@ -713,9 +713,11 @@ function plan(b) {
 }
 // The day he started a book: saved when he first reads it; older books use their first reading time.
 function startedOn(b) {
+  // A book only counts as started once a page has been read: opening the timer and changing your mind doesn't count.
+  if (b.status !== 'finished' && !(b.page > 0)) return null;
   if (b.startedAt) return b.startedAt;
-  const t = S.sessions.filter(x => x.bookId === b.id && x.start >= (b.resetAt || 0)).map(x => x.start);
-  return t.length ? Math.min(...t) : (b.page > 0 || b.status === 'finished' ? b.added : null);
+  const t = S.sessions.filter(x => x.bookId === b.id && x.start >= (b.resetAt || 0) && pagesOf(x) > 0).map(x => x.start);
+  return t.length ? Math.min(...t) : b.added;
 }
 // Pages from "Update my page" without the timer, kept by day so the calendar can count them.
 const logPages = n => { if (n > 0) { const d = dayKey(); S.pageLog = S.pageLog || {}; S.pageLog[d] = (S.pageLog[d] || 0) + n; } };
@@ -1083,6 +1085,17 @@ if (!S.extraFix) {
     if (b.status === 'finished' && b.finishedAt >= new Date(2026, 10, 15).getTime()) extra += finStars(b) - 50; }
   if (ch) extra += Math.round(w * (S.chaptersRead || 0) / ch);
   S.extraEarned = (S.extraEarned || 0) + extra; S.extraFix = 1; save();
+}
+// Start dates that came from a reading time with no pages read are moved to the first real page.
+if (!S.startFix) {
+  for (const b of S.books) {
+    if (!b.startedAt) continue;
+    const z = S.sessions.find(x => x.bookId === b.id && x.start === b.startedAt && pagesOf(x) === 0);
+    if (!z) continue;
+    const t = S.sessions.filter(x => x.bookId === b.id && x.start >= (b.resetAt || 0) && pagesOf(x) > 0).map(x => x.start);
+    b.startedAt = t.length ? Math.min(...t) : null;
+  }
+  S.startFix = 1; save();
 }
 function checkUnlocks() {
   S.unlocked ||= {};
@@ -2147,7 +2160,7 @@ function saveProgress() {
   const prev = b.page;
   if (pg > prev) S.pagesRead += pg - prev;
   if (pg > prev && ctx.secs == null) logPages(pg - prev);
-  if (!b.startedAt && (pg > prev || ctx.secs != null)) b.startedAt = startedOn(b) || ctx.start || Date.now();
+  if (!b.startedAt && pg > prev && pg > 0) b.startedAt = ctx.start || Date.now();
   if ($('#tch')) {
     b.chapters = Math.max(0, parseInt($('#tch').value) || 0);
     b.chDone = Math.max(0, parseInt($('#ch').value) || 0);
@@ -2736,7 +2749,7 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) naviga
 // ---------- staying up to date ----------
 // Phones often resume the app from memory instead of reloading it, so check for a newer
 // version whenever the app opens or comes back on screen, and reload into it.
-const APP_VERSION = 'rr-shell-v40';  // must match SHELL in sw.js
+const APP_VERSION = 'rr-shell-v41';  // must match SHELL in sw.js
 async function checkForUpdate() {
   if (!location.protocol.startsWith('http')) return;
   try {
