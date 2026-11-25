@@ -562,6 +562,63 @@ body.darkbg .clockch{color:#E4D9FF}
 .chend label{flex:1;font-weight:700;font-size:15px}
 .chend .in{width:110px;flex:none;text-align:center;padding:9px 10px}
 .yn{margin-top:2px}
+/* star shop */
+.watchrow{margin-top:14px}.watchrow .watchbtn{margin-top:0}
+.btn.shopbtn{margin-top:12px;background:linear-gradient(rgba(255,255,255,.34),rgba(255,255,255,0) 55%),linear-gradient(135deg,rgba(255,176,32,.92),rgba(236,72,153,.88));flex-wrap:wrap;gap:4px 10px}
+.btn.shopbtn small{font-family:'Nunito';font-size:14px;font-weight:800;opacity:.95}
+.shopstat .e{font-size:34px}
+.shoptop{margin-top:4px;text-align:center}
+.shoptop .fun{font-size:26px;font-weight:600}
+.shoptop .bal{font-family:'Fredoka';font-size:30px;font-weight:600;color:#D97706;margin:2px 0 4px}
+.shoptop .bal small{font-family:'Nunito';font-size:15px;color:var(--muted)}
+.shoptop>small{color:var(--muted);display:block}
+.utabs.shoptabs{margin-top:16px}
+.shopcard .pic{height:58px}
+.shopcard .pic svg{max-height:58px}
+.shopcard small.tag{color:#7C3AED;font-weight:800;font-size:11px;line-height:1.25}
+.shopcard.own{box-shadow:0 2px 0 var(--line),inset 0 0 0 2px rgba(34,197,94,.55)}
+.shopcard .ringpic{align-items:center}
+.shopcard .ringpic svg{max-height:54px}
+.shopcard .numpic{align-items:center;overflow:hidden}
+.numpic .clock{display:inline-block;font-size:25px;line-height:1.1;text-shadow:none!important}
+.glassbg{border-radius:12px;padding:6px;background:repeating-linear-gradient(45deg,#FDE68A 0 10px,#BFDBFE 10px 20px,#FBCFE8 20px 30px)}
+.glassbg .holder.sw2{margin:0}
+.glassbg.big{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px;margin:14px 0 6px;border-radius:18px}
+.glassbg.big .cover{aspect-ratio:2/3}
+.soon{padding:6px 10px}
+.soonrow{display:flex;align-items:center;gap:12px;width:100%;background:none;border:0;padding:10px 4px;font:inherit;color:inherit;text-align:left;cursor:pointer;border-bottom:1px solid var(--line)}
+.soonrow:last-child{border-bottom:0}
+.soonrow .e{font-size:28px}
+.soonrow b{display:block;font-family:'Fredoka';font-weight:600}
+.soonrow small{color:var(--muted)}
+.peekpic{display:flex;justify-content:center;align-items:flex-end;min-height:150px;margin:14px 0 4px;padding:10px;border-radius:20px;background:radial-gradient(circle at 50% 80%,rgba(255,255,255,.9),rgba(255,255,255,.35))}
+.peekpic svg{max-width:100%;height:auto;max-height:170px}
+.peekring{display:flex;justify-content:center;margin:16px 0 8px}
+.whochips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.whochips .fchip{padding:6px 11px;font-size:14px}
+.whochips .fchip.dim{opacity:.6}
+.tryon{font-size:17px;margin:16px 0 8px;text-align:center}
+.tagline{background:rgba(255,255,255,.6);border-radius:14px;padding:10px 12px;margin-top:10px;font-size:14px;color:var(--ink)}
+.sizes{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:10px}
+.sizes b{margin-right:2px}
+.sizes .fchip{padding:6px 12px;font-size:14px}
+.tring{filter:drop-shadow(0 1px 3px rgba(40,30,80,.18))}
+.cos-spin{animation:cosspin .35s linear infinite}
+@keyframes cosspin{0%{transform:scaleX(1)}50%{transform:scaleX(-1)}100%{transform:scaleX(1)}}
+/* timer number styles */
+.clock.ns-thin{font-family:-apple-system,'Helvetica Neue',Roboto,'Segoe UI',Arial,sans-serif;font-weight:200;transform:scale(1.1);letter-spacing:-.02em}
+.clock.ns-thick{font-family:'Arial Black','Segoe UI Black',-apple-system,Roboto,sans-serif;font-weight:900;letter-spacing:-.02em}
+.clock.ns-tall{font-family:-apple-system,Roboto,'Segoe UI',Arial,sans-serif;font-weight:600;transform:scale(.72,1.45);letter-spacing:-.01em}
+.clock.ns-wide{transform:scale(1.2,.76)}
+.clock.ns-round{font-weight:700;color:#fff;-webkit-text-stroke:5px var(--purple);paint-order:stroke fill;text-shadow:0 5px 0 rgba(108,75,244,.35)!important}
+.clock.ns-serif{font-family:Georgia,'Times New Roman',serif;font-weight:700;font-style:italic}
+.clock.ns-mono{font-family:'Courier New',Courier,monospace;font-weight:700;letter-spacing:-.04em}
+.clock.ns-outline{color:transparent;-webkit-text-stroke:2.5px var(--oc,#2B2340);text-shadow:none!important;font-weight:700}
+body.darkbg .clock.ns-outline{--oc:#fff}
+.clock.ns-neon{color:#fff;text-shadow:0 0 3px #fff,0 0 9px #FF1FCF,0 0 18px #FF1FCF,0 0 32px #FF1FCF!important}
+.clock.ns-rainbow{background:linear-gradient(90deg,#EF4444,#F97316,#FACC15,#22C55E,#3B82F6,#8B5CF6,#EC4899);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none!important;font-weight:700}
+.clock.ns-gold{background:linear-gradient(180deg,#FFF4B8,#F2C230 45%,#B8860B 55%,#FFE680);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-stroke:1px #8A6508;text-shadow:none!important;font-weight:700}
+.numpic .clock.ns-round{-webkit-text-stroke-width:3px}
 </style>
 </head>
 <body>
@@ -582,6 +639,7 @@ body.darkbg .clockch{color:#E4D9FF}
 
 <script src="animals.js"></script>
 <script src="rig.js"></script>
+<script src="costumes.js"></script>
 <script src="backgrounds.js"></script>
 <script src="bookmarks.js"></script>
 <script>
@@ -591,7 +649,7 @@ body.darkbg .clockch{color:#E4D9FF}
 const KEY = 'readingRocket.v1';
 const DEFAULTS = {
   name: 'Reader', goal: 20, books: [], sessions: [], goalDays: {}, badges: {},
-  stars: 0, pagesRead: 0, chaptersRead: 0, pageLog: {}, series: [], extraEarned: 0, rereads: 0, rewardsGiven: 0, unlocked: {}, bg: 'cream', pets: [], reward: { text: '', cost: 0 }, timer: null, selBook: null, chimed: '', bonusDone: {}, marks: {}, sfx: { goal: 'popper', bonus: 'fireworks', book: 'applause' }
+  stars: 0, pagesRead: 0, chaptersRead: 0, pageLog: {}, series: [], extraEarned: 0, rereads: 0, rewardsGiven: 0, unlocked: {}, bg: 'cream', pets: [], reward: { text: '', cost: 0 }, timer: null, selBook: null, chimed: '', bonusDone: {}, marks: {}, shop: { own: {}, ring: 'orig', num: 'orig', wear: {} }, petSize: 1, sfx: { goal: 'popper', bonus: 'fireworks', book: 'applause' }
 };
 let S = load();
 let view = 'shelf', currentBook = null, shelfFilter = 'all', parentOK = false, unlockTab = 'animal';
@@ -761,29 +819,12 @@ function ring(pct, size, stroke, color) {
 /* ---------- book series ----------
    S.series = [{ id, name, total, tint }]; a book in a series has b.seriesId and b.seriesNo (its number in the series).
    One book is enough to make a series. Missing numbers show as grey "not added yet" slots. */
-const GLASS = [
-  { id: 'clear',      n: 'Clear',      cost: 0 },
-  { id: 'g-ruby',     n: 'Ruby',       cost: 200,  c: ['#E11D48', '#FB7185', '#9F1239'] },
-  { id: 'g-sapphire', n: 'Sapphire',   cost: 600,  c: ['#2563EB', '#60A5FA', '#1E3A8A'] },
-  { id: 'g-emerald',  n: 'Emerald',    cost: 1000, c: ['#059669', '#34D399', '#065F46'] },
-  { id: 'g-amber',    n: 'Amber',      cost: 1500, c: ['#F59E0B', '#FCD34D', '#B45309'] },
-  { id: 'g-amethyst', n: 'Amethyst',   cost: 2000, c: ['#7C3AED', '#C4B5FD', '#4C1D95'] },
-  { id: 'g-rose',     n: 'Rose',       cost: 2500, c: ['#EC4899', '#F9A8D4', '#9D174D'] },
-  { id: 'g-lagoon',   n: 'Lagoon',     cost: 3000, c: ['#0D9488', '#5EEAD4', '#134E4A'] },
-  { id: 'g-sunset',   n: 'Sunset',     cost: 3500, c: ['#F97316', '#F43F5E', '#A855F7'] },
-  { id: 'g-ocean',    n: 'Deep Ocean', cost: 4000, c: ['#0EA5E9', '#1D4ED8', '#06B6D4'] },
-  { id: 'g-rainbow',  n: 'Rainbow',    cost: 4500, c: ['#EF4444', '#F59E0B', '#22C55E', '#3B82F6', '#A855F7'] },
-  { id: 'g-gold',     n: 'Gold',       cost: 5000, c: ['#FBBF24', '#FDE68A', '#B45309'] },
-  { id: 'g-galaxy',   n: 'Galaxy',     cost: 5500, c: ['#4C1D95', '#1E1B4B', '#EC4899'] },
-];
-const glassOf = id => GLASS.find(t => t.id === id) || GLASS[0];
-const glassOwned = t => starsEarned() >= t.cost;
 const rgba = (hex, a) => { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; };
 // Style for a holder: clear frosted glass, or stained glass with dark "lead" lines between the coloured panes.
 function glassStyle(id) {
   const t = glassOf(id);
   if (!t.c) return '';
-  const c = t.c, stops = c.map((x, i) => `${rgba(x, .7)} ${Math.round(i / (c.length - 1) * 100)}%`).join(',');
+  const c = t.c, stops = c.map((x, i) => `${rgba(x, t.a || .7)} ${Math.round(i / (c.length - 1) * 100)}%`).join(',');
   const g = `radial-gradient(circle at 18% 22%,${rgba(c[1], .75)},transparent 38%),radial-gradient(circle at 82% 75%,${rgba(c[c.length - 1], .7)},transparent 42%),linear-gradient(135deg,${stops})`;
   const lead = 'repeating-linear-gradient(55deg,transparent 0 22px,rgba(35,25,55,.28) 22px 24px),repeating-linear-gradient(-35deg,transparent 0 30px,rgba(35,25,55,.22) 30px 32px)';
   return `--g:${g};--lead:${lead}`;
@@ -1064,7 +1105,7 @@ const ANIMALS = [  // drawn and animated in animals.js
   { id: 'orca',        e: '🐋', n: 'Killer Whale', cost: 6800, move: 'swim', speed: 60,  size: 54 },
   { id: 'spermwhale',  e: '🐳', n: 'Sperm Whale',  cost: 8500, move: 'swim', speed: 36,  size: 62 },
 ].map(a => ({ ...a, kind: 'animal' })).sort((a, b) => a.cost - b.cost);
-const animalImg = (a, h) => petSVG(a.id, h);
+const animalImg = (a, h) => wornSVG(a.id, h);
 // Whole-app backgrounds: drawn and animated in backgrounds.js
 const BACKGROUNDS = RRBG.list.map(x => ({ ...x, kind: 'bg' }));
 const UNLOCKS = [...ANIMALS, ...BACKGROUNDS];
@@ -1077,6 +1118,314 @@ for (const [id, add] of [['harvest', 180], ['turkey', 100]]) {
   u.cost = S.dyn[id];
 }
 BACKGROUNDS.sort((a, b) => a.cost - b.cost); ANIMALS.sort((a, b) => a.cost - b.cost);
+/* ---------- star shop ----------
+   Spend stars (S.stars) on new looks. Unlocks count every star ever earned, so spending never locks anything.
+   S.shop = { own: { id: time }, ring, num, wear: { animalId: [costumeIds] } }.
+   The originals (timer ring, numbers, clear glass, no costume) are always free, so he can switch back any time. */
+const RINGS = [
+  { id: 'orig', n: 'Original', cost: 0 },
+  { id: 'r-red', n: 'Red', c: '#EF4444', cost: 100 }, { id: 'r-orange', n: 'Orange', c: '#F97316', cost: 100 },
+  { id: 'r-yellow', n: 'Yellow', c: '#FACC15', cost: 100 }, { id: 'r-green', n: 'Green', c: '#22C55E', cost: 100 },
+  { id: 'r-blue', n: 'Blue', c: '#3B82F6', cost: 100 }, { id: 'r-indigo', n: 'Indigo', c: '#4F46E5', cost: 100 },
+  { id: 'r-violet', n: 'Violet', c: '#8B5CF6', cost: 100 }, { id: 'r-pink', n: 'Pink', c: '#EC4899', cost: 100 },
+  { id: 'r-nyellow', n: 'Neon Yellow', c: '#DFFF00', glow: 1, cost: 250 }, { id: 'r-ngreen', n: 'Neon Green', c: '#39FF14', glow: 1, cost: 250 },
+  { id: 'r-npink', n: 'Neon Pink', c: '#FF1FCF', glow: 1, cost: 250 }, { id: 'r-nblue', n: 'Neon Blue', c: '#00E5FF', glow: 1, cost: 250 },
+  { id: 'r-norange', n: 'Neon Orange', c: '#FF6A13', glow: 1, cost: 250 }, { id: 'r-npurple', n: 'Neon Purple', c: '#BC13FE', glow: 1, cost: 250 },
+  { id: 'r-gold', n: 'Gold', g: ['#FFF4B8', '#F2C230', '#B8860B', '#FFE680', '#C9961A'], cost: 400 },
+  { id: 'r-silver', n: 'Silver', g: ['#FFFFFF', '#C4CCD6', '#7B8794', '#EEF2F6', '#9AA5B1'], cost: 400 },
+  { id: 'r-rainbow', n: 'Rainbow', g: ['#EF4444', '#F97316', '#FACC15', '#22C55E', '#3B82F6', '#8B5CF6', '#EC4899'], cost: 500 },
+];
+const NUMS = [
+  { id: 'orig', n: 'Original', cost: 0 },
+  { id: 'n-thin', n: 'Thin', cost: 150 }, { id: 'n-thick', n: 'Thick', cost: 150 },
+  { id: 'n-tall', n: 'Stretched Tall', cost: 200 }, { id: 'n-wide', n: 'Stretched Wide', cost: 200 },
+  { id: 'n-round', n: 'Bubble', cost: 200 }, { id: 'n-serif', n: 'Fancy', cost: 200 },
+  { id: 'n-mono', n: 'Typewriter', cost: 200 }, { id: 'n-outline', n: 'Outline', cost: 250 },
+  { id: 'n-neon', n: 'Neon Glow', cost: 300 }, { id: 'n-rainbow', n: 'Rainbow', cost: 350 }, { id: 'n-gold', n: 'Gold', cost: 350 },
+];
+const ringOf = id => RINGS.find(r => r.id === id) || RINGS[0];
+const numOf = id => NUMS.find(r => r.id === id) || NUMS[0];
+const numClass = (id = S.shop.num) => id && id !== 'orig' ? 'ns-' + id.slice(2) : '';
+// The ring around the timer. The original turns from orange to green; bought colors fill in their color on a white ring.
+function timerRing(pct, size, stroke, id = S.shop.ring) {
+  const R = ringOf(id);
+  if (!R.c && !R.g) return ring(pct, size, stroke, 'var(--orange)');
+  const r = (size - stroke) / 2, c = 2 * Math.PI * r, p = Math.max(0, Math.min(1, pct)), k = uid(), h = size / 2;
+  const col = R.g ? `url(#g${k})` : R.c;
+  return `<svg class="tring" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="overflow:visible"><defs>
+    ${R.g ? `<linearGradient id="g${k}" x1="0" y1="0" x2="1" y2="1">${R.g.map((s, i) => `<stop offset="${i / (R.g.length - 1)}" stop-color="${s}"/>`).join('')}</linearGradient>` : ''}
+    ${R.glow ? `<filter id="f${k}" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="${Math.max(2, stroke * .35)}" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>` : ''}</defs>
+    <circle cx="${h}" cy="${h}" r="${r}" fill="none" stroke="#fff" stroke-width="${stroke}"/>
+    <circle cx="${h}" cy="${h}" r="${r + stroke / 2}" fill="none" stroke="rgba(60,40,110,.12)" stroke-width="1"/><circle cx="${h}" cy="${h}" r="${r - stroke / 2}" fill="none" stroke="rgba(60,40,110,.12)" stroke-width="1"/>
+    <circle class="ringfg" cx="${h}" cy="${h}" r="${r}" fill="none" stroke="${col}" stroke-width="${stroke}" stroke-linecap="round" ${R.glow ? `filter="url(#f${k})"` : ''}
+      stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - p)}" transform="rotate(-90 ${h} ${h})" style="transition:stroke-dashoffset .5s"/></svg>`;
+}
+
+// Stained glass: plain rainbow colors (plus gold, black, brown, gray) and fancier mixes. All see-through.
+const GLASS = [
+  { id: 'clear',      n: 'Clear',      cost: 0 },
+  { id: 'g-red',      n: 'Red',        cost: 150, c: ['#EF4444', '#FCA5A5', '#B91C1C'] },
+  { id: 'g-orange',   n: 'Orange',     cost: 150, c: ['#F97316', '#FDBA74', '#C2410C'] },
+  { id: 'g-yellow',   n: 'Yellow',     cost: 150, c: ['#FACC15', '#FEF08A', '#CA8A04'] },
+  { id: 'g-green',    n: 'Green',      cost: 150, c: ['#22C55E', '#86EFAC', '#15803D'] },
+  { id: 'g-blue',     n: 'Blue',       cost: 150, c: ['#3B82F6', '#93C5FD', '#1D4ED8'] },
+  { id: 'g-indigo',   n: 'Indigo',     cost: 150, c: ['#4F46E5', '#A5B4FC', '#3730A3'] },
+  { id: 'g-violet',   n: 'Violet',     cost: 150, c: ['#A855F7', '#D8B4FE', '#7E22CE'] },
+  { id: 'g-pink',     n: 'Pink',       cost: 150, c: ['#EC4899', '#F9A8D4', '#BE185D'] },
+  { id: 'g-gold',     n: 'Gold',       cost: 300, old: 5000, c: ['#FBBF24', '#FDE68A', '#B45309'] },
+  { id: 'g-black',    n: 'Black',      cost: 150, c: ['#1F2937', '#6B7280', '#030712'], a: .62 },
+  { id: 'g-brown',    n: 'Brown',      cost: 150, c: ['#92400E', '#D6A06A', '#5C2A0A'] },
+  { id: 'g-gray',     n: 'Gray',       cost: 150, c: ['#6B7280', '#D1D5DB', '#374151'] },
+  { id: 'g-ruby',     n: 'Ruby',       cost: 250, old: 200,  c: ['#E11D48', '#FB7185', '#9F1239'] },
+  { id: 'g-sapphire', n: 'Sapphire',   cost: 250, old: 600,  c: ['#2563EB', '#60A5FA', '#1E3A8A'] },
+  { id: 'g-emerald',  n: 'Emerald',    cost: 250, old: 1000, c: ['#059669', '#34D399', '#065F46'] },
+  { id: 'g-amber',    n: 'Amber',      cost: 250, old: 1500, c: ['#F59E0B', '#FCD34D', '#B45309'] },
+  { id: 'g-amethyst', n: 'Amethyst',   cost: 250, old: 2000, c: ['#7C3AED', '#C4B5FD', '#4C1D95'] },
+  { id: 'g-rose',     n: 'Rose',       cost: 250, old: 2500, c: ['#EC4899', '#F9A8D4', '#9D174D'] },
+  { id: 'g-lagoon',   n: 'Lagoon',     cost: 300, old: 3000, c: ['#0D9488', '#5EEAD4', '#134E4A'] },
+  { id: 'g-sunset',   n: 'Sunset',     cost: 350, old: 3500, c: ['#F97316', '#F43F5E', '#A855F7'] },
+  { id: 'g-ocean',    n: 'Deep Ocean', cost: 350, old: 4000, c: ['#0EA5E9', '#1D4ED8', '#06B6D4'] },
+  { id: 'g-rainbow',  n: 'Rainbow',    cost: 400, old: 4500, c: ['#EF4444', '#F59E0B', '#22C55E', '#3B82F6', '#A855F7'] },
+  { id: 'g-galaxy',   n: 'Galaxy',     cost: 400, old: 5500, c: ['#4C1D95', '#1E1B4B', '#EC4899'] },
+];
+const glassOf = id => GLASS.find(t => t.id === id) || GLASS[0];
+const glassOwned = t => !t.cost || !!(S.shop && S.shop.own[t.id]);
+
+/* ---------- costumes ----------
+   who: 'all', or the animals that can wear it. parts: hat, face, neck, back (see costumes.js). */
+const CH = RRCOS.H, CF = RRCOS.F, CN = RRCOS.N, CB = RRCOS.B;
+const WALKERS = () => ANIMALS.filter(a => RIG[a.id] && !RIG[a.id].fly && !RIG[a.id].swim).map(a => a.id);
+const COSTUMES = [
+  { id: 'c-party',    n: 'Party Hat',          cost: 150, who: 'all', parts: { hat: CH.party() } },
+  { id: 'c-bowtie',   n: 'Red Bow Tie',        cost: 120, who: 'all', parts: { neck: CN.bowtie() } },
+  { id: 'c-glasses',  n: 'Bookworm Glasses',   cost: 150, who: 'all', parts: { face: CF.glasses() } },
+  { id: 'c-shades',   n: 'Cool Sunglasses',    cost: 200, who: 'all', parts: { face: CF.shades() } },
+  { id: 'c-stars',    n: 'Star Glasses',       cost: 250, who: 'all', parts: { face: CF.stars() } },
+  { id: 'c-monocle',  n: 'Fancy Monocle',      cost: 200, who: 'all', parts: { face: CF.monocle() } },
+  { id: 'c-hero',     n: 'Hero Mask',          cost: 250, who: 'all', parts: { face: CF.mask() } },
+  { id: 'c-scarf',    n: 'Cozy Scarf',         cost: 200, who: 'all', parts: { neck: CN.scarf('#7C3AED', '#FDE047') } },
+  { id: 'c-medal',    n: 'Reading Champ Medal', cost: 300, who: 'all', parts: { neck: CN.medal() } },
+  { id: 'c-cap',      n: 'Baseball Cap',       cost: 200, who: 'all', parts: { hat: CH.cap('#DC2626', '#991B1B') } },
+  { id: 'c-propeller', n: 'Propeller Beanie',  cost: 250, who: 'all', parts: { hat: CH.propeller() } },
+  { id: 'c-tophat',   n: 'Fancy Top Hat',      cost: 300, who: 'all', parts: { hat: CH.top('#1F2937', '#DC2626') } },
+  { id: 'c-grad',     n: 'Graduation Cap',     cost: 350, who: 'all', parts: { hat: CH.grad() } },
+  { id: 'c-crown',    n: 'Royal Crown',        cost: 450, who: 'all', parts: { hat: CH.crown() } },
+  { id: 'c-cape',     n: 'Super Cape',         cost: 400, who: WALKERS(), parts: { back: CB.cape() } },
+  { id: 'c-backpack', n: 'Book Backpack',      cost: 300, who: WALKERS(), parts: { back: CB.backpack() } },
+  // made for some animals only
+  { id: 'c-skater',   n: 'Ice Skater Earmuffs & Scarf', cost: 300, who: ['penguin'], parts: { hat: CH.earmuffs('#22D3EE', '#fff'), neck: CN.scarf('#06B6D4', '#fff') } },
+  { id: 'c-frogcrown', n: 'Frog Prince Crown', cost: 300, who: ['frog'], parts: { hat: CH.crown('#FFC93C', '#22C55E', '#22C55E') } },
+  { id: 'c-magic',    n: 'Magician Hat & Bow Tie', cost: 350, who: ['bunny', 'penguin'], parts: { hat: CH.top('#111827', '#7C3AED', '<path d="M30 -60 l4 -8 l4 8 l8 4 l-8 4 l-4 8 l-4 -8 l-8 -4Z" fill="#FFD23F" stroke="#2A1E14" stroke-width="1.4"/>'), neck: CN.bowtie('#7C3AED') } },
+  { id: 'c-nightcap', n: 'Night Owl Sleep Cap', cost: 250, who: ['owl', 'snowyowl'], parts: { hat: CH.nightcap() } },
+  { id: 'c-wizard',   n: 'Wizard Hat',         cost: 350, who: ['owl', 'snowyowl', 'cat', 'fox', 'dragon', 'unicorn', 'phoenix'], parts: { hat: CH.witch('#1E3A8A', '#FFD23F').replace('<rect x="-8" y="-24" width="16" height="16" rx="2" fill="none" stroke="#FFC93C" stroke-width="3.5"/>', '') } },
+  { id: 'c-cowboy',   n: 'Cowboy Hat & Bandana', cost: 300, who: ['horse', 'cow', 'dog', 'highland', 'goat', 'llama', 'pig', 'sheep', 'unicorn', 'zebra'], parts: { hat: CH.brim('#A16207', '#92400E', '#451A03'), neck: CN.bandana() } },
+  { id: 'c-pirate',   n: 'Pirate Hat & Eye Patch', cost: 350, who: ['parrot', 'dog', 'cat', 'monkey', 'raccoon', 'otter', 'seal'], parts: { hat: CH.pirate(), face: CF.patch() } },
+  { id: 'c-explorer', n: 'Safari Explorer Hat', cost: 300, who: ['monkey', 'gorilla', 'elephant', 'giraffe', 'rhino', 'hippo', 'zebra', 'lion', 'tiger', 'cheetah', 'kangaroo', 'koala'], parts: { hat: CH.explorer() } },
+  { id: 'c-captain',  n: 'Sea Captain Hat',    cost: 300, who: ['dolphin', 'orca', 'greatwhite', 'spermwhale', 'seal', 'otter', 'penguin', 'turtle', 'duck'], parts: { hat: CH.captain() } },
+  { id: 'c-ranger',   n: 'Dino Ranger Hat',    cost: 300, who: ['trex', 'raptor', 'triceratops', 'sauropod', 'mammoth', 'crocodile'], parts: { hat: CH.ranger() } },
+  { id: 'c-pilot',    n: 'Pilot Goggles',      cost: 250, who: ['bird', 'parrot', 'owl', 'snowyowl', 'eagle', 'phoenix', 'dragon', 'flamingo'], parts: { face: CF.goggles(), neck: CN.scarf('#fff', '#E5E7EB') } },
+  { id: 'c-flowers',  n: 'Flower Crown',       cost: 250, who: ['bunny', 'lamb', 'deer', 'unicorn', 'sheep', 'koala', 'cat', 'guineapig'], parts: { hat: CH.flowers() } },
+  { id: 'c-lei',      n: 'Beach Flower Lei',   cost: 250, who: ['turtle', 'dolphin', 'seal', 'otter', 'parrot', 'flamingo', 'monkey', 'frog'], parts: { neck: CN.lei() } },
+  { id: 'c-bell',     n: 'Bell Collar',        cost: 150, who: ['cat', 'dog', 'cow', 'goat', 'sheep', 'lamb', 'highland'], parts: { neck: CN.bell() } },
+];
+
+// Holidays: in the shop from 20 days before until 2 days after. A different look each year.
+const nthWeekday = (y, m, wd, n) => { const d = new Date(y, m, 1); d.setDate(1 + (wd - d.getDay() + 7) % 7 + (n - 1) * 7); return d; };
+function easterDay(y) {
+  const a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3);
+  const h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451);
+  return new Date(y, Math.floor((h + l - 7 * m + 114) / 31) - 1, (h + l - 7 * m + 114) % 31 + 1);
+}
+const HOLIDAYS = [
+  { id: 'valentine', n: "Valentine's Day", e: '💘', day: y => new Date(y, 1, 14), looks: [
+    { n: 'Heart Headband', parts: { hat: CH.hearts() } }, { n: 'Heart Glasses & Pink Bow Tie', parts: { face: CF.hearts(), neck: CN.bowtie('#EC4899') } }] },
+  { id: 'stpat', n: "St. Patrick's Day", e: '☘️', day: y => new Date(y, 2, 17), looks: [
+    { n: 'Leprechaun Hat & Green Bow Tie', parts: { hat: CH.leprechaun(), neck: CN.bowtie('#16A34A') } }, { n: 'Shamrock Headband', parts: { hat: CH.shamrocks() } }] },
+  { id: 'easter', n: 'Easter', e: '🐣', day: easterDay, looks: [
+    { n: 'Bunny Ears Headband', parts: { hat: CH.bunnyears() } }, { n: 'Easter Egg Hat', parts: { hat: CH.egg() } }] },
+  { id: 'july4', n: 'Fourth of July', e: '🎆', day: y => new Date(y, 6, 4), looks: [
+    { n: 'Stars & Stripes Hat', parts: { hat: CH.usa() } }, { n: 'Fireworks Headband', parts: { hat: CH.fireworks() } }] },
+  { id: 'halloween', n: 'Halloween', e: '🎃', day: y => new Date(y, 9, 31), looks: [
+    { n: 'Pumpkin Hat', parts: { hat: CH.pumpkin() } }, { n: 'Witch Hat', parts: { hat: CH.witch('#4C1D95', '#F97316') } }] },
+  { id: 'thanks', n: 'Thanksgiving', e: '🦃', day: y => nthWeekday(y, 10, 4, 4), looks: [
+    { n: 'Turkey Hat', parts: { hat: CH.turkey() } }, { n: 'Pilgrim Hat & Leaf Scarf', parts: { hat: CH.pilgrim(), neck: CN.leafscarf() } }] },
+  { id: 'xmas', n: 'Christmas', e: '🎄', day: y => new Date(y, 11, 25), looks: [
+    { n: 'Santa Hat & Scarf', parts: { hat: CH.santa(), neck: CN.scarf('#DC2626', '#fff') } }, { n: 'Reindeer Antlers & Jingle Bell', parts: { hat: CH.antlers(), neck: CN.bell() } },
+    { n: 'Elf Hat', parts: { hat: CH.elf() } }] },
+];
+// Seasons: in the shop from the first day of the season until 1 a.m. the day after it ends.
+const SEASONS = [
+  { id: 'spring', n: 'Spring', e: '🌷', start: [2, 20], looks: [
+    { n: 'Spring Blossom Crown', parts: { hat: CH.flowers() } }, { n: 'Spring Rain Hat', parts: { hat: CH.rainhat() } }] },
+  { id: 'summer', n: 'Summer', e: '☀️', start: [5, 21], looks: [
+    { n: 'Straw Sun Hat & Shades', parts: { hat: CH.sunhat(), face: CF.shades() } }, { n: 'Aloha Lei & Sunglasses', parts: { neck: CN.lei(), face: CF.shades('#0EA5E9', '#F97316') } }] },
+  { id: 'fall', n: 'Fall', e: '🍂', start: [8, 22], looks: [
+    { n: 'Fall Beanie & Leaf Scarf', parts: { hat: CH.beanie('#EA580C', '#92400E', '#FBBF24', '#FDBA74'), neck: CN.leafscarf() } }, { n: 'Acorn Cap', parts: { hat: CH.acorn() } }] },
+  { id: 'winter', n: 'Winter', e: '❄️', start: [11, 21], looks: [
+    { n: 'Snowy Pom-Pom Hat & Scarf', parts: { hat: CH.beanie('#2563EB', '#fff', '#fff', '#93C5FD'), neck: CN.scarf('#60A5FA', '#fff') } }, { n: 'Winter Earmuffs', parts: { hat: CH.earmuffs() } }] },
+];
+const LOOK0 = 2026, LIMITED_COST = 250, NY_COST = 300;
+const lookIdx = (list, y) => ((y - LOOK0) % list.length + list.length) % list.length;
+const COSTUME_MAP = Object.fromEntries(COSTUMES.map(c => [c.id, c]));
+function costumeById(id) {
+  if (COSTUME_MAP[id]) return COSTUME_MAP[id];
+  let m = /^h-(\w+)-(\d+)$/.exec(id), c = null;
+  if (m) { const h = HOLIDAYS.find(x => x.id === m[1]), l = h && h.looks[+m[2]]; if (l) c = { id, n: l.n, cost: LIMITED_COST, who: 'all', parts: l.parts, hol: h }; }
+  else if ((m = /^s-(\w+)-(\d+)$/.exec(id))) { const s = SEASONS.find(x => x.id === m[1]), l = s && s.looks[+m[2]]; if (l) c = { id, n: l.n, cost: LIMITED_COST, who: 'all', parts: l.parts, sea: s }; }
+  else if ((m = /^ny-(\d{4})$/.exec(id))) c = { id, n: `${m[1]} New Year Outfit`, cost: NY_COST, who: 'all', year: +m[1], parts: { hat: CH.year(m[1]), neck: CN.bowtie('#FFC93C', '<circle cx="-14" cy="-2" r="2.4" fill="#fff"/><circle cx="16" cy="3" r="2.4" fill="#fff"/>') } };
+  return c ? (COSTUME_MAP[id] = c) : null;
+}
+RRCOS.find = costumeById;
+const at = (y, m, d, h = 0) => new Date(y, m, d, h).getTime();
+// Every limited-time costume window near now: { id, kind, label, e, start, end }
+function limitedEvents(t = Date.now()) {
+  const Y = new Date(t).getFullYear(), out = [];
+  for (const y of [Y - 1, Y, Y + 1]) {
+    for (const h of HOLIDAYS) {
+      const d = h.day(y), i = lookIdx(h.looks, y);
+      out.push({ id: `h-${h.id}-${i}`, kind: 'holiday', label: h.n, e: h.e, day: d.getTime(), start: at(y, d.getMonth(), d.getDate() - 20), end: at(y, d.getMonth(), d.getDate() + 3, 1) });
+    }
+    out.push({ id: `ny-${y}`, kind: 'newyear', label: `New Year ${y}`, e: '🎉', day: at(y, 0, 1), start: at(y - 1, 11, 12), end: at(y, 0, 4, 1) });
+    SEASONS.forEach((s, j) => {
+      const nx = SEASONS[(j + 1) % 4], ny = j === 3 ? y + 1 : y, i = lookIdx(s.looks, y);
+      out.push({ id: `s-${s.id}-${i}`, kind: 'season', label: s.n, e: s.e, start: at(y, s.start[0], s.start[1]), end: at(ny, nx.start[0], nx.start[1], 1) });
+    });
+  }
+  return out.sort((a, b) => a.start - b.start);
+}
+const limitedNow = (t = Date.now()) => limitedEvents(t).filter(e => e.start <= t && t < e.end);
+const limitedSoon = (t = Date.now()) => limitedEvents(t).filter(e => e.start > t).slice(0, 4);
+const inShop = c => !c.hol && !c.sea && !c.year || limitedNow().some(e => e.id === c.id);
+const canWear = (c, aid) => !!c && (c.who === 'all' || c.who.includes(aid)) && !!(RIG[aid]);
+const slotsOf = c => Object.keys(c.parts);
+const wornOf = aid => ((S.shop && S.shop.wear[aid]) || []).filter(id => S.shop.own[id] && canWear(costumeById(id), aid));
+// What the animal would wear with this costume put on (anything using the same spot comes off).
+const withCostume = (aid, cid) => { const c = costumeById(cid), sl = slotsOf(c); return [...wornOf(aid).filter(id => !slotsOf(costumeById(id)).some(s => sl.includes(s))), cid]; };
+function wornSVG(id, h, list = wornOf(id)) {
+  const s = petSVG(id, h);
+  return list.length && RIG[id] ? s.replace('<svg ', `<svg data-cos="${list.join(',')}" `) : s;
+}
+const aName = id => (ANIMALS.find(a => a.id === id) || { n: id }).n;
+const aEmoji = id => (ANIMALS.find(a => a.id === id) || { e: '' }).e;
+function whoTag(c) {
+  if (c.who === 'all') return '🌍 Every animal';
+  const L = c.who.filter(id => ANIMALS.some(a => a.id === id));
+  if (L.length === 1) return `${aEmoji(L[0])} ${aName(L[0])} only`;
+  if (L.length === 2) return `${aEmoji(L[0])} ${aName(L[0])} + ${aEmoji(L[1])} ${aName(L[1])}`;
+  return `${L.slice(0, 4).map(aEmoji).join('')}${L.length > 4 ? '…' : ''} ${L.length} animals`;
+}
+// Which animal to show a costume on: one that's out walking, then any he has, then the first that can wear it.
+function previewAnimal(c) {
+  const can = ANIMALS.filter(a => canWear(c, a.id)).map(a => a.id);
+  return can.find(id => (S.pets || []).includes(id)) || can.find(id => S.unlocked[id]) || can[0];
+}
+function refreshPet(aid) { pets = pets.filter(o => o.a.id !== aid || (o.el.remove(), false)); syncPets(); }
+const PET_SIZES = [[1, 'Regular'], [1.5, 'Big'], [2, 'Huge']];
+
+let shopTab = null, shopFrom = 'unlocks', shopPrev = null, closetPrev = null, closetAid = null;
+const daysLeft = end => Math.max(1, Math.ceil((end - Date.now()) / DAY));
+const shortDate = ms => new Date(ms).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+function shopView() {
+  const live = limitedNow(), tabs = [...(live.length ? [['limited', '⏳', 'Limited']] : []), ['costume', '👕', 'Costumes'], ['ring', '⭕', 'Rings'], ['num', '🔢', 'Numbers'], ['glass', '💎', 'Glass']];
+  if (!shopTab || !tabs.some(t => t[0] === shopTab)) shopTab = tabs[0][0];
+  const price = (own, cost) => own ? '✓ Yours' : `⭐ ${cost.toLocaleString()}`;
+  const cosCard = (c, extra = '') => { const aid = previewAnimal(c), own = S.shop.own[c.id];
+    return `<button class="ucard shopcard ${own ? 'own' : ''}" data-act="shopPeek" data-k="costume" data-id="${c.id}"><div class="pic">${wornSVG(aid, 56, [c.id])}</div><b>${esc(c.n)}</b><small class="tag">${whoTag(c)}</small><small>${extra || price(own, c.cost)}</small></button>`; };
+  let body;
+  if (shopTab === 'limited') {
+    body = `<p class="hint" style="margin:0 2px 12px">Special costumes for holidays and seasons. They leave the shop soon, but once you buy one it's yours forever!</p>
+      <div class="ugrid">${live.map(e => { const c = costumeById(e.id);
+        return cosCard(c, `${S.shop.own[c.id] ? '✓ Yours' : `⭐ ${c.cost}`} · ${e.e} leaves in ${daysLeft(e.end)} day${daysLeft(e.end) === 1 ? '' : 's'}`); }).join('')}</div>
+      ${soonHTML()}`;
+  } else if (shopTab === 'costume') {
+    const mine = COSTUMES.concat(Object.keys(S.shop.own).map(costumeById).filter(c => c && (c.hol || c.sea || c.year) && !live.some(e => e.id === c.id)));
+    body = `<p class="hint" style="margin:0 2px 12px">Tap any costume to see how it looks on your animal before you buy it. Tags show which animals can wear it.</p>
+      <div class="ugrid"><button class="ucard shopcard own" data-act="closet"><div class="pic" style="font-size:40px">🐾</div><b>No costume</b><small class="tag">🌍 Every animal</small><small>Always free</small></button>
+      ${mine.map(c => cosCard(c)).join('')}</div>${live.length ? '' : soonHTML()}`;
+  } else if (shopTab === 'ring') {
+    body = `<p class="hint" style="margin:0 2px 12px">Change the color of the ring around your reading timer. Tap one to try it first!</p>
+      <div class="ugrid">${RINGS.map(r => { const own = shopOwned('ring', r.id), on = S.shop.ring === r.id;
+        return `<button class="ucard shopcard ${on ? 'on' : ''}" data-act="shopPeek" data-k="ring" data-id="${r.id}"><div class="pic ringpic">${timerRing(.7, 54, 8, r.id)}</div><b>${r.n}</b><small>${on ? '✓ Using it' : r.cost ? price(own, r.cost) : 'Always free'}</small></button>`; }).join('')}</div>`;
+  } else if (shopTab === 'num') {
+    body = `<p class="hint" style="margin:0 2px 12px">Pick how the numbers on your timer look, like a phone lock screen. Tap one to try it first!</p>
+      <div class="ugrid">${NUMS.map(r => { const own = shopOwned('num', r.id), on = S.shop.num === r.id;
+        return `<button class="ucard shopcard ${on ? 'on' : ''}" data-act="shopPeek" data-k="num" data-id="${r.id}"><div class="pic numpic"><span class="clock ${numClass(r.id)}">12:34</span></div><b>${r.n}</b><small>${on ? '✓ Using it' : r.cost ? price(own, r.cost) : 'Always free'}</small></button>`; }).join('')}</div>`;
+  } else {
+    body = `<p class="hint" style="margin:0 2px 12px">See-through stained glass for the book holders on your series pages. Pick one when you make or change a series.</p>
+      <div class="ugrid">${GLASS.map(t => { const own = glassOwned(t);
+        return `<button class="ucard shopcard" data-act="shopPeek" data-k="glass" data-id="${t.id}"><div class="glassbg"><div class="holder sw2" style="${glassStyle(t.id)}"></div></div><b>${t.n}</b><small>${t.cost ? price(own, t.cost) : 'Always free'}</small></button>`; }).join('')}</div>`;
+  }
+  return `<button class="backbtn" data-act="nav" data-v="${shopFrom}">← ${shopFrom === 'trophies' ? 'Trophies' : 'Unlocks'}</button>
+    <div class="card shoptop"><div class="fun">🛍️ Star Shop</div><div class="bal">⭐ ${S.stars.toLocaleString()} <small>stars to spend</small></div>
+      <small>Buying never takes away your unlocks. They count every star you've ever earned!</small></div>
+    <div class="filters utabs shoptabs" style="grid-template-columns:repeat(${tabs.length},1fr)">${tabs.map(([k, e, l]) => `<button class="fchip ${shopTab === k ? 'on' : ''}" data-act="shopTab" data-k="${k}"><i>${e}</i>${l}</button>`).join('')}</div>
+    ${body}`;
+}
+function soonHTML() {
+  const soon = limitedSoon();
+  return soon.length ? `<div class="sectionhead"><h2>Coming soon</h2></div><div class="card soon">${soon.map(e =>
+    `<button class="soonrow" data-act="shopPeek" data-k="costume" data-id="${e.id}"><span class="e">${e.e}</span><span><b>${esc(costumeById(e.id).n)}</b><small>${e.label} · in the shop ${shortDate(e.start)}</small></span></button>`).join('')}</div>` : '';
+}
+function shopOwned(k, id) {
+  if (k === 'ring') return id === 'orig' || !!S.shop.own[id];
+  if (k === 'num') return id === 'orig' || !!S.shop.own[id];
+  if (k === 'glass') return glassOwned(glassOf(id));
+  return !!S.shop.own[id];
+}
+// The "try it on" sheet for anything in the shop.
+function shopPeekHTML() {
+  const { k, id } = shopPrev;
+  let pic, name, cost, note = '', btns = '', after = '';
+  const own = shopOwned(k, id), afford = n => S.stars >= n;
+  const buyBtn = (n, label) => !afford(n) ? `<button class="btn white block" disabled>⭐ ${n.toLocaleString()} · you need ${(n - S.stars).toLocaleString()} more stars</button>`
+    : `<button class="btn green block" data-act="shopBuy">🛍️ Buy ${label} for ⭐ ${n.toLocaleString()}</button>`;
+  if (k === 'costume') {
+    const c = costumeById(id), aid = shopPrev.aid || previewAnimal(c), ev = limitedEvents().find(e => e.id === id), live = inShop(c);
+    shopPrev.aid = aid; name = c.n; cost = c.cost;
+    const can = ANIMALS.filter(a => canWear(c, a.id)), chips = c.who === 'all' ? can.filter(a => S.unlocked[a.id]) : can;
+    pic = `<div class="peekpic">${wornSVG(aid, 130, withCostume(aid, id))}</div>
+      <div class="hint" style="text-align:center;margin:2px 0 0">Showing it on the ${aName(aid)}${S.unlocked[aid] ? '' : ' (not unlocked yet)'}</div>`;
+    after = `<h3 class="tryon">Try it on ${c.who === 'all' ? 'your animals' : 'another animal'}:</h3><div class="whochips">${chips.map(a => `<button class="fchip ${a.id === aid ? 'on' : ''} ${S.unlocked[a.id] ? '' : 'dim'}" data-act="peekAnimal" data-id="${a.id}">${a.e} ${a.n}${S.unlocked[a.id] ? '' : ' 🔒'}</button>`).join('')}</div>`;
+    note = `<div class="tagline">${c.who === 'all' ? '🌍 Every animal can wear this.' : `Made for: ${can.map(a => a.n).join(', ')}.`}</div>`;
+    if (ev) note += `<div class="tagline">${ev.e} ${ev.label} costume. ${live ? `In the shop until ${shortDate(ev.end - 2 * 3600e3)}.` : `Comes to the shop on ${shortDate(ev.start)}.`} Once you buy it, it's yours forever!</div>`;
+    if (!own) btns = live ? buyBtn(c.cost, 'it') : `<button class="btn white block" disabled>Not in the shop right now</button>`;
+    else if (!S.unlocked[aid]) btns = `<button class="btn white block" disabled>Unlock the ${aName(aid)} to dress it up</button>`;
+    else btns = wornOf(aid).includes(id) ? `<button class="btn white block" data-act="peekOff">Take it off the ${aName(aid)}</button>`
+      : `<button class="btn green block" data-act="peekWear">👕 Equip on the ${aName(aid)}</button>`;
+  } else if (k === 'ring' || k === 'num') {
+    const R = k === 'ring' ? ringOf(id) : numOf(id), on = S.shop[k] === id;
+    name = (k === 'ring' ? 'Timer ring: ' : 'Numbers: ') + R.n; cost = R.cost;
+    pic = `<div class="peekring"><div class="ringbox">${timerRing(.68, 220, 18, k === 'ring' ? id : S.shop.ring)}<div class="mid">
+      <div class="clock ${numClass(k === 'num' ? id : S.shop.num)}">12:34</div><div class="clocksub">13 of 20 min today</div></div></div></div>`;
+    if (k === 'ring') note = `<div class="tagline">${R.c || R.g ? 'The part you read fills in with this color. The rest of the ring is white.' : 'The original ring: orange while you read, green when you reach your goal.'}</div>`;
+    btns = !own ? buyBtn(R.cost, 'it') : on ? `<button class="btn white block" disabled>✓ You're using it</button>` : `<button class="btn green block" data-act="shopUse">✅ Use it</button>`;
+  } else {
+    const t = glassOf(id); name = `${t.n} glass`; cost = t.cost;
+    pic = `<div class="glassbg big">${[1, 2, 3].map(n => `<div class="holder" style="${glassStyle(id)}"><span class="sno">#${n}</span><div class="cover" style="--h:${n * 110}"><span class="gen">Book ${n}</span></div></div>`).join('')}</div>`;
+    note = `<div class="tagline">See-through glass: the color shows and your background still peeks through. Pick it on any series page with ✏️ Change.</div>`;
+    btns = own ? `<button class="btn white block" disabled>✓ Yours! Pick it when you change a series</button>` : buyBtn(t.cost, 'it');
+  }
+  return `<button class="x" data-act="closeSheet">✕</button><h2>${esc(name)}</h2>
+    <div class="hint" style="margin:0">${own ? '✓ You own this' : cost ? `Costs ⭐ ${cost.toLocaleString()} · you have ⭐ ${S.stars.toLocaleString()}` : 'Always free'}</div>
+    ${pic}<div style="margin-top:12px">${btns}</div>${note}${after}`;
+}
+function closetHTML(aid) {
+  const own = Object.keys(S.shop.own).map(costumeById).filter(c => c && canWear(c, aid));
+  const worn = wornOf(aid), pv = closetPrev, list = pv == null ? worn : pv === '' ? [] : withCostume(aid, pv);
+  const card = (cid, label, pic) => `<button class="ucard ${pv === cid ? 'on' : ''}" data-act="closetPick" data-id="${cid}"><div class="pic">${pic}</div><b>${label}</b><small>${cid === '' ? (worn.length ? 'Take it all off' : '✓ Wearing') : worn.includes(cid) ? '✓ Wearing' : 'Tap to try'}</small></button>`;
+  let btn = '';
+  if (pv != null) btn = pv === '' ? (worn.length ? `<button class="btn green block" data-act="closetEquip">✅ Take everything off</button>` : '')
+    : worn.includes(pv) ? `<button class="btn white block" data-act="closetOff">Take it off</button>` : `<button class="btn green block" data-act="closetEquip">👕 Equip</button>`;
+  return `<button class="x" data-act="closeSheet">✕</button><button class="backbtn" style="padding-top:4px" data-act="closet">← All animals</button>
+    <h2>${aEmoji(aid)} ${aName(aid)}'s costumes</h2>
+    <div class="peekpic">${wornSVG(aid, 130, list)}</div>
+    ${pv != null ? `<div class="hint" style="text-align:center;margin:0 0 6px">👀 Trying it on. ${pv === '' || !worn.includes(pv) ? 'Tap Equip to keep it on.' : ''}</div>` : ''}
+    <div style="margin:6px 0 12px">${btn}</div>
+    <div class="ugrid">${card('', 'No costume', petSVG(aid, 46))}${own.map(c => card(c.id, esc(c.n), wornSVG(aid, 46, [c.id]))).join('')}</div>
+    ${own.length ? '' : `<p class="hint" style="text-align:center">No costumes for the ${aName(aid)} yet.</p>`}
+    <button class="btn white block" style="margin-top:14px" data-act="openShop" data-tab="costume">🛍️ Get more in the Star Shop</button>`;
+}
+
 // Chapter stars, checkpoint bonuses and the bigger finish bonus (from Nov 15, 2026) weren't counted toward unlocks
 // at first. Add them in once, worked out from each book.
 if (!S.extraFix) {
@@ -1097,6 +1446,14 @@ if (!S.startFix) {
   }
   S.startFix = 1; save();
 }
+// The Star Shop took over the glass colors: keep every glass he had already won (they used to come with stars earned).
+S.shop.own ||= {}; S.shop.wear ||= {}; S.shop.ring ||= 'orig'; S.shop.num ||= 'orig';
+if (!S.shopFix) {
+  const have = starsEarned();
+  for (const t of GLASS) if (t.old && (have >= t.old || (S.glassSeen || {})[t.id])) S.shop.own[t.id] = Date.now();
+  for (const sr of S.series || []) if (sr.tint && sr.tint !== 'clear') S.shop.own[sr.tint] ||= Date.now();
+  S.shopFix = 1; save();
+}
 function checkUnlocks() {
   S.unlocked ||= {};
   const have = starsEarned();
@@ -1110,11 +1467,6 @@ function checkUnlocks() {
       ? { e: animalImg(u, 96), title: `You unlocked the ${u.n}!`, text: 'Go to 🐾 Unlocks and tap it to take it for a walk!', confetti: true }
       : { e: u.e, title: `New background: ${u.n}!`, text: 'Go to 🐾 Unlocks to use it!', confetti: true });
   }
-  S.glassSeen ||= {};
-  const glass = GLASS.filter(t => t.cost && !S.glassSeen[t.id] && have >= t.cost);
-  glass.forEach(t => S.glassSeen[t.id] = 1);
-  if (glass.length) celebrate({ e: '💎', title: glass.length > 1 ? `${glass.length} new glass colors!` : `New glass color: ${glass[0].n}!`,
-    text: `${glass.map(t => t.n).join(', ')}. Use ${glass.length > 1 ? 'them' : 'it'} on your book series holders!`, confetti: true });
 }
 /* ---------- bookmarks ----------
    Every book on the shelf builds its own bookmark while he reads it (a sketch, then colours, pictures and a
@@ -1270,7 +1622,7 @@ function render() { applyTheme(); renderHeader(); renderMain(); renderNav(); }
 function renderHeader() {
   const st = streak();
   const sub = { shelf: 'Ready for a reading adventure?', book: 'Let\'s see how far you got!', read: 'Find a cozy spot 📖',
-    trophies: 'Look at everything you did!', calendar: 'Your reading calendar 📅', series: 'Your book series 📚', speed: 'How fast did you read? ⚡', unlocks: 'Pick friends to walk with you 🐾', parent: 'Grown-up corner' }[view];
+    trophies: 'Look at everything you did!', calendar: 'Your reading calendar 📅', series: 'Your book series 📚', speed: 'How fast did you read? ⚡', unlocks: 'Pick friends to walk with you 🐾', shop: 'Spend your stars on cool looks 🛍️', parent: 'Grown-up corner' }[view];
   $('#hdr').innerHTML = `<div class="top">
     <div class="hi">Hi, ${esc(S.name)}! <small>${sub}</small></div>
     <div class="chips"><span class="chip" title="Days in a row">🔥 ${st}</span><span class="chip" title="Stars">⭐ ${S.stars}</span>
@@ -1281,7 +1633,7 @@ function renderNav() {
   const items = [['shelf', '📚', 'My Books'], ['read', '⏱️', 'Read!'], ['trophies', '🏆', 'Trophies'], ['unlocks', '🐾', 'Unlocks']];
   const running = S.timer && S.timer.startedAt;
   $('#nav').innerHTML = items.map(([v, ic, label]) =>
-    `<button data-act="nav" data-v="${v}" class="${view === v || ((view === 'book' || view === 'series') && v === 'shelf') || ((view === 'calendar' || view === 'speed') && v === 'trophies') ? 'on' : ''}"><span class="ic">${ic}</span><span>${label}${(v === 'read' && running) || (v === 'unlocks' && unopened().length) ? '<i class="dot"></i>' : ''}</span></button>`).join('');
+    `<button data-act="nav" data-v="${v}" class="${view === v || ((view === 'book' || view === 'series') && v === 'shelf') || ((view === 'calendar' || view === 'speed') && v === 'trophies') || (view === 'shop' && v === shopFrom) ? 'on' : ''}"><span class="ic">${ic}</span><span>${label}${(v === 'read' && running) || (v === 'unlocks' && unopened().length) ? '<i class="dot"></i>' : ''}</span></button>`).join('');
 }
 
 function renderMain() {
@@ -1294,6 +1646,7 @@ function renderMain() {
   else if (view === 'series') m.innerHTML = seriesView();
   else if (view === 'speed') m.innerHTML = speedView();
   else if (view === 'unlocks') m.innerHTML = unlocksView();
+  else if (view === 'shop') m.innerHTML = shopView();
   else if (view === 'parent') m.innerHTML = parentView();
 }
 
@@ -1607,8 +1960,8 @@ function readView() {
       ? `<div class="row2"><button class="btn white" data-act="pause">⏸ Pause</button><button class="btn orange" data-act="done">✅ I'm done</button></div>`
       : `<div class="row2"><button class="btn green" data-act="resume">▶ Keep going</button><button class="btn orange" data-act="done">✅ I'm done</button></div>`;
   return `${top}
-    <div class="timerbox"><div class="ringbox" id="tRing">${ring(0, 270, 22, 'var(--orange)')}
-      <div class="mid"><div class="clock" id="tClock">0:00</div><div class="clockch" id="tCh"></div><div class="clocksub" id="tSub"></div></div></div></div>
+    <div class="timerbox"><div class="ringbox" id="tRing">${timerRing(0, 270, 22)}
+      <div class="mid"><div class="clock ${numClass()}" id="tClock">0:00</div><div class="clockch" id="tCh"></div><div class="clocksub" id="tSub"></div></div></div></div>
     ${sel.noCh ? '' : `<div class="chend"><label for="chEndR">📑 This chapter ends on page <small style="color:var(--muted);font-weight:600">(if you want)</small></label>
       <input class="in" id="chEndR" type="number" inputmode="numeric" value="${sel.chEnd || ''}" placeholder="page" onchange="setChEnd('${sel.id}', this.value)"></div>`}
     <div class="encourage" id="tMsg"></div>
@@ -1627,7 +1980,7 @@ function updateTimerUI() {
   if ($('#tCh')) $('#tCh').textContent = chn == null || !S.timer ? '' : chn > 0 ? `📑 ${chn} page${chn === 1 ? '' : 's'} left in this chapter` : '📑 You reached the end of the chapter!';
   const fg = $('#tRing .ringfg'), r = (270 - 22) / 2, c = 2 * Math.PI * r;
   fg.setAttribute('stroke-dashoffset', c * (1 - Math.min(1, today / goal)));
-  fg.setAttribute('stroke', met ? 'var(--green)' : 'var(--orange)');
+  if (S.shop.ring === 'orig') fg.setAttribute('stroke', met ? 'var(--green)' : 'var(--orange)');
   const left = Math.ceil(goal - today);
   let msg;
   if (!S.timer) msg = met ? 'Goal done today! Extra reading = extra stars ⭐' : `${left} minute${left === 1 ? '' : 's'} to reach your goal!`;
@@ -1675,7 +2028,9 @@ function trophiesView() {
     <div class="stat"><span class="e">📑</span><b>${(S.chaptersRead || 0).toLocaleString()}</b><small>chapters read</small></div>
     <button class="stat" data-act="nav" data-v="speed"><span class="e">⚡</span><b>Speed</b><small>my fastest books</small></button>
     <button class="stat wide" data-act="nav" data-v="unlocks"><span class="e">🐾</span><span><b style="font-size:22px">My Unlocks</b>
-      <small>${ANIMALS.filter(a => S.unlocked[a.id]).length} animal friends · ${UNLOCKS.filter(u => S.unlocked[u.id]).length} of ${UNLOCKS.length} unlocked</small></span></button></div>
+      <small>${ANIMALS.filter(a => S.unlocked[a.id]).length} animal friends · ${UNLOCKS.filter(u => S.unlocked[u.id]).length} of ${UNLOCKS.length} unlocked</small></span></button>
+    <button class="stat wide shopstat" data-act="openShop"><span class="e">🛍️</span><span><b style="font-size:22px">Star Shop</b>
+      <small>⭐ ${S.stars.toLocaleString()} stars to spend on costumes, timer looks and glass</small></span></button></div>
 
   <div class="sectionhead"><h2>This week</h2><button class="link" data-act="openCal">📅 Calendar</button></div>
   <div class="card weekcard" data-act="openCal"><div class="week">
@@ -1705,6 +2060,7 @@ function hrMin(secs) {
 /* ---------- unlocks ---------- */
 function unlocksView() {
   S.unlocked ||= {}; S.pets ||= [];
+  if (unlockTab === 'glass') unlockTab = 'animal';
   const have = starsEarned();
   const bgId = (BACKGROUNDS.find(x => x.id === S.bg && S.unlocked[x.id]) || BACKGROUNDS[0]).id;
   const nextOf = list => list.filter(u => !S.unlocked[u.id]).sort((a, b) => a.cost - b.cost)[0];
@@ -1725,35 +2081,20 @@ function unlocksView() {
     const status = !got ? `⭐ ${u.cost.toLocaleString()}` : u.kind === 'animal' ? (on ? '✓ Out walking' : 'Tap to bring out') : on ? '✓ Using it' : 'Tap to use';
     return `<button class="ucard ${got ? '' : 'locked'} ${on ? 'on' : ''}" data-act="pickUnlock" data-id="${u.id}">${got ? '' : '<span class="lock">🔒</span>'}${pic}<b>${u.n}</b><small>${status}</small></button>`;
   };
-  const tabs = `<div class="filters utabs" style="margin-top:18px">${[['animal', '🐾', 'Animals'], ['bg', '🖼️', 'Backgrounds'], ['mark', '🔖', 'Bookmarks'], ['glass', '💎', 'Glass']].map(([k, e, l]) =>
+  const tabs = `<div class="filters utabs" style="margin-top:18px">${[['animal', '🐾', 'Animals'], ['bg', '🖼️', 'Backgrounds'], ['mark', '🔖', 'Bookmarks']].map(([k, e, l]) =>
       `<button class="fchip ${unlockTab === k ? 'on' : ''}" data-act="unlockTab" data-k="${k}"><i>${e}</i>${l}</button>`).join('')}</div>`;
   if (unlockTab === 'mark') return marksView(have, tabs);
-  if (unlockTab === 'glass') return glassView(have, tabs);
   return `<div class="card nextup" style="margin-top:-12px;position:relative">
       ${unlockTab === 'animal' ? nextRow('Next animal', nextOf(ANIMALS), 'Every animal unlocked!') : nextRow('Next background', nextOf(BACKGROUNDS), 'Every background unlocked!')}
       <small style="color:var(--muted);display:block;text-align:center;margin-top:8px">⭐ ${have.toLocaleString()} stars earned all-time</small></div>
-    <button class="btn green watchbtn" data-act="watch">👀 Watch my animals${out ? ` (${out})` : ''}</button>
+    <div class="row2 watchrow"><button class="btn green watchbtn" data-act="watch">👀 Watch${out ? ` (${out})` : ''}</button><button class="btn purple watchbtn" data-act="closet">👕 Costumes</button></div>
+    <button class="btn shopbtn block" data-act="openShop">🛍️ Star Shop <small>⭐ ${S.stars.toLocaleString()} to spend</small></button>
     ${tabs}
     <p class="hint" style="margin:0 2px 12px">${unlockTab === 'animal'
-      ? `Tap an animal to bring it out. It walks around on every page! Tap it again to send it home.${out ? ` <b>${out} out now.</b> <button class="link" data-act="petsAway" style="padding:0">Send them all home</button>` : ''}`
+      ? `Tap an animal to bring it out. It walks around on every page! Tap it again to send it home.${out ? ` <b>${out} out now.</b> <button class="link" data-act="petsAway" style="padding:0">Send them all home</button>` : ''}
+        <span class="sizes"><b>Animal size:</b>${PET_SIZES.map(([k, l]) => `<button class="fchip ${(S.petSize || 1) === k ? 'on' : ''}" data-act="petSize" data-k="${k}">${l}</button>`).join('')}</span>`
       : 'Tap a background to change how the whole app looks.'}</p>
     <div class="ugrid">${(unlockTab === 'animal' ? ANIMALS : BACKGROUNDS).map(card).join('')}</div>
-    <p class="hint" style="text-align:center;margin-top:16px">Unlocks count every star you've ever earned.<br>Getting a reward never takes them away!</p>`;
-}
-
-function glassView(have, tabs) {
-  const next = GLASS.find(t => have < t.cost);
-  return `<div class="card nextup" style="margin-top:-12px;position:relative">
-    ${next ? `<div class="nextrow"><span class="nicon"><span class="holder" style="display:block;width:40px;height:40px;padding:0;${glassStyle(next.id)}"></span></span><div style="flex:1;min-width:0">
-      <div class="fun nlabel">Next glass: ${next.n}</div>
-      <div style="display:flex;align-items:center;gap:8px;margin-top:5px"><div class="bar"><i style="width:${Math.min(100, have / next.cost * 100)}%"></i></div>
-      <small style="color:var(--muted);white-space:nowrap">${(next.cost - have).toLocaleString()} more ⭐</small></div></div></div>`
-      : '<div class="nextrow"><span class="nicon">🏆</span><div style="flex:1;min-width:0"><div class="fun nlabel">Every glass color unlocked!</div></div></div>'}
-    <small style="color:var(--muted);display:block;text-align:center;margin-top:8px">⭐ ${have.toLocaleString()} stars earned all-time</small></div>
-    ${tabs}
-    <p class="hint" style="margin:0 2px 12px">Stained glass colors for the holders in your book series. Pick one when you make or change a series.</p>
-    <div class="ugrid">${GLASS.map(t => { const got = have >= t.cost;
-      return `<button class="ucard ${got ? '' : 'locked'}" data-act="glassInfo" data-id="${t.id}">${got ? '' : '<span class="lock">🔒</span>'}<div class="holder sw2" style="${glassStyle(t.id)}"></div><b>${t.n}</b><small>${got ? (t.cost ? 'Unlocked' : 'Always free') : `⭐ ${t.cost.toLocaleString()}`}</small></button>`; }).join('')}</div>
     <p class="hint" style="text-align:center;margin-top:16px">Unlocks count every star you've ever earned.<br>Getting a reward never takes them away!</p>`;
 }
 
@@ -1775,7 +2116,8 @@ function marksView(have, tabs) {
         <div style="display:flex;align-items:center;gap:8px;margin-top:5px"><div class="bar"><i style="width:${Math.min(100, have / next.cost * 100)}%"></i></div>
         <small style="color:var(--muted);white-space:nowrap">${(next.cost - have).toLocaleString()} more ⭐</small></div></div></div>` : ''}
       <small style="color:var(--muted);display:block;text-align:center;margin-top:8px">🔖 ${have2} bookmark${have2 === 1 ? '' : 's'} won · finish any book to win its bookmark!</small></div>
-    <button class="btn green watchbtn" data-act="watch">👀 Watch my animals${S.pets.length ? ` (${S.pets.length})` : ''}</button>
+    <div class="row2 watchrow"><button class="btn green watchbtn" data-act="watch">👀 Watch${S.pets.length ? ` (${S.pets.length})` : ''}</button><button class="btn purple watchbtn" data-act="closet">👕 Costumes</button></div>
+    <button class="btn shopbtn block" data-act="openShop">🛍️ Star Shop <small>⭐ ${S.stars.toLocaleString()} to spend</small></button>
     ${tabs}
     <p class="hint" style="margin:0 2px 4px">Every book you read builds its own bookmark. It gets colors, pictures and a tassel as you read, and you win it when you finish!</p>
     <div class="bmhead"><h3>📚 My book bookmarks</h3><span style="color:var(--muted)">${S.books.filter(markOf).length + gone.length} won</span></div>
@@ -1822,9 +2164,9 @@ function petTarget(o) { const A = petArea(), top = groundTop(o); o.tx = Math.ran
 // fliers stay in the upper part of the screen; swimmers can glide anywhere
 function petSkyY(o) { const A = petArea(); return A.top + Math.random() * Math.max(20, o && o.swim ? A.bot - A.top - o.h : (A.bot - A.top) * .45); }
 function makePet(a) {
-  const h = a.size, art = PETART[a.id], el = document.createElement('div');
+  const h = Math.round(a.size * (S.petSize || 1)), art = PETART[a.id], el = document.createElement('div');
   el.className = `pet ${art.fly || art.swim ? 'flyer walking' : ''}`;
-  el.innerHTML = `<div class="shadow"></div><div class="flip">${petSVG(a.id, h)}</div>`;
+  el.innerHTML = `<div class="shadow"></div><div class="flip">${wornSVG(a.id, h)}</div>`;
   petBox.appendChild(el);
   const A = petArea(), w = h * art.w / art.h;
   const o = { a, el, h, w, flip: el.children[1], fly: !!(art.fly || art.swim), swim: !!art.swim, wait: Math.random() * 2,
@@ -2386,6 +2728,48 @@ const ACT = {
   filter(el) { shelfFilter = el.dataset.f; renderMain(); },
   showFinished() { shelfFilter = 'finished'; view = 'shelf'; render(); document.querySelector('.sectionhead')?.scrollIntoView({ behavior: 'smooth' }); },
   unlockTab(el) { unlockTab = el.dataset.k; renderMain(); },
+  openShop(el) {
+    if (view !== 'shop') shopFrom = view === 'trophies' ? 'trophies' : 'unlocks';
+    if (el && el.dataset.tab) shopTab = el.dataset.tab;
+    closeSheet(); view = 'shop'; render(); scrollTo(0, 0);
+  },
+  shopTab(el) { shopTab = el.dataset.k; renderMain(); },
+  shopPeek(el) { shopPrev = { k: el.dataset.k, id: el.dataset.id }; openSheet(shopPeekHTML()); },
+  peekAnimal(el) { shopPrev.aid = el.dataset.id; const y = $('#sheet').scrollTop; openSheet(shopPeekHTML()); $('#sheet').scrollTop = y; },
+  shopBuy() {
+    const { k, id } = shopPrev, item = k === 'costume' ? costumeById(id) : k === 'ring' ? ringOf(id) : k === 'num' ? numOf(id) : glassOf(id);
+    if (shopOwned(k, id)) return;
+    if (k === 'costume' && !inShop(item)) return toast('That one is not in the shop right now.');
+    if (S.stars < item.cost) return toast(`You need ${(item.cost - S.stars).toLocaleString()} more stars ⭐`);
+    const name = k === 'ring' ? `the ${item.n} timer ring` : k === 'num' ? `${item.n} timer numbers` : k === 'glass' ? `${item.n} glass` : `the ${item.n}`;
+    if (!confirm(`Buy ${name} for ${item.cost.toLocaleString()} stars?`)) return;
+    S.stars -= item.cost; S.shop.own[id] = Date.now();
+    let msg = 'It\'s yours forever! 🎉';
+    if (k === 'ring' || k === 'num') { S.shop[k] = id; msg = 'Your timer has its new look! ⏱️'; }
+    if (k === 'glass') msg = 'Pick it on a series page with ✏️ Change!';
+    if (k === 'costume' && S.unlocked[shopPrev.aid]) { const aid = shopPrev.aid; S.shop.wear[aid] = withCostume(aid, id); refreshPet(aid); msg = `The ${aName(aid)} is wearing it! 👕`; }
+    save(); renderHeader(); renderMain(); openSheet(shopPeekHTML()); toast(msg);
+  },
+  shopUse() { S.shop[shopPrev.k] = shopPrev.id; save(); renderMain(); openSheet(shopPeekHTML()); toast('Your timer has its new look! ⏱️'); },
+  peekWear() { const aid = shopPrev.aid; S.shop.wear[aid] = withCostume(aid, shopPrev.id); save(); refreshPet(aid); renderMain(); openSheet(shopPeekHTML()); toast(`The ${aName(aid)} looks great! 👕`); },
+  peekOff() { const aid = shopPrev.aid; S.shop.wear[aid] = wornOf(aid).filter(x => x !== shopPrev.id); save(); refreshPet(aid); renderMain(); openSheet(shopPeekHTML()); },
+  closet() {
+    closetPrev = null;
+    const mine = ANIMALS.filter(a => S.unlocked[a.id] && RIG[a.id]);
+    const n = aid => Object.keys(S.shop.own).map(costumeById).filter(c => c && canWear(c, aid)).length;
+    openSheet(`<button class="x" data-act="closeSheet">✕</button><h2>👕 Costumes</h2><div class="hint" style="margin:0 0 12px">Pick an animal to dress up.</div>
+      <div class="ugrid">${mine.map(a => `<button class="ucard" data-act="closetAnimal" data-id="${a.id}"><div class="pic">${wornSVG(a.id, 52)}</div><b>${a.n}</b><small>${n(a.id) ? `${n(a.id)} costume${n(a.id) === 1 ? '' : 's'}` : 'None yet'}</small></button>`).join('')}</div>
+      <button class="btn white block" style="margin-top:14px" data-act="openShop" data-tab="costume">🛍️ Get costumes in the Star Shop</button>`);
+  },
+  closetAnimal(el) { closetAid = el.dataset.id; closetPrev = null; openSheet(closetHTML(closetAid)); },
+  closetPick(el) { closetPrev = el.dataset.id; openSheet(closetHTML(closetAid)); },
+  closetEquip() {
+    const aid = closetAid; S.shop.wear[aid] = closetPrev === '' ? [] : withCostume(aid, closetPrev);
+    toast(closetPrev === '' ? `The ${aName(aid)} is back to normal` : `The ${aName(aid)} looks great! 👕`);
+    closetPrev = null; save(); refreshPet(aid); renderMain(); openSheet(closetHTML(aid));
+  },
+  closetOff() { const aid = closetAid; S.shop.wear[aid] = wornOf(aid).filter(x => x !== closetPrev); closetPrev = null; save(); refreshPet(aid); renderMain(); openSheet(closetHTML(aid)); },
+  petSize(el) { S.petSize = +el.dataset.k; save(); pets.forEach(o => o.el.remove()); pets = []; syncPets(); renderMain(); },
   pickUnlock(el) {
     const u = UNLOCKS.find(x => x.id === el.dataset.id);
     if (!S.unlocked[u.id]) { const need = u.cost - starsEarned(); return toast(`Earn ${need.toLocaleString()} more ⭐ to unlock the ${u.n}!`); }
@@ -2469,9 +2853,6 @@ const ACT = {
   chStep(el) { const i = $('#ch'); i.value = Math.max(0, (parseInt(i.value) || 0) + +el.dataset.n); },
   openSeries(el) { closeSheet(); currentSeries = el.dataset.id; backTo = 'series'; view = 'series'; render(); scrollTo(0, 0); },
   backSeries() { shelfFilter = 'series'; backTo = 'shelf'; view = 'shelf'; render(); scrollTo(0, 0); },
-  glassInfo(el) { const t = glassOf(el.dataset.id);
-    if (!glassOwned(t)) return toast(`Earn ${(t.cost - starsEarned()).toLocaleString()} more ⭐ to unlock ${t.n} glass!`);
-    toast(`Pick ${t.n} when you make or change a series 📚`); },
   // make or change a series: name, how many books in the whole series, glass color
   serEditAsk(el) {
     const sr = el && el.dataset.id ? seriesOf(el.dataset.id) : null;
@@ -2484,14 +2865,14 @@ const ACT = {
       <label class="l">Glass color for the book holders</label>
       <div class="tints">${GLASS.map(t => { const got = glassOwned(t);
         return `<button class="tint ${t.id === serTint ? 'sel' : ''} ${got ? '' : 'locked'}" data-act="serTintPick" data-id="${t.id}"><div class="holder" style="${glassStyle(t.id)}">${got ? '' : '🔒'}</div>${t.n}</button>`; }).join('')}</div>
-      <div class="hint">Win more glass colors with stars on the 🐾 Unlocks page.</div>
+      <div class="hint">Get more glass colors in the 🛍️ Star Shop (on the Unlocks and Trophies pages).</div>
       <button class="btn green block" style="margin-top:20px" data-act="serSave" data-id="${sr ? sr.id : ''}">💾 Save</button>
       ${sr ? `<button class="btn white block" style="margin-top:10px" data-act="serDelete" data-id="${sr.id}">Delete this series</button>
       <div class="hint" style="text-align:center">Deleting the series keeps all its books on your shelf.</div>` : ''}`);
   },
   serTintPick(el) {
     const t = glassOf(el.dataset.id);
-    if (!glassOwned(t)) return toast(`Earn ${(t.cost - starsEarned()).toLocaleString()} more ⭐ to unlock ${t.n} glass!`);
+    if (!glassOwned(t)) return toast(`Get ${t.n} glass in the 🛍️ Star Shop for ⭐ ${t.cost}!`);
     serTint = t.id; document.querySelectorAll('.tint').forEach(x => x.classList.toggle('sel', x === el));
   },
   serSave(el) {
@@ -2749,7 +3130,7 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) naviga
 // ---------- staying up to date ----------
 // Phones often resume the app from memory instead of reloading it, so check for a newer
 // version whenever the app opens or comes back on screen, and reload into it.
-const APP_VERSION = 'rr-shell-v41';  // must match SHELL in sw.js
+const APP_VERSION = 'rr-shell-v42';  // must match SHELL in sw.js
 async function checkForUpdate() {
   if (!location.protocol.startsWith('http')) return;
   try {
