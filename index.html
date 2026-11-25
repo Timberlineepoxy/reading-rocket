@@ -539,6 +539,29 @@ body.darkbg .ucard.locked .pic,body.darkbg .ucard.locked .e,body.darkbg .ucard.l
 .tint.sel .holder{outline:3px solid var(--orange);outline-offset:2px}
 .tint.locked{opacity:.6}
 .ucard .holder.sw2{width:100%;aspect-ratio:3/2;padding:0;margin-bottom:6px}
+/* verse of the day, speed trophies, chapter end */
+.verse{margin-top:-14px;position:relative}
+.verse .vlabel{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.verse p{margin:6px 0 4px;font-size:17px;line-height:1.45;font-weight:600}
+.verse .vref{text-align:right;font-family:'Fredoka';font-weight:600;color:var(--purple)}
+body.darkbg .verse .vref{color:#E4D9FF}
+.verse + .mission{margin-top:14px}
+.srank{display:flex;align-items:center;gap:12px;padding:12px 14px;margin-bottom:10px;cursor:pointer}
+.srank .rk{flex:none;width:38px;text-align:center;font-family:'Fredoka';font-size:24px;font-weight:600}
+.srank .cover{width:46px;flex:none}
+.srank .cover .gen{font-size:0}
+.srank .info{flex:1;min-width:0}
+.srank .info b{display:block;font-size:16px;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.srank .info small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
+.srank .days{flex:none;text-align:right;font-family:'Fredoka';font-weight:600;font-size:22px;line-height:1}
+.srank .days small{display:block;font-family:'Nunito';font-size:11px;font-weight:700;color:var(--muted)}
+.srank.wip{opacity:.85}
+.clockch{font-size:14px;font-weight:800;color:var(--purple);margin-top:6px;max-width:190px;line-height:1.25}
+body.darkbg .clockch{color:#E4D9FF}
+.chend{display:flex;align-items:center;gap:10px;margin:4px auto 14px;max-width:340px}
+.chend label{flex:1;font-weight:700;font-size:15px}
+.chend .in{width:110px;flex:none;text-align:center;padding:9px 10px}
+.yn{margin-top:2px}
 </style>
 </head>
 <body>
@@ -1234,7 +1257,7 @@ function render() { applyTheme(); renderHeader(); renderMain(); renderNav(); }
 function renderHeader() {
   const st = streak();
   const sub = { shelf: 'Ready for a reading adventure?', book: 'Let\'s see how far you got!', read: 'Find a cozy spot 📖',
-    trophies: 'Look at everything you did!', calendar: 'Your reading calendar 📅', series: 'Your book series 📚', unlocks: 'Pick friends to walk with you 🐾', parent: 'Grown-up corner' }[view];
+    trophies: 'Look at everything you did!', calendar: 'Your reading calendar 📅', series: 'Your book series 📚', speed: 'How fast did you read? ⚡', unlocks: 'Pick friends to walk with you 🐾', parent: 'Grown-up corner' }[view];
   $('#hdr').innerHTML = `<div class="top">
     <div class="hi">Hi, ${esc(S.name)}! <small>${sub}</small></div>
     <div class="chips"><span class="chip" title="Days in a row">🔥 ${st}</span><span class="chip" title="Stars">⭐ ${S.stars}</span>
@@ -1245,7 +1268,7 @@ function renderNav() {
   const items = [['shelf', '📚', 'My Books'], ['read', '⏱️', 'Read!'], ['trophies', '🏆', 'Trophies'], ['unlocks', '🐾', 'Unlocks']];
   const running = S.timer && S.timer.startedAt;
   $('#nav').innerHTML = items.map(([v, ic, label]) =>
-    `<button data-act="nav" data-v="${v}" class="${view === v || ((view === 'book' || view === 'series') && v === 'shelf') || (view === 'calendar' && v === 'trophies') ? 'on' : ''}"><span class="ic">${ic}</span><span>${label}${(v === 'read' && running) || (v === 'unlocks' && unopened().length) ? '<i class="dot"></i>' : ''}</span></button>`).join('');
+    `<button data-act="nav" data-v="${v}" class="${view === v || ((view === 'book' || view === 'series') && v === 'shelf') || ((view === 'calendar' || view === 'speed') && v === 'trophies') ? 'on' : ''}"><span class="ic">${ic}</span><span>${label}${(v === 'read' && running) || (v === 'unlocks' && unopened().length) ? '<i class="dot"></i>' : ''}</span></button>`).join('');
 }
 
 function renderMain() {
@@ -1256,8 +1279,77 @@ function renderMain() {
   else if (view === 'trophies') m.innerHTML = trophiesView();
   else if (view === 'calendar') m.innerHTML = calendarView();
   else if (view === 'series') m.innerHTML = seriesView();
+  else if (view === 'speed') m.innerHTML = speedView();
   else if (view === 'unlocks') m.innerHTML = unlocksView();
   else if (view === 'parent') m.innerHTML = parentView();
+}
+
+/* ---------- verse of the day (King James Version) ---------- */
+const VERSES = [
+  ['This is the day which the LORD hath made; we will rejoice and be glad in it.', 'Psalm 118:24'],
+  ['I can do all things through Christ which strengtheneth me.', 'Philippians 4:13'],
+  ['Be strong and of a good courage; be not afraid, neither be thou dismayed: for the LORD thy God is with thee whithersoever thou goest.', 'Joshua 1:9'],
+  ['Thy word is a lamp unto my feet, and a light unto my path.', 'Psalm 119:105'],
+  ['Trust in the LORD with all thine heart; and lean not unto thine own understanding.', 'Proverbs 3:5'],
+  ['For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.', 'John 3:16'],
+  ['The LORD is my shepherd; I shall not want.', 'Psalm 23:1'],
+  ['Fear thou not; for I am with thee: be not dismayed; for I am thy God: I will strengthen thee; yea, I will help thee.', 'Isaiah 41:10'],
+  ['We love him, because he first loved us.', '1 John 4:19'],
+  ['And be ye kind one to another, tenderhearted, forgiving one another, even as God for Christ\'s sake hath forgiven you.', 'Ephesians 4:32'],
+  ['What time I am afraid, I will trust in thee.', 'Psalm 56:3'],
+  ['With God all things are possible.', 'Matthew 19:26'],
+  ['And whatsoever ye do, do it heartily, as to the Lord, and not unto men.', 'Colossians 3:23'],
+  ['Let no man despise thy youth; but be thou an example of the believers, in word, in conversation, in charity, in spirit, in faith, in purity.', '1 Timothy 4:12'],
+  ['O give thanks unto the LORD; for he is good: for his mercy endureth for ever.', 'Psalm 136:1'],
+  ['A friend loveth at all times.', 'Proverbs 17:17'],
+  ['And we know that all things work together for good to them that love God.', 'Romans 8:28'],
+  ['Let your light so shine before men, that they may see your good works, and glorify your Father which is in heaven.', 'Matthew 5:16'],
+  ['God is our refuge and strength, a very present help in trouble.', 'Psalm 46:1'],
+  ['And let us not be weary in well doing: for in due season we shall reap, if we faint not.', 'Galatians 6:9'],
+  ['I will praise thee; for I am fearfully and wonderfully made: marvellous are thy works.', 'Psalm 139:14'],
+  ['Let all your things be done with charity.', '1 Corinthians 16:14'],
+  ['I am the light of the world: he that followeth me shall not walk in darkness, but shall have the light of life.', 'John 8:12'],
+  ['The name of the LORD is a strong tower: the righteous runneth into it, and is safe.', 'Proverbs 18:10'],
+  ['I will both lay me down in peace, and sleep: for thou, LORD, only makest me dwell in safety.', 'Psalm 4:8'],
+  ['Ask, and it shall be given you; seek, and ye shall find; knock, and it shall be opened unto you.', 'Matthew 7:7'],
+  ['The LORD thy God, he it is that doth go with thee; he will not fail thee, nor forsake thee.', 'Deuteronomy 31:6'],
+  ['The LORD is good, a strong hold in the day of trouble; and he knoweth them that trust in him.', 'Nahum 1:7'],
+  ['O taste and see that the LORD is good: blessed is the man that trusteth in him.', 'Psalm 34:8'],
+  ['For with God nothing shall be impossible.', 'Luke 1:37'],
+  ['Rejoice evermore. Pray without ceasing. In every thing give thanks.', '1 Thessalonians 5:16-18'],
+  ['A soft answer turneth away wrath: but grievous words stir up anger.', 'Proverbs 15:1'],
+  ['Delight thyself also in the LORD; and he shall give thee the desires of thine heart.', 'Psalm 37:4'],
+  ['Thou shalt love thy neighbour as thyself.', 'Matthew 22:39'],
+  ['Peace I leave with you, my peace I give unto you. Let not your heart be troubled, neither let it be afraid.', 'John 14:27'],
+  ['My help cometh from the LORD, which made heaven and earth.', 'Psalm 121:2'],
+  ['They that wait upon the LORD shall renew their strength; they shall mount up with wings as eagles; they shall run, and not be weary.', 'Isaiah 40:31'],
+  ['For God hath not given us the spirit of fear; but of power, and of love, and of a sound mind.', '2 Timothy 1:7'],
+  ['Commit thy works unto the LORD, and thy thoughts shall be established.', 'Proverbs 16:3'],
+  ['Make a joyful noise unto the LORD, all ye lands.', 'Psalm 100:1'],
+  ['His compassions fail not. They are new every morning: great is thy faithfulness.', 'Lamentations 3:22-23'],
+  ['Lo, I am with you alway, even unto the end of the world.', 'Matthew 28:20'],
+  ['The LORD is my rock, and my fortress, and my deliverer.', 'Psalm 18:2'],
+  ['Every good gift and every perfect gift is from above, and cometh down from the Father of lights.', 'James 1:17'],
+  ['Rejoicing in hope; patient in tribulation; continuing instant in prayer.', 'Romans 12:12'],
+  ['Jesus Christ the same yesterday, and to day, and for ever.', 'Hebrews 13:8'],
+  ['What doth the LORD require of thee, but to do justly, and to love mercy, and to walk humbly with thy God?', 'Micah 6:8'],
+  ['Suffer the little children to come unto me, and forbid them not: for of such is the kingdom of God.', 'Mark 10:14'],
+  ['I will praise thee, O LORD, with my whole heart; I will shew forth all thy marvellous works.', 'Psalm 9:1'],
+  ['In the beginning God created the heaven and the earth.', 'Genesis 1:1'],
+  ['This is my commandment, That ye love one another, as I have loved you.', 'John 15:12'],
+  ['I will instruct thee and teach thee in the way which thou shalt go: I will guide thee with mine eye.', 'Psalm 32:8'],
+  ['The LORD shall fight for you, and ye shall hold your peace.', 'Exodus 14:14'],
+  ['Casting all your care upon him; for he careth for you.', '1 Peter 5:7'],
+  ['Bless the LORD, O my soul, and forget not all his benefits.', 'Psalm 103:2'],
+  ['Keep thy heart with all diligence; for out of it are the issues of life.', 'Proverbs 4:23'],
+  ['The LORD is good to all: and his tender mercies are over all his works.', 'Psalm 145:9'],
+  ['Now the God of hope fill you with all joy and peace in believing.', 'Romans 15:13'],
+];
+// A new verse every day, the same one all day long.
+const verseToday = () => { const n = VERSES.length, i = daysBetween('2026-01-01', dayKey()); return VERSES[((i % n) + n) % n]; };
+function verseHTML() {
+  const [t, ref] = verseToday();
+  return `<div class="card verse"><div class="vlabel">✝️ Verse of the day</div><p>“${esc(t)}”</p><div class="vref">${esc(ref)}</div></div>`;
 }
 
 /* ---------- shelf ---------- */
@@ -1265,7 +1357,7 @@ function shelfView() {
   const today = secsOn(dayKey()) / 60, goal = S.goal, met = today >= goal;
   const pct = today / goal;
   const left = Math.max(0, Math.ceil(goal - today));
-  let html = `<div class="card mission">
+  let html = verseHTML() + `<div class="card mission">
     <div class="ringbox">${ring(pct, 104, 12, met ? 'var(--green)' : 'var(--orange)')}
       <div class="mid"><span class="fun" style="font-size:26px;font-weight:600">${Math.floor(today)}</span><small style="color:var(--muted)">of ${goal} min</small></div></div>
     <div style="flex:1;min-width:0">
@@ -1358,7 +1450,7 @@ function bookView() {
   const p = b.totalPages ? Math.min(1, b.page / b.totalPages) : 0;
   const leftPct = `calc(24px + (100% - 48px) * ${p})`;
   const sr = b.seriesId && seriesOf(b.seriesId);
-  return `${backTo === 'series' && sr ? `<button class="backbtn" data-act="openSeries" data-id="${sr.id}">← ${esc(sr.name)}</button>` : '<button class="backbtn" data-act="nav" data-v="shelf">← My Bookshelf</button>'}
+  return `${backTo === 'series' && sr ? `<button class="backbtn" data-act="openSeries" data-id="${sr.id}">← ${esc(sr.name)}</button>` : backTo === 'speed' ? '<button class="backbtn" data-act="nav" data-v="speed">← Speed trophies</button>' : '<button class="backbtn" data-act="nav" data-v="shelf">← My Bookshelf</button>'}
   <div class="bookhero">${coverHTML(b)}
     <div><h1>${esc(b.title)}</h1>${b.author ? `<div class="by">by ${esc(b.author)}</div>` : ''}
     ${sr ? `<button class="link serline" data-act="openSeries" data-id="${sr.id}">📚 Book #${b.seriesNo || '?'} in ${esc(sr.name)}</button>` : ''}
@@ -1374,7 +1466,7 @@ function bookView() {
     <div class="facts">
       <div class="fact"><small>📅 Started</small><b>${startedOn(b) ? fullDate(startedOn(b)) : 'Not started yet'}</b></div>
       <div class="fact"><small>🏁 Finished</small><b>${fin && b.finishedAt ? fullDate(b.finishedAt) : fin ? 'Finished' : 'In progress'}</b></div>
-      <div class="fact"><small>Chapters done</small><b>${b.chDone ? b.chDone + (b.chapters ? ` of ${b.chapters}` : '') : b.chapter ? esc(b.chapter) : b.chapters ? `0 of ${b.chapters}` : '—'}</b></div>
+      <div class="fact"><small>Chapters done</small><b>${b.noCh ? 'No chapters' : b.chDone ? b.chDone + (b.chapters ? ` of ${b.chapters}` : '') : b.chapter ? esc(b.chapter) : b.chapters ? `0 of ${b.chapters}` : '—'}</b></div>
       <div class="fact"><small>Last read</small><b>${niceDate(b.lastRead)}</b></div>
       <div class="fact"><small>Time in this book</small><b>${fmtMin(b.secs || 0)}</b></div>
       <div class="fact"><small>Reading times</small><b>${S.sessions.filter(s => s.bookId === b.id && s.start >= (b.resetAt || 0)).length}</b></div>
@@ -1389,7 +1481,7 @@ function bookView() {
     <button class="btn green block" data-act="readBook" data-id="${b.id}">▶ Read this book</button>
     <div class="row2"><button class="btn white small" data-act="updatePage" data-id="${b.id}">📖 Update my page</button>
     <button class="btn white small" data-act="finishAsk" data-id="${b.id}">🏁 I finished it!</button></div>`}
-    ${fin && (!b.chapters || (b.chPaid || 0) < b.chapters) ? `<button class="btn white small" data-act="chapAsk" data-id="${b.id}">📑 Add this book's chapters for stars</button>` : ''}
+    ${fin && !b.noCh && (!b.chapters || (b.chPaid || 0) < b.chapters) ? `<button class="btn white small" data-act="chapAsk" data-id="${b.id}">📑 Add this book's chapters for stars</button>` : ''}
     ${fin ? '' : `<button class="btn white small" data-act="startOverAsk" data-id="${b.id}">🔄 Start this book over</button>`}
     ${sr ? `<button class="btn white small" data-act="serBookAsk" data-id="${b.id}">📚 Change series number or remove</button>` : `<button class="btn white small" data-act="serJoinAsk" data-id="${b.id}">📚 Add to a series</button>`}
     <div style="text-align:center"><button class="link" data-act="editBook" data-id="${b.id}">Change name or picture</button>
@@ -1503,7 +1595,9 @@ function readView() {
       : `<div class="row2"><button class="btn green" data-act="resume">▶ Keep going</button><button class="btn orange" data-act="done">✅ I'm done</button></div>`;
   return `${top}
     <div class="timerbox"><div class="ringbox" id="tRing">${ring(0, 270, 22, 'var(--orange)')}
-      <div class="mid"><div class="clock" id="tClock">0:00</div><div class="clocksub" id="tSub"></div></div></div></div>
+      <div class="mid"><div class="clock" id="tClock">0:00</div><div class="clockch" id="tCh"></div><div class="clocksub" id="tSub"></div></div></div></div>
+    ${sel.noCh ? '' : `<div class="chend"><label for="chEndR">📑 This chapter ends on page <small style="color:var(--muted);font-weight:600">(if you want)</small></label>
+      <input class="in" id="chEndR" type="number" inputmode="numeric" value="${sel.chEnd || ''}" placeholder="page" onchange="setChEnd('${sel.id}', this.value)"></div>`}
     <div class="encourage" id="tMsg"></div>
     ${buttons}
     ${t ? `<div style="text-align:center;margin-top:6px"><button class="link" data-act="cancelTimer">Oops, I didn't mean to start</button></div>` : ''}
@@ -1516,6 +1610,8 @@ function updateTimerUI() {
   $('#tClock').textContent = h ? `${h}:${pad(mm)}:${pad(ss)}` : `${mm}:${pad(ss)}`;
   const today = secsOn(dayKey()) / 60, goal = S.goal, met = today >= goal;
   $('#tSub').textContent = `${Math.floor(today)} of ${goal} min today`;
+  const cb = book(S.timer ? S.timer.bookId : S.selBook), chn = cb && !cb.noCh && cb.chEnd ? cb.chEnd - cb.page : null;
+  if ($('#tCh')) $('#tCh').textContent = chn == null || !S.timer ? '' : chn > 0 ? `📑 ${chn} page${chn === 1 ? '' : 's'} left in this chapter` : '📑 You reached the end of the chapter!';
   const fg = $('#tRing .ringfg'), r = (270 - 22) / 2, c = 2 * Math.PI * r;
   fg.setAttribute('stroke-dashoffset', c * (1 - Math.min(1, today / goal)));
   fg.setAttribute('stroke', met ? 'var(--green)' : 'var(--orange)');
@@ -1531,6 +1627,27 @@ function updateTimerUI() {
   $('#tMsg').textContent = msg;
 }
 
+/* ---------- speed trophies: finished books from fastest to slowest ---------- */
+const bookSecs = b => S.sessions.reduce((a, x) => a + (x.bookId === b.id && x.start >= (b.resetAt || 0) ? x.secs : 0), 0) || b.secs || 0;
+function speedView() {
+  const daysFor = (b, end) => { const st = startedOn(b) || b.added; return Math.max(1, daysBetween(dayKey(new Date(st)), dayKey(new Date(end))) + 1); };
+  const done = S.books.filter(b => b.status === 'finished' && b.finishedAt).map(b => ({ b, days: daysFor(b, b.finishedAt), secs: bookSecs(b) }))
+    .sort((x, y) => x.days - y.days || x.secs - y.secs || sortTitle(x.b, y.b));
+  const wip = S.books.filter(b => b.status !== 'finished').sort(sortTitle);
+  const medal = i => ['🥇', '🥈', '🥉'][i] || `#${i + 1}`;
+  const row = (b, rk, big, sub, info) => `<div class="card srank${rk === '?' ? ' wip' : ''}" data-act="openBook" data-id="${b.id}"><span class="rk">${rk}</span>${coverHTML(b)}
+    <div class="info"><b>${esc(b.title)}</b><small>${info}</small></div><div class="days">${big}<small>${sub}</small></div></div>`;
+  return `<button class="backbtn" data-act="nav" data-v="trophies">← Trophies</button>
+  <div class="sectionhead"><h2>⚡ Speed trophies</h2></div>
+  <p class="hint" style="margin:0 2px 12px">Your finished books, from fastest to slowest. Days count from the day you started to the day you finished.</p>
+  ${done.length ? done.map((x, i) => row(x.b, medal(i), x.days, x.days === 1 ? 'day' : 'days',
+      `${fullDate(startedOn(x.b) || x.b.added)} → ${fullDate(x.b.finishedAt)}${x.secs ? ` · ${fmtMin(x.secs)} reading` : ''}`)).join('')
+    : '<div class="card empty"><div class="big">🏁</div><p>Finish a book to see how fast you read it!</p></div>'}
+  ${wip.length ? `<div class="sectionhead"><h2>Still reading</h2></div>
+  ${wip.map(b => { const st = startedOn(b);
+    return row(b, '?', '❓', 'not done', st ? `Started ${fullDate(st)} · ${daysFor(b, Date.now())} day${daysFor(b, Date.now()) === 1 ? '' : 's'} so far` : 'Not started yet'); }).join('')}` : ''}`;
+}
+
 /* ---------- trophies ---------- */
 function trophiesView() {
   const today = dayKey(), days = [...Array(7)].map((_, i) => addDays(today, i - 6));
@@ -1542,7 +1659,8 @@ function trophiesView() {
     <div class="stat"><span class="e">⏱️</span><b>${hrMin(totalSecs())}</b><small>reading time · ${Math.round(totalSecs() / 60).toLocaleString()} minutes</small></div>
     <button class="stat" data-act="showFinished"><span class="e">🏁</span><b>${finishedCount()}</b><small>books finished</small></button>
     <div class="stat"><span class="e">📄</span><b>${S.pagesRead.toLocaleString()}</b><small>pages read</small></div>
-    <div class="stat wide"><span class="e">📑</span><span><b style="font-size:22px">${(S.chaptersRead || 0).toLocaleString()}</b><small>chapters read</small></span></div>
+    <div class="stat"><span class="e">📑</span><b>${(S.chaptersRead || 0).toLocaleString()}</b><small>chapters read</small></div>
+    <button class="stat" data-act="nav" data-v="speed"><span class="e">⚡</span><b>Speed</b><small>my fastest books</small></button>
     <button class="stat wide" data-act="nav" data-v="unlocks"><span class="e">🐾</span><span><b style="font-size:22px">My Unlocks</b>
       <small>${ANIMALS.filter(a => S.unlocked[a.id]).length} animal friends · ${UNLOCKS.filter(u => S.unlocked[u.id]).length} of ${UNLOCKS.length} unlocked</small></span></button></div>
 
@@ -1826,11 +1944,19 @@ function serNoFill(selId, noId, boxId) {
 }
 let serTint = 'clear', serPick = null;
 
+// Chapter-end page typed on the timer screen.
+function setChEnd(id, v) {
+  const b = book(id); if (!b) return;
+  const n = Math.max(0, parseInt(v) || 0);
+  if (n && n <= b.page) { toast(`You're already on page ${b.page}. Pick a page after that!`); $('#chEndR').value = b.chEnd || ''; return; }
+  b.chEnd = n; save(); updateTimerUI(); if (n) toast(S.timer ? 'Chapter countdown is on! 📑' : 'Start reading to see the chapter countdown! 📑');
+}
+
 /* ---------- add / edit a book ---------- */
 function openAdd(editId) {
   const b = editId && book(editId);
   addFlow = { step: b ? 'details' : 'search', q: '', results: [], loading: false, error: '', editId: b ? b.id : null,
-    chosen: b ? { title: b.title, author: b.author, cover: b.cover, pages: b.totalPages, chapters: b.chapters || 0 } : { title: '', author: '', cover: '', pages: 0, chapters: 0 } };
+    chosen: b ? { title: b.title, author: b.author, cover: b.cover, pages: b.totalPages, chapters: b.chapters || 0, hasCh: !b.noCh } : { title: '', author: '', cover: '', pages: 0, chapters: 0, hasCh: true } };
   renderAdd();
 }
 function renderAdd() {
@@ -1863,14 +1989,16 @@ function renderAdd() {
       <label class="l">Author</label><input class="in" id="bAuthor" value="${esc(c.author)}" placeholder="Who wrote it?" maxlength="80">
       <label class="l">How many pages?</label><input class="in" id="bPages" type="number" inputmode="numeric" value="${c.pages || ''}" placeholder="Look at the last page number">
       <div class="hint">${c.pages && !f.editId ? 'This is a guess from the internet. Check the last page of your book!' : 'Flip to the very last page and look at the number.'}</div>
-      <label class="l">How many chapters?</label><input class="in" id="bChap" type="number" inputmode="numeric" value="${c.chapters || ''}" placeholder="Look at the list of chapters at the front">
-      <div class="hint">Longer chapters are worth more stars!</div>
+      <label class="l">Are there chapters in this book?</label>
+      <div class="row2 yn"><button class="btn small ${c.hasCh !== false ? 'green' : 'white'}" data-act="chYN" data-v="1">✅ Yes</button><button class="btn small ${c.hasCh === false ? 'green' : 'white'}" data-act="chYN" data-v="0">❌ No</button></div>
+      <div class="chOnly" style="${c.hasCh === false ? 'display:none' : ''}"><label class="l">How many chapters?</label><input class="in" id="bChap" type="number" inputmode="numeric" value="${c.chapters || ''}" placeholder="Look at the list of chapters at the front">
+      <div class="hint">Longer chapters are worth more stars!</div></div>
       ${(S.series || []).length && !f.editId ? `<label class="l">Part of a series?</label>
       <select class="in" id="bSer" onchange="serNoFill('bSer','bSerNo','bSerBox')"><option value="">No</option>${S.series.map(x => `<option value="${x.id}" ${c.ser === x.id ? 'selected' : ''}>${esc(x.name)}</option>`).join('')}</select>
       <div id="bSerBox" style="${c.ser ? '' : 'display:none'}"><label class="l">What number book is it in the series?</label>
       <input class="in" id="bSerNo" type="number" inputmode="numeric" min="1" value="${c.serNo || (c.ser ? nextNo(c.ser) : '')}" placeholder="e.g. 1 for book #1"></div>` : ''}
       ${f.editId ? '' : `<label class="l">What page are you on now?</label><input class="in" id="bStart" type="number" inputmode="numeric" value="0">
-      <label class="l">How many chapters have you finished already?</label><input class="in" id="bChDone" type="number" inputmode="numeric" value="0">`}
+      <div class="chOnly" style="${c.hasCh === false ? 'display:none' : ''}"><label class="l">How many chapters have you finished already?</label><input class="in" id="bChDone" type="number" inputmode="numeric" value="0"></div>`}
       <button class="btn orange block" style="margin-top:20px" data-act="saveBook">${f.editId ? 'Save' : '📚 Put it on my shelf!'}</button>`);
   }
 }
@@ -1998,12 +2126,15 @@ function openProgress(bookId, session) {
     <div class="hint" style="text-align:center">You started at page ${b.page}</div>
     <label class="l">How many pages in the whole book?</label>
     <input class="in" id="tp" type="number" inputmode="numeric" value="${b.totalPages || ''}" placeholder="Look at the last page number">
-    <label class="l">What chapter did you just finish?</label>
+    ${b.noCh ? '' : `<label class="l">What chapter did you just finish?</label>
     <div class="stepper"><button class="sb" data-act="chStep" data-n="-1">−1</button>
       <input class="in" id="ch" type="number" inputmode="numeric" value="${b.chDone || 0}"><button class="sb" data-act="chStep" data-n="1">+1</button></div>
     <div class="hint" style="text-align:center">${b.chapters ? `Each chapter in this book is worth ${chStars(b)} ⭐` : 'Each chapter is worth ⭐ stars! Add how many chapters below.'}</div>
     <label class="l">How many chapters in the whole book?</label>
     <input class="in" id="tch" type="number" inputmode="numeric" value="${b.chapters || ''}" placeholder="Look at the list of chapters at the front">
+    <label class="l">The chapter you're on now ends on page <small style="color:var(--muted);font-family:Nunito">(if you want)</small></label>
+    <input class="in" id="chEndIn" type="number" inputmode="numeric" value="${b.chEnd || ''}" placeholder="e.g. 62">
+    <div class="hint">The timer will count down the pages left in your chapter.</div>`}
     <label class="l">Where did you stop? <small style="color:var(--muted);font-family:Nunito">(if you want)</small></label>
     <input class="in" id="note" value="${esc(b.note)}" placeholder="e.g. Right after the dragon showed up" maxlength="100">
     <button class="btn green block" style="margin-top:20px" data-act="saveProgress">💾 Save</button>`);
@@ -2017,10 +2148,15 @@ function saveProgress() {
   if (pg > prev) S.pagesRead += pg - prev;
   if (pg > prev && ctx.secs == null) logPages(pg - prev);
   if (!b.startedAt && (pg > prev || ctx.secs != null)) b.startedAt = startedOn(b) || ctx.start || Date.now();
-  b.chapters = Math.max(0, parseInt($('#tch').value) || 0);
-  b.chDone = Math.max(0, parseInt($('#ch').value) || 0);
-  if (b.chapters) b.chDone = Math.min(b.chDone, b.chapters);
-  if (b.chDone) b.chapter = '';
+  if ($('#tch')) {
+    b.chapters = Math.max(0, parseInt($('#tch').value) || 0);
+    b.chDone = Math.max(0, parseInt($('#ch').value) || 0);
+    if (b.chapters) b.chDone = Math.min(b.chDone, b.chapters);
+    if (b.chDone) b.chapter = '';
+    b.chEnd = Math.max(0, parseInt($('#chEndIn').value) || 0);
+  }
+  // Passed the end of the chapter? Clear it, ready for the next chapter.
+  if (b.chEnd && pg >= b.chEnd) b.chEnd = 0;
   b.page = pg; b.note = $('#note').value.trim(); b.lastRead = Date.now();
 
   if (ctx.secs != null) {
@@ -2251,7 +2387,7 @@ const ACT = {
   },
   petsAway() { S.pets = []; save(); syncPets(); renderMain(); toast('Everyone went home for a nap 💤'); },
   watch() { startWatch(); },
-  openBook(el) { closeSheet(); backTo = view === 'series' ? 'series' : 'shelf'; currentBook = el.dataset.id; view = 'book'; render(); scrollTo(0, 0); },
+  openBook(el) { closeSheet(); backTo = view === 'series' ? 'series' : view === 'speed' ? 'speed' : 'shelf'; currentBook = el.dataset.id; view = 'book'; render(); scrollTo(0, 0); },
   addBook() { openAdd(); },
   closeSheet,
   search: doSearch,
@@ -2271,7 +2407,7 @@ const ACT = {
     if (addFlow.editId) {
       const b = book(addFlow.editId);
       const looks = b.title !== c.title || b.cover !== c.cover;
-      Object.assign(b, { title: c.title, author: c.author, cover: c.cover, totalPages: c.pages, chapters: c.chapters });
+      Object.assign(b, { title: c.title, author: c.author, cover: c.cover, totalPages: c.pages, chapters: c.hasCh === false ? 0 : c.chapters, noCh: c.hasCh === false });
       if (b.totalPages && b.page > b.totalPages) b.page = b.totalPages;
       payFinishedChapters(b);
       if (looks) { delete b.bmv; analyzeBook(b); }
@@ -2279,10 +2415,11 @@ const ACT = {
     } else {
       let start = Math.max(0, parseInt($('#bStart').value) || 0);
       if (c.pages) start = Math.min(start, c.pages);
-      let chd = Math.max(0, parseInt($('#bChDone').value) || 0);
+      const noCh = c.hasCh === false;
+      let chd = noCh ? 0 : Math.max(0, parseInt($('#bChDone').value) || 0);
       if (c.chapters) chd = Math.min(chd, c.chapters);
       const b = { id: uid(), title: c.title, author: c.author, cover: c.cover, totalPages: c.pages, page: start, chapter: '', note: '',
-        chapters: c.chapters, chDone: chd, chPaid: chd, msPaid: {}, startedAt: start > 0 ? Date.now() : null,
+        chapters: noCh ? 0 : c.chapters, noCh, chDone: chd, chPaid: chd, msPaid: {}, startedAt: start > 0 ? Date.now() : null,
         status: 'reading', added: Date.now(), lastRead: null, secs: 0 };
       if (c.ser && seriesOf(c.ser)) {
         if (!(c.serNo >= 1)) return toast('What number book is it in the series?');
@@ -2311,6 +2448,11 @@ const ACT = {
   },
   cancelTimer() { if (confirm('Stop the timer without saving this time?')) { S.timer = null; save(); releaseWake(); render(); updateTimerUI(); } },
   updatePage(el) { openProgress(el.dataset.id); },
+  chYN(el) {
+    grabDetails(); const yes = el.dataset.v === '1'; addFlow.chosen.hasCh = yes;
+    document.querySelectorAll('.yn .btn').forEach(x => { const on = (x.dataset.v === '1') === yes; x.classList.toggle('green', on); x.classList.toggle('white', !on); });
+    document.querySelectorAll('.chOnly').forEach(x => x.style.display = yes ? '' : 'none');
+  },
   chStep(el) { const i = $('#ch'); i.value = Math.max(0, (parseInt(i.value) || 0) + +el.dataset.n); },
   openSeries(el) { closeSheet(); currentSeries = el.dataset.id; backTo = 'series'; view = 'series'; render(); scrollTo(0, 0); },
   backSeries() { shelfFilter = 'series'; backTo = 'shelf'; view = 'shelf'; render(); scrollTo(0, 0); },
@@ -2594,7 +2736,7 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) naviga
 // ---------- staying up to date ----------
 // Phones often resume the app from memory instead of reloading it, so check for a newer
 // version whenever the app opens or comes back on screen, and reload into it.
-const APP_VERSION = 'rr-shell-v39';  // must match SHELL in sw.js
+const APP_VERSION = 'rr-shell-v40';  // must match SHELL in sw.js
 async function checkForUpdate() {
   if (!location.protocol.startsWith('http')) return;
   try {
